@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+{%  load static %}
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'mainapp/style.css' %}">
+    <title>AdventureMinds - {% block title %} Welcome! {% endblock %}</title>
+</head>
+<body>
+    <div>
+        {% block body_block %}*** {% endblock %}
+    </div>
+    <div>
+        <ul>
+            <li>About Us</li>
+            <li>Contact Us</li>
+        </ul>
+    </div>
+</body>
+</html>

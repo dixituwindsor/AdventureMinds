@@ -1,0 +1,37 @@
+{% extends 'mainapp/base.html' %}
+
+{% block body_block %}
+    <h1>Messages app</h1>
+    <br/><br/>
+    <div class="chats_display" id="display_chats" style="font-size: 18px">
+    <input type="text" id="input_message"/>
+    <button type="submit" id="send_message">Send</button>
+    <br/><br/>
+    </div>
+    <script>
+            const socket = new WebSocket("ws://" + window.location.host + "/");
+            socket.onopen = function (e){
+                console.log("Connection successful");
+            };
+            socket.onopen = function (e){
+                console.log("Connection Unsuccessful")
+            }
+            document.querySelector("#input_message").focus();
+            document.querySelector("#input_message").onkeyup = function (e){
+                if (e.keyCode === 13){
+                    document.querySelector("#send_message").click();
+                }
+            };
+            document.querySelector("#send_message").onclick = function (e){
+                var messageInput = document.querySelector("#input_message").value;
+                socket.send(JSON.stringify({message: messageInput, username: "Dixit"}));
+            };
+            socket.onmessage = function (e){
+                const data = JSON.parse(e.data);
+                var div = document.createElement("div");
+                div.innerHTML = data.username + " : " + data.message;
+                document.querySelector("#input_message").value = "";
+                document.querySelector("display_chats").appendChild(div);
+            };
+    </script>
+{% endblock %}
