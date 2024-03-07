@@ -11,6 +11,7 @@ def messenger(request):
     context = {}
     return render(request=request, template_name=template, context=context)
 
+<<<<<<< HEAD
 # def messenger(request):
 #     resonse = HttpResponse()
 #     resonse.write("<h1>Hello World</h1>")
@@ -59,3 +60,5 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
+=======
+>>>>>>> master
