@@ -1,53 +1,76 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-        <link rel="stylesheet" href="{% static 'mainapp/style.css' %}">
+<form method="post">
+  {% csrf_token %}
+  <div class="preferences-container">
+    {% for field in form %}
+      <div class="preference-field">
+        <label>{{ field.label }}</label>
+        <div class="options">
+          {% for option_value, option_label in field.field.choices %}
+            <button type="button" class="preference-option {% if forloop.first %}selected{% endif %}" data-field="{{ field.name }}" data-value="{{ option_value }}">
+              {% if forloop.first %}None{% else %}{{ option_label }}{% endif %}
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <button type="submit">Submit</button>
+</form>
 
-    <title>User Preferences</title>
-</head>
-<body>
-    <h1>User Preferences</h1>
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="id_travel_style">Travel Style:</label>
-            {{ form.travel_style }}
-        </div>
-        <div class="form-group">
-            <label for="id_activity_preferences">Activity Preferences:</label>
-            {{ form.activity_preferences }}
-        </div>
-        <div class="form-group">
-            <label for="id_destination_preferences">Destination Preferences:</label>
-            {{ form.destination_preferences }}
-        </div>
-        <div class="form-group">
-            <label for="id_accommodation_preferences">Accommodation Preferences:</label>
-            {{ form.accommodation_preferences }}
-        </div>
-        <div class="form-group">
-            <label for="id_transportation_preferences">Transportation Preferences:</label>
-            {{ form.transportation_preferences }}
-        </div>
-        <div class="form-group">
-            <label for="id_meal_preferences">Meal Preferences:</label>
-            {{ form.meal_preferences }}
-        </div>
-        <div class="form-group">
-            <label for="id_language_preferences">Language Preferences:</label>
-            {{ form.language_preferences }}
-        </div>
-        <div class="form-group">
-            <label for="id_budget_range">Budget Range:</label>
-            {{ form.budget_range }}
-        </div>
-        <div class="form-group">
-            <label for="id_special_interests">Special Interests:</label>
-            {{ form.special_interests }}
-        </div>
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-</body>
-</html>
+<style>
+  .preference-field {
+    margin-bottom: 20px;
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .preference-option {
+    border: 2px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .preference-option.selected {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+  }
+
+  /* Remove margin for the first button in each category */
+  .preference-field .options .preference-option:first-child {
+    margin-left: 0;
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const preferenceButtons = document.querySelectorAll('.preference-option');
+  preferenceButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const field = this.dataset.field;
+      const value = this.dataset.value;
+      if (this.classList.contains('selected')) {
+        this.classList.remove('selected');
+        // Handle deselection logic (e.g., remove the selected value from hidden input)
+      } else {
+        // Deselect other options in the same field
+        const otherOptions = document.querySelectorAll(`.preference-option[data-field="${field}"]`);
+        otherOptions.forEach(option => {
+          option.classList.remove('selected');
+        });
+        // Handle selection logic (e.g., add the selected value to hidden input)
+        this.classList.add('selected');
+      }
+    });
+  });
+});
+</script>

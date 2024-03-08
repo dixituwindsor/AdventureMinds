@@ -1,5 +1,8 @@
 from django import forms
 from .models import UserProfile, UserPreferences
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
 
 
 class UserProfileForm(forms.ModelForm):
@@ -36,9 +39,6 @@ class UserPreferencesForm(forms.ModelForm):
             'budget_range': 'Budget Range',
             'special_interests': 'Special Interests'
         }
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 
 # class SignupForm(UserCreationForm):
 #     class Meta:
