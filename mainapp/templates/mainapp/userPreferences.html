@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <link rel="stylesheet" href="{% static 'mainapp/style.css' %}">
+
+    <title>User Preferences</title>
+</head>
+<body>
+    <h1>User Preferences</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_travel_style">Travel Style:</label>
+            {{ form.travel_style }}
+        </div>
+        <div class="form-group">
+            <label for="id_activity_preferences">Activity Preferences:</label>
+            {{ form.activity_preferences }}
+        </div>
+        <div class="form-group">
+            <label for="id_destination_preferences">Destination Preferences:</label>
+            {{ form.destination_preferences }}
+        </div>
+        <div class="form-group">
+            <label for="id_accommodation_preferences">Accommodation Preferences:</label>
+            {{ form.accommodation_preferences }}
+        </div>
+        <div class="form-group">
+            <label for="id_transportation_preferences">Transportation Preferences:</label>
+            {{ form.transportation_preferences }}
+        </div>
+        <div class="form-group">
+            <label for="id_meal_preferences">Meal Preferences:</label>
+            {{ form.meal_preferences }}
+        </div>
+        <div class="form-group">
+            <label for="id_language_preferences">Language Preferences:</label>
+            {{ form.language_preferences }}
+        </div>
+        <div class="form-group">
+            <label for="id_budget_range">Budget Range:</label>
+            {{ form.budget_range }}
+        </div>
+        <div class="form-group">
+            <label for="id_special_interests">Special Interests:</label>
+            {{ form.special_interests }}
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</body>
+</html>

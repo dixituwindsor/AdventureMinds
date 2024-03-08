@@ -1,23 +1,38 @@
-{% extends 'mainapp/base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'mainapp/style.css' %}">
 
-    <link rel="stylesheet" type="text/css" href="{% static 'mainapp/style.css' %}">
-{% block title %} Profile Update {% endblock %}
-
-
-{% block body_block %}
-<div class="">
-  <p class="">phone number</p>
-  <p class="">Emergency Contact</p>
-  <p class="">Name</p>
-  <p class="">Email</p>
-  <p class="">Address</p>
-
-  <div class="">Save</div>
-  <div class="">
-{#    <img class="" src="{% static 'assets/frame-17.png' %}">#}
-{#    <img class="" src="{% static 'assets/frame-18-mmg.png' %}"/>#}
-  </div>
-</div>
-
-{% endblock %}
+    <title>User Profile</title>
+</head>
+<body>
+    <div class="container">
+        <h1>User Profile</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_name">Name:</label>
+                {{ form.name }}
+            </div>
+            <div class="form-group">
+                <label for="id_email">Email:</label>
+                {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label for="id_address">Address:</label>
+                {{ form.address }}
+            </div>
+            <div class="form-group">
+                <label for="id_phone_number">Phone Number:</label>
+                {{ form.phone_number }}
+            </div>
+            <div class="form-group">
+                <a href="{% url 'mainapp:user_preferences' %}" class="btn btn-primary">Add Preferences</a>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</body>
+</html>
