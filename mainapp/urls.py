@@ -3,6 +3,7 @@ from . import views
 
 app_name = 'mainapp'
 urlpatterns = [
+    path('chat_app/', views.chat_app, name='chat_app'),
     path('', views.messenger, name='messenger'),
     path('home/', views.messenger, name='home'),
     path('login/', views.user_login, name='login'),
