@@ -66,3 +66,19 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background-color: #0056b3;
 }
+.chat-app {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.create-group, .send-message, .view-messages {
+    border: 1px solid #ddd;
+    padding: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
