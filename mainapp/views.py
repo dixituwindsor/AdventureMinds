@@ -1,9 +1,9 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import ChatGroups, Message, UserProfile
+from .models import ChatGroups, Message, UserProfile, Destination, Review
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserCreationForm, SignupForm, LoginForm
+from .forms import UserCreationForm, SignupForm, LoginForm, ReviewForm
 from .models import UserProfile
 
 # Create your views here.
@@ -107,3 +107,18 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
+
+def destination_detail(request, destination_id):
+    destination = get_object_or_404(Destination, pk=destination_id)
+    reviews = Review.objects.filter(destination=destination)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.destination = destination
+            review.user = request.user  # Assuming user is authenticated
+            review.save()
+            return redirect('destination_detail', destination_id=destination_id)
+    else:
+        form = ReviewForm()
+    return render(request, 'destination_detail.html', {'destination': destination, 'reviews': reviews, 'form': form})

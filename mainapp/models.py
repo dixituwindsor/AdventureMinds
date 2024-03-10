@@ -33,3 +33,15 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.sender.username} -> {self.recipient.username if self.recipient else self.chat_group.name}: {self.content}"
+
+class Destination(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+
+
+class Review(models.Model):
+    destination = models.ForeignKey(Destination, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
