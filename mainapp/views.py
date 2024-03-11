@@ -9,6 +9,11 @@ def messenger(request):
     context = {}
     return render(request=request, template_name=template, context=context)
 
+def homepage(request):
+    template = "mainapp/homepage.html"
+    context = {}
+    return render(request=request, template_name=template, context=context)
+
 # def messenger(request):
 #     resonse = HttpResponse()
 #     resonse.write("<h1>Hello World</h1>")
