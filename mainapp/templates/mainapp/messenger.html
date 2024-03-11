@@ -14,7 +14,7 @@
                 console.log("Connection successful");
             };
             socket.onopen = function (e){
-                console.log("Connection Unsuccessful")
+                console.log("Connection Unsuccessful");
             }
             document.querySelector("#input_message").focus();
             document.querySelector("#input_message").onkeyup = function (e){
@@ -24,7 +24,7 @@
             };
             document.querySelector("#send_message").onclick = function (e){
                 var messageInput = document.querySelector("#input_message").value;
-                socket.send(JSON.stringify({message: messageInput, username: "Dixit"}));
+                socket.send(JSON.stringify({message: messageInput, username: "{{ request.user.username }}"}));
             };
             socket.onmessage = function (e){
                 const data = JSON.parse(e.data);

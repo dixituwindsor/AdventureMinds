@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+<<<<<<< HEAD
     <data-source source="LOCAL" name="Django default" uuid="27537f6a-8889-4a30-baca-b4f5138ccc10">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
@@ -8,6 +9,13 @@
       <remarks>$PROJECT_DIR$/AdventureMinds/settings.py</remarks>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:D:\AdventureMindsProject\AdventureMinds\db.sqlite3</jdbc-url>
+=======
+    <data-source source="LOCAL" name="db" uuid="e9caead2-c41b-4346-b441-616528c9961d">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:D:\Masters\Sem3\IADS\Project\AdventureMinds\db.sqlite3</jdbc-url>
+>>>>>>> 1fbcbaea95c9dec6feaaf19311ecadb6f38ef42a
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
