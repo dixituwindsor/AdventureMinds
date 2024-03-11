@@ -5,4 +5,5 @@ app_name = 'mainapp'
 urlpatterns = [
     path('', views.messenger, name='messenger'),
     path('h/', views.homepage, name='homepage'),
+    path('t/', views.terms_conditions, name='terms_conditions'),
 ]

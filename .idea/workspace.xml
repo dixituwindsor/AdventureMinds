@@ -8,6 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/static/mainapp/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/static/mainapp/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/homepage.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/homepage.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +100,7 @@
       <option name="presentableId" value="Default" />
       <updated>1710105049786</updated>
       <workItem from="1710105050865" duration="3075000" />
-      <workItem from="1710110224581" duration="17953000" />
+      <workItem from="1710110224581" duration="21884000" />
     </task>
     <servers />
   </component>

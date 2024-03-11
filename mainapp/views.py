@@ -14,6 +14,11 @@ def homepage(request):
     context = {}
     return render(request=request, template_name=template, context=context)
 
+def terms_conditions(request):
+    template = "mainapp/terms_conditions.html"
+    context = {}
+    return render(request=request, template_name=template, context=context)
+
 # def messenger(request):
 #     resonse = HttpResponse()
 #     resonse.write("<h1>Hello World</h1>")
