@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import ChatGroups, Message, UserProfile
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
+from .models import UserProfile
 
 # Create your views here.
 
@@ -45,20 +46,42 @@ def chat_app(request):
 # signup page
 def user_signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        # form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
+        # form = UserCreationForm(request.POST)
+        # form = SignupForm(request.POST)
+        # if form.is_valid():
+        #     user = form.save(commit= False)
+        #     user.save()
             # loginForm = LoginForm()
-            return redirect('mainapp:login')
             # return render(request, 'login.html', {'form' : loginForm})
+
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            firstname = form.cleaned_data['firstname']
+            lastname = form.cleaned_data['lastname']
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            email = form.cleaned_data['email']
+
+            if(UserProfile.objects.filter(username=username).exists()):
+                response = HttpResponse()
+                response.write("<p>Username already exists, choose different username</p>")
+                return response
+
+            userprofileobj = UserProfile()
+            userprofileobj.firstname = firstname
+            userprofileobj.last_name = lastname
+            userprofileobj.username = username
+            userprofileobj.password = password
+            userprofileobj.email = email
+            userprofileobj.save()
+            return redirect('mainapp:login')
         else:
             response = HttpResponse()
             response.write("<p>Something went wrong</p>")
             return response
     else:
-        form = UserCreationForm()
-        # form = SignUpForm()
+        # form = UserCreationForm()
+        form = SignupForm()
         return render(request, 'mainapp/signup.html', {'form': form})
 
 
@@ -69,9 +92,11 @@ def user_login(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user:
-                login(request, user)
+            # user = authenticate(request, username=username, password=password)
+            # if user:
+            #     login(request, user)
+            #     return redirect('mainapp:home')
+            if UserProfile.objects.filter(username=username).exists() and UserProfile.objects.filter(username=username).get().password == password :
                 return redirect('mainapp:home')
             else:
                 response = HttpResponse()
