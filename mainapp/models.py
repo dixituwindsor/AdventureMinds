@@ -1,3 +1,4 @@
+
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 
@@ -49,19 +50,35 @@ class Trip(models.Model):
     def __str__(self):
         return f"{self.user.username}'s trip to {self.destination.name}"
 
-class Review(models.Model):
-    # destination = models.ForeignKey(Destination, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField()
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
-    # def save(self, *args, **kwargs):
-    #     # Calculate average rating for user profile and update
-    #     self.trip.user.total_reviews += 1
-    #     self.trip.user.total_ratings += self.rating
-    #     self.user.average_rating = self.trip.user.total_ratings / self.trip.user.total_reviews
-    #     self.user.save()
-    #     super().save(*args, **kwargs)
+# class Review(models.Model):
+#     # destination = models.ForeignKey(Destination, on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     rating = models.IntegerField()
+#     comment = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+#     # def save(self, *args, **kwargs):
+#     #     # Calculate average rating for user profile and update
+#     #     self.trip.user.total_reviews += 1
+#     #     self.trip.user.total_ratings += self.rating
+#     #     self.user.average_rating = self.trip.user.total_ratings / self.trip.user.total_reviews
+#     #     self.user.save()
+#     #     super().save(*args, **kwargs)
+#     def __str__(self):
+#         return f"{self.trip.user.username}'s review for {self.trip.destination.name}"
+
+class TripReview(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, null=True, blank=True)
+    review = models.TextField()
+    rating = models.IntegerField(default=None)
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Trip Reviews"
+
     def __str__(self):
-        return f"{self.trip.user.username}'s review for {self.trip.destination.name}"
+        return self.trip.destination.name
+
+    def get_rating(self):
+        return self.rating

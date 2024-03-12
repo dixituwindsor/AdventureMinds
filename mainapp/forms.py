@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Review
+from .models import TripReview
 
 # class SignupForm(UserCreationForm):
 #     class Meta:
@@ -32,6 +32,8 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
 class ReviewForm(forms.ModelForm):
+    review = forms.CharField(widget=forms.Textarea(attrs={ 'placeholder': 'Enter your Reviews'}))
     class Meta:
-        model = Review
-        fields = ['rating', 'comment']
+        model = TripReview
+        fields = ['review', 'rating']
+
