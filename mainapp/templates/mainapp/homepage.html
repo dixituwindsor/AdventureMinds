@@ -30,29 +30,31 @@
 </script>
 </head>
 <body>
-    <div class="container-lg mt-2" id="navbar_container">
-        <nav class="navbar">
-            <div class="d-flex align-items-center">
-                <button class="navbar-toggler bg_acc_green border border-dark m-2 d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_content" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+    <div class="container-lg mt-2 " id="navbar_container">
+        <nav class="navbar row">
+            <div class="d-flex align-items-center col-4 ">
+                <button class="navbar-toggler bg_acc_green m-2 d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_content" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
                     <span class="bi bi-list"></span>
                     <i class="bi bi-person"></i>
                 </button>
                 <div class="input-group">
                     <input class="form-control border-end-0 border rounded-pill" type="search" value="Search..." id="example-search-input">
                     <span class="input-group-append">
-                        <button class="btn btn-outline-secondary bg_search_green border-bottom-0 border rounded-pill ms-n5" type="button">
+                        <button class="btn bg_search_green border-bottom-0 border rounded-pill ms-n5" type="button">
                             <i class="bi bi-search"></i>
                         </button>
                     </span>
                 </div>
             </div>
-            <ul class="">
-                <li><a href="#">Itinary</a></li>
-                <li><a href="#">Itinary</a></li>
-                <li><a href="#">Itinary</a></li>
-                <li><a href="#">Food</a></li>
-                <li><a href="#">Travel</a></li>
-            </ul>
+            <div class="col-6 ">
+                <ul class="nav_list d-flex justify-content-between p-0 m-0">
+                    <li><a href="#">Itinerary</a></li>
+                    <li><a href="#">Itinerary</a></li>
+                    <li><a href="#">Itinerary</a></li>
+                    <li><a href="#">Food</a></li>
+                    <li><a href="#">Travel</a></li>
+                </ul>
+            </div>
         </nav>
     </div>
     <button class="btn btn-success back-to-top-btn" onclick="topFunction()">
@@ -74,6 +76,8 @@
                 </ul>
           </div>
     </div>
+    <div class="content  container">
 {% block body_block %}  {% endblock %}
+    </div>
 </body>
 </html>
