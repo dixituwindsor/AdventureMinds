@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import Trip, TripPhoto, UserPreferences
+
 
 # class SignupForm(UserCreationForm):
 #     class Meta:
@@ -29,3 +31,23 @@ class SignupForm(forms.Form):
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+class TripForm(forms.ModelForm):
+    preferences = forms.ModelMultipleChoiceField(
+        queryset=UserPreferences.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
+    class Meta:
+        model = Trip
+        fields = ['source_place', 'destination_place', 'date', 'number_of_days', 'preferences', 'photos']
+
+    # Add a widget for multiple photos
+    photos = forms.ImageField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+
+
+class TripPhotoForm(forms.ModelForm):
+    class Meta:
+        model = TripPhoto
+        fields = ['photo']

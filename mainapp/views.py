@@ -3,11 +3,33 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import ChatGroups, Message, UserProfile
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserCreationForm, SignupForm, LoginForm
-from .models import UserProfile
+from .forms import UserCreationForm, SignupForm, LoginForm, TripForm, TripPhotoForm
+from .models import UserProfile, Trip, TripPhoto, UserPreferences
 
 # Create your views here.
 
+@login_required
+def add_trip(request):
+    if request.method == 'POST':
+        form = TripForm(request.POST, request.FILES)
+        photo_formset = TripPhotoForm(request.POST, request.FILES, prefix='photos')
+        if form.is_valid() and photo_formset.is_valid():
+            trip = form.save(commit=False)
+            trip.user = request.user
+            trip.save()
+            form.save_m2m()  # Save the many-to-many relationships
+            for photo_form in photo_formset:
+                if photo_form.cleaned_data.get('photo'):
+                    TripPhoto.objects.create(trip=trip, photo=photo_form.cleaned_data['photo'])
+            return redirect('mainapp:trip_list')  # Change 'trip_list' to your actual trip list URL name
+    else:
+        form = TripForm()
+        photo_formset = TripPhotoForm(prefix='photos')
+    return render(request, 'mainapp/add_trip.html', {'form': form, 'photo_formset': photo_formset})
+
+def trip_list(request):
+    trips = Trip.objects.all()
+    return render(request, 'mainapp/trip_list.html', {'trips': trips})
 
 def messenger(request):
     template = "mainapp/messenger.html"
