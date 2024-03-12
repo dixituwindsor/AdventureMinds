@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block body_block %}
+<nav>
+    <a href="{% url 'chat_app' %}">Chat App</a>
+</nav>
+<div class="chat-app">
+    <h2>Chat App</h2>
+    <div class="create-group">
+        <h3>Create New Group</h3>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_group">
+            <label for="name">Group Name:</label>
+            <input type="text" id="name" name="name" required>
+            <button type="submit">Create</button>
+        </form>
+    </div>
+    <div class="send-message">
+        <h3>Send Message</h3>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="send_message">
+            <label for="content">Message:</label>
+            <textarea id="content" name="content" required></textarea>
+            <label for="group_id">Group:</label>
+            <select id="group_id" name="group_id">
+                <option value="">Select a group</option>
+                {% for group in groups %}
+                <option value="{{ group.id }}">{{ group.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="recipient_username">Or send to:</label>
+            <input type="text" id="recipient_username" name="recipient_username" placeholder="Username">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <div class="view-messages">
+        <h3>Messages</h3>
+        <!-- Display messages here -->
+    </div>
+</div>
+{% endblock %}
