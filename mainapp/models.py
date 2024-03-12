@@ -56,12 +56,12 @@ class Review(models.Model):
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
-    def save(self, *args, **kwargs):
-        # Calculate average rating for user profile and update
-        self.trip.user.total_reviews += 1
-        self.trip.user.total_ratings += self.rating
-        self.user.average_rating = self.trip.user.total_ratings / self.trip.user.total_reviews
-        self.user.save()
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # Calculate average rating for user profile and update
+    #     self.trip.user.total_reviews += 1
+    #     self.trip.user.total_ratings += self.rating
+    #     self.user.average_rating = self.trip.user.total_ratings / self.trip.user.total_reviews
+    #     self.user.save()
+    #     super().save(*args, **kwargs)
     def __str__(self):
         return f"{self.trip.user.username}'s review for {self.trip.destination.name}"

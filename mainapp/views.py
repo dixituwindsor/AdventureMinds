@@ -125,8 +125,8 @@ def user_logout(request):
 
 
 
-def trip_detail(request, trip_id):
-    trip = Trip.objects.get(pk=trip_id)
+def trip_detail(request):
+    trip = Trip.objects.filter(trip_date= '2023-01-12').first()
     reviews = Review.objects.filter(trip=trip)
     form = ReviewForm()
 
@@ -134,9 +134,9 @@ def trip_detail(request, trip_id):
         form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
-            review.user = request.trip.user.userprofile
+            #review.user = request.trip.user.userprofile
             review.trip = trip
             review.save()
-            return redirect('trip_detail', trip_id=trip_id)
+            return redirect('mainapp:messenger')
 
     return render(request, 'mainapp/trip_detail.html', {'trip': trip, 'reviews': reviews, 'form': form})
