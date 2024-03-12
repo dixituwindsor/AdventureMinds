@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import ChatGroups, Message, UserProfile
@@ -28,6 +28,10 @@ def terms_conditions(request):
 #     resonse = HttpResponse()
 #     resonse.write("<h1>Hello World</h1>")
 #     return resonse
+
+def getusers(request):
+    users = UserProfile.objects.all().values('username', 'id')
+    return JsonResponse(list(users), safe=False)
 
 @login_required
 def chat_app(request):
