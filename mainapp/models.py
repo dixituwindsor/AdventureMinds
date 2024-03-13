@@ -6,6 +6,7 @@ from django.contrib.auth.models import User, AbstractUser
 class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
+
     def __str__(self):
         return self.name
 
@@ -24,7 +25,7 @@ class UserProfile(models.Model):
 
 
 class UserPreferences(models.Model):
-    user_profile = models.OneToOneField('UserProfile', on_delete=models.CASCADE, related_name='preferences')
+    user = models.OneToOneField('UserProfile', on_delete=models.CASCADE, related_name='preferences')
     travel_style = models.CharField(max_length=100, choices=[
         ('Adventure Seeker', 'Adventure Seeker'),
         ('Cultural Explorer', 'Cultural Explorer'),
@@ -96,9 +97,7 @@ class UserPreferences(models.Model):
     ], blank=True)
 
     def __str__(self):
-        return f'Preferences for {self.user.username}'
-
-        return self.get_full_name()
+        return f'Preferences for {self.user.name}'
 
 
 class ChatGroups(models.Model):
@@ -112,10 +111,10 @@ class ChatGroups(models.Model):
 class Message(models.Model):
     sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="sent_messages")
     chat_group = models.ForeignKey(ChatGroups, on_delete=models.CASCADE, null=True, blank=True)
-    recipient = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name="received_messages")
+    recipient = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True,
+                                  related_name="received_messages")
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.sender.name} -> {self.recipient.name if self.recipient else self.chat_group.name}: {self.content}"
-
