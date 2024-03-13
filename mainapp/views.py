@@ -2,12 +2,12 @@ from django.db.models import Avg
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import ChatGroups, Message, UserProfile, Trip, TripReview
+from .models import ChatGroups, Message, UserProfile, Place, TripReview
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserCreationForm, SignupForm, LoginForm, ReviewForm
+from .forms import UserCreationForm, SignupForm, LoginForm, ReviewForm, RatingForm
 from .models import UserProfile
+from django.views.generic.detail import DetailView
 
-# Create your views here.
 
 
 def messenger(request):
@@ -142,43 +142,97 @@ def user_logout(request):
 #
 #     return render(request, 'mainapp/trip_detail.html', {'trip': trip, 'reviews': reviews, 'form': form})
 
-def trip_info(request,id):
-    trip = Trip.objects.get(pk=id)
-    trips = Trip.objects.filter(trip_date= trip.trip_date).exclude(id=id)
-    reviews = TripReview.objects.filter(trip=trip).order_by("-date")
+# def trip_info(request,id):
+#     trip = Trip.objects.get(pk=id)
+#     trips = Trip.objects.filter(trip_date= trip.trip_date).exclude(id=id)
+#     reviews = TripReview.objects.filter(trip=trip).order_by("-date")
+#
+#     average_rating = TripReview.objects.filter(trip=trip).aggregate(rating=Avg('rating'))
+#     review_form = ReviewForm()
+#
+#     context ={
+#         't': trip,
+#         'trips': trips,
+#         'reviews': reviews,
+#         'average_rating':average_rating,
+#         'review_form':review_form,
+#     }
+#     return render(request, 'mainapp/trip_info.html',context)
+#
+# def trip_detail(request, trip_id):
+#     trip = get_object_or_404(Trip, pk=trip_id)
+#     reviews = TripReview.objects.filter(trip=trip)
+#     return render(request, 'mainapp/trip_detail.html', {'trip': trip, 'reviews': reviews})
+#
+# # def add_review(request,trip_id):
+# #     trip = Trip.objects.get(pk=trip_id)
+# #     user = request.user
+# #
+# #     review = TripReview.objects.create(
+# #         user=user,
+# #         trip=trip,
+# #         review=request.POST['review'],
+# #         rating=request.POST['rating'],
+# #
+# #     )
+# #
+# #     context = {
+# #         'user': user.username,
+# #         'review': request.POST['review'],
+# #         'rating': request.POST['rating'],
+# #     }
+# #
+# #     average_reviews = TripReview.objects.filter(trip=trip).aggregate(rating=Avg('rating'))
+# #     # response = {'bool': 'True','context': context,'average_reviews': average_reviews}
+# #     return render(request, 'mainapp/trip_info.html', context)
+#
+#     # return JsonResponse({'bool': True, 'context': context, 'average_reviews': average_reviews})
+#
+#
+# def add_trip(request):
+#     # Example data
+#     trip_data = {
+#         'name': 'Trip to Rome',
+#         'description': 'An adventure in Italy'
+#     }
+#
+#     # Create and save a new trip
+#     trip = Trip(**trip_data)
+#     # trip.save()
+#
+#     return HttpResponse("Trip added successfully")
 
-    average_rating = TripReview.objects.filter(trip=trip).aggregate(rating=Avg('rating'))
-    review_form = ReviewForm()
+class PlaceDetailView(DetailView):
+    model = Place
+    template_name = 'mainapp/place_detail.html'
 
-    context ={
-        't': trip,
-        'trips': trips,
-        'reviews': reviews,
-        'average_rating':average_rating,
-        'review_form':review_form,
-    }
-    return render(request, 'mainapp/trip_info.html',context)
-def add_review(request,id):
-    trip = Trip.objects.get(pk=id)
-    user = request.user
+# @login_required
+def add_review(request, place_id):
+    place = Place.objects.get(id=place_id)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.place = place
+            review.save()
+            return redirect('place_detail', place_id=place.id)
+    else:
+        form = ReviewForm()
+    return render(request, 'mainapp/add_review.html', {'form': form, 'place': place})
 
-    review = TripReview.objects.create(
-        user=user,
-        trip=trip,
-        review=request.POST['review'],
-        rating=request.POST['rating'],
-
-    )
-
-    context = {
-        'user': user.username,
-        'review': request.POST['review'],
-        'rating': request.POST['rating'],
-    }
-
-    average_reviews = TripReview.objects.filter(trip=trip).aggregate(rating=Avg('rating'))
-    # response = {'bool': 'True','context': context,'average_reviews': average_reviews}
-    return render(request, 'mainapp/trip_info.html', context)
-
-    # return JsonResponse({'bool': True, 'context': context, 'average_reviews': average_reviews})
+# @login_required
+def add_rating(request, place_id):
+    place = Place.objects.get(id=place_id)
+    if request.method == 'POST':
+        rating_form = RatingForm(request.POST)
+        if rating_form.is_valid():
+            rating = rating_form.save(commit=False)
+            rating.user = request.user
+            rating.place = place
+            rating.save()
+            return redirect('place_detail', place_id=place.id)
+    else:
+        rating_form = RatingForm()
+    return render(request, 'mainapp/add_review.html', {'rating_form': rating_form, 'place': place})
 

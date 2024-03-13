@@ -1,0 +1,16 @@
+<!-- add_review.html -->
+{% extends "mainapp/base.html" %}
+
+{% block content %}
+ <h2>Add a Review for {{ place.name }}</h2>
+ <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+ </form>
+ <h2>Add a Rating for {{ place.name }}</h2>
+ <form method="post">
+    {% csrf_token %}
+    {{ rating_form.as_p }}
+    <button type="submit">Submit</button>
+ </form>   
+{% endblock %}

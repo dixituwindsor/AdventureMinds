@@ -8,7 +8,7 @@ class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
     def __str__(self):
-        return self.name
+        return 'pk=' +str (self.pk)+', name='+self.name
 
 
 class UserProfile(User):
@@ -18,6 +18,14 @@ class UserProfile(User):
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     def __str__(self):
         return self.get_username()
+
+    def total_reviews(self):
+        return self.review_set.count()
+
+    def average_rating(self):
+        if self.total_reviews() > 0:
+            return self.review_set.all().aggregate(models.Avg('rating'))['rating__avg']
+        return 0
 
 
 class ChatGroups(models.Model):
@@ -42,13 +50,15 @@ class Message(models.Model):
 #     name = models.CharField(max_length=100)
 #     description = models.TextField()
 
-class Trip(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    destination = models.ForeignKey(Place, on_delete=models.CASCADE)
-    trip_date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username}'s trip to {self.destination.name}"
+# class Trip(models.Model):
+#     # user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+#     # destination = models.ForeignKey(Place, on_delete=models.CASCADE)
+#     # trip_date = models.DateTimeField(auto_now_add=True)
+#     name = models.CharField(max_length=100)
+#     description = models.TextField()
+#
+#     def __str__(self):
+#         return f"{self.user.username}'s trip to {self.destination.name}"
 
 # class Review(models.Model):
 #     # destination = models.ForeignKey(Destination, on_delete=models.CASCADE)
@@ -69,16 +79,30 @@ class Trip(models.Model):
 
 class TripReview(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, null=True, blank=True)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, null=True, blank=True)
     review = models.TextField()
     rating = models.IntegerField(default=None)
     date = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        verbose_name_plural = "Trip Reviews"
+    # class Meta:
+    #     verbose_name_plural = "Trip Reviews"
 
     def __str__(self):
-        return self.trip.destination.name
+        return self.place.name
+    #
+    # def get_rating(self):
+    #     return self.rating
 
-    def get_rating(self):
-        return self.rating
+
+
+# class Review(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+#     text = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#
+# class Rating(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+#     value = models.IntegerField()
+#     created_at = models.DateTimeField(auto_now_add=True)
