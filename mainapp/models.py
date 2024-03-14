@@ -109,19 +109,57 @@ class UserPreferences(models.Model):
     def __str__(self):
         return f'Preferences for {self.user.username}'
 
+
 class Trip(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     source_place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='source_trips')
-    destination_place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='destination_trips')
-    date = models.DateField()
-    number_of_days = models.PositiveIntegerField()
-    preferences = models.ManyToManyField(UserPreferences, blank=True)
-    photos = models.ManyToManyField('TripPhoto', blank=True)
+    destination_place = models.CharField(max_length=100)
+    date_of_trip = models.DateField()
+    days_of_travel = models.IntegerField()
+    travel_style = models.CharField(max_length=100, choices=[])
+    activities = models.CharField(max_length=100, choices=[])
+    transportation = models.CharField(max_length=100, choices=[])
+    meal = models.CharField(max_length=100, choices=[])
+    language = models.CharField(max_length=100, choices=[])
+    speacial_interests = models.CharField(max_length=100, choices=[])
+    accommodation = models.CharField(max_length=100, choices=[])
+    budget = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'Trip by {self.user.username} - {self.destination_place.name}'
+        return f'Trip from {self.source_place} to {self.destination_place}'
+
+    def set_travel_style_choices(self, user_profile):
+        user_preferences = UserPreferences.objects.get(user_profile=user_profile)
+        self.travel_style = user_preferences.travel_style
+
+    def set_activities_choices(self, user_profile):
+        user_preferences = UserPreferences.objects.get(user_profile=user_profile)
+        self.activities = user_preferences.activity_preferences
+
+    def set_transportation_choices(self, user_profile):
+        user_preferences = UserPreferences.objects.get(user_profile=user_profile)
+        self.transportation = user_preferences.transportation_preferences
+
+    def set_meal_choices(self, user_profile):
+        user_preferences = UserPreferences.objects.get(user_profile=user_profile)
+        self.meal = user_preferences.meal_preferences
+
+    def set_language_choices(self, user_profile):
+        user_preferences = UserPreferences.objects.get(user_profile=user_profile)
+        self.language = user_preferences.language_preferences
+
+    def set_speacial_interests_choices(self, user_profile):
+        user_preferences = UserPreferences.objects.get(user_profile=user_profile)
+        self.speacial_interests = user_preferences.speacial_interests
+
+    def set_accommodation_choices(self, user_profile):
+        user_preferences = UserPreferences.objects.get(user_profile=user_profile)
+        self.accommodation = user_preferences.accommodation_preferences
 
 
-class TripPhoto(models.Model):
+class Photo(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='photos')
-    photo = models.ImageField(upload_to='trip_photos/')
+    image = models.ImageField(upload_to='trip_photos/')
+
+    def __str__(self):
+        return f'Photo for Trip: {self.trip}'

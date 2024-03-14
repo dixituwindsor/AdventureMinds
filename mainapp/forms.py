@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Trip, TripPhoto, UserPreferences
+from .models import Trip, Photo, UserPreferences
 
 
 # class SignupForm(UserCreationForm):
@@ -32,22 +32,34 @@ class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
+from django import forms
+from .models import Trip
+
 class TripForm(forms.ModelForm):
-    preferences = forms.ModelMultipleChoiceField(
-        queryset=UserPreferences.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
+    photos = forms.ImageField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
 
     class Meta:
         model = Trip
-        fields = ['source_place', 'destination_place', 'date', 'number_of_days', 'preferences', 'photos']
+        fields = ['source_place', 'destination_place', 'date_of_trip', 'days_of_travel',
+                  'travel_style', 'activities', 'transportation', 'meal', 'language',
+                  'special_interests', 'accommodation', 'budget', 'photos']
 
-    # Add a widget for multiple photos
-    photos = forms.ImageField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+    def __init__(self, *args, **kwargs):
+        user_profile = kwargs.pop('user_profile', None)
+        super(TripForm, self).__init__(*args, **kwargs)
+        if user_profile:
+            self.instance.set_travel_style_choices(user_profile)
+            self.instance.set_activities_choices(user_profile)
+            self.instance.set_transportation_choices(user_profile)
+            self.instance.set_meal_choices(user_profile)
+            self.instance.set_language_choices(user_profile)
+            self.instance.set_special_interests_choices(user_profile)
+            self.instance.set_accommodation_choices(user_profile)
 
-
-class TripPhotoForm(forms.ModelForm):
-    class Meta:
-        model = TripPhoto
-        fields = ['photo']
+            self.fields['travel_style'].choices = [(self.instance.travel_style, self.instance.travel_style)]
+            self.fields['activities'].choices = [(choice, choice) for choice in self.instance.activities.split(',')]
+            self.fields['transportation'].choices = [(choice, choice) for choice in self.instance.transportation.split(',')]
+            self.fields['meal'].choices = [(choice, choice) for choice in self.instance.meal.split(',')]
+            self.fields['language'].choices = [(choice, choice) for choice in self.instance.language.split(',')]
+            self.fields['special_interests'].choices = [(choice, choice) for choice in self.instance.special_interests.split(',')]
+            self.fields['accommodation'].choices = [(choice, choice) for choice in self.instance.accommodation.split(',')]
