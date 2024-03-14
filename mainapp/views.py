@@ -1,10 +1,10 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import ChatGroups, Message, UserProfile
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
-from .models import UserProfile
+from .models import UserProfile, Thread, User, ChatMessage
+
 
 # Create your views here.
 
@@ -34,27 +34,25 @@ def getusers(request):
     return JsonResponse(list(users), safe=False)
 
 @login_required
-def chat_app(request):
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        if action == 'create_group':
-            name = request.POST['name']
-            group = ChatGroups.objects.create(name=name)
-            group.members.add(request.user)
-            return redirect('chat_app')
-        elif action == 'send_message':
-            content = request.POST['content']
-            group_id = request.POST.get('group_id')
-            recipient_username = request.POST.get('recipient_username')
-            if group_id:
-                group = ChatGroups.objects.get(id=group_id)
-                Message.objects.create(sender=request.user, chat_group=group, content=content)
-            elif recipient_username:
-                recipient = UserProfile.objects.get(username=recipient_username)
-                Message.objects.create(sender=request.user, recipient=recipient, content=content)
-            return redirect('chat_app')
-    groups = ChatGroups.objects.filter(members=request.user)
-    return render(request, 'mainapp/messages.html', {'groups': groups})
+def chat_app(request, user_id=None):
+    if user_id:
+        # Assuming the logged-in user is the first person in the thread
+        first_person = request.user
+        second_person = get_object_or_404(User, id=user_id)
+        thread, created = Thread.objects.get_or_create(
+            first_person=first_person,
+            second_person=second_person,
+        )
+        messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp')
+        context = {
+            'thread': thread,
+            'messages': messages,
+        }
+        return render(request, 'mainapp/messages.html', context)
+    else:
+        users = User.objects.all()
+        context = {'users': users}
+        return render(request, 'mainapp/messages.html', context)
 
 
 # signup page
@@ -96,7 +94,7 @@ def user_signup(request):
     else:
         # form = UserCreationForm()
         form = SignupForm()
-        return render(request, 'mainapp/signup.html', {'form': form})
+        return render(request, 'registration/signup.html', {'form': form})
 
 
 # login page
@@ -106,19 +104,17 @@ def user_login(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            # user = authenticate(request, username=username, password=password)
-            # if user:
-            #     login(request, user)
-            #     return redirect('mainapp:home')
-            if UserProfile.objects.filter(username=username).exists() and UserProfile.objects.filter(username=username).get().password == password :
-                return redirect('mainapp:home')
+            user = authenticate(request, username=username, password=password)
+            if user is not None and user.is_active:
+                login(request, user)
+                return redirect('mainapp:chat_app')
             else:
                 response = HttpResponse()
                 response.write("<p>Wrong credentials</p>")
                 return response
     else:
         form = LoginForm()
-        return render(request, 'mainapp/login.html', {'form': form})
+        return render(request, 'registration/login.html', {'form': form})
 
 
 # logout page
