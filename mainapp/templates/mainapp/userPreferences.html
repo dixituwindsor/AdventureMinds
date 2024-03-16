@@ -1,0 +1,76 @@
+<form method="post">
+  {% csrf_token %}
+  <div class="preferences-container">
+    {% for field in form %}
+      <div class="preference-field">
+        <label>{{ field.label }}</label>
+        <div class="options">
+          {% for option_value, option_label in field.field.choices %}
+            <button type="button" class="preference-option {% if forloop.first %}selected{% endif %}" data-field="{{ field.name }}" data-value="{{ option_value }}">
+              {% if forloop.first %}None{% else %}{{ option_label }}{% endif %}
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <button type="submit">Submit</button>
+</form>
+
+<style>
+  .preference-field {
+    margin-bottom: 20px;
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .preference-option {
+    border: 2px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .preference-option.selected {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+  }
+
+  /* Remove margin for the first button in each category */
+  .preference-field .options .preference-option:first-child {
+    margin-left: 0;
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const preferenceButtons = document.querySelectorAll('.preference-option');
+  preferenceButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const field = this.dataset.field;
+      const value = this.dataset.value;
+      if (this.classList.contains('selected')) {
+        this.classList.remove('selected');
+        // Handle deselection logic (e.g., remove the selected value from hidden input)
+      } else {
+        // Deselect other options in the same field
+        const otherOptions = document.querySelectorAll(`.preference-option[data-field="${field}"]`);
+        otherOptions.forEach(option => {
+          option.classList.remove('selected');
+        });
+        // Handle selection logic (e.g., add the selected value to hidden input)
+        this.classList.add('selected');
+      }
+    });
+  });
+});
+</script>

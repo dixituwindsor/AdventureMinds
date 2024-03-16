@@ -1,3 +1,10 @@
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from .models import UserProfile, UserPreferences
+from .forms import UserProfileForm, UserPreferencesForm
+
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -7,6 +14,48 @@ from .models import UserProfile, Thread, User, ChatMessage
 
 
 # Create your views here.
+
+def user_profile(request):
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST)
+        if form.is_valid():
+            user_profile = form.save(commit=False)
+            user_profile.user = request.user
+            user_profile.save()
+            return redirect('mainapp:profile')
+    else:
+        form = UserProfileForm()
+    return render(request, 'mainapp/profile.html', {'form': form})
+
+# def user_profile(request):
+#     try:
+#         profile = request.user.userprofile
+#     except UserProfile.DoesNotExist:
+#         profile = None
+#
+#     if request.method == 'POST':
+#         form = UserProfileForm(request.POST, instance=profile)
+#         if form.is_valid():
+#             user_profile = form.save(commit=False)
+#             user_profile.user = request.user
+#             user_profile.save()
+#             return redirect('mainapp:profile')
+#     else:
+#         form = UserProfileForm(instance=profile)
+#     return render(request, 'mainapp/profile.html', {'form': form})
+
+
+def user_preferences(request):
+    if request.method == 'POST':
+        form = UserPreferencesForm(request.POST)
+        if form.is_valid():
+            preferences = form.save(commit=False)
+            preferences.user_profile = request.user.userprofile
+            preferences.save()
+            return redirect(reverse('mainapp:profile'))
+    else:
+        form = UserPreferencesForm()
+    return render(request, 'mainapp/userPreferences.html', {'form': form})
 
 
 def messenger(request):
@@ -53,6 +102,7 @@ def chat_app(request, user_id=None):
         users = User.objects.all()
         context = {'users': users}
         return render(request, 'mainapp/messages.html', context)
+
 
 
 # signup page
@@ -121,3 +171,4 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
+
