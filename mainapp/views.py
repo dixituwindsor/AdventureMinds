@@ -15,16 +15,16 @@ from .models import UserProfile, Thread, User, ChatMessage
 
 # Create your views here.
 
+@login_required
 def user_profile(request):
+    user_profile_instance, created = UserProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        form = UserProfileForm(request.POST)
+        form = UserProfileForm(request.POST, instance=user_profile_instance)
         if form.is_valid():
-            user_profile = form.save(commit=False)
-            user_profile.user = request.user
-            user_profile.save()
+            form.save()
             return redirect('mainapp:profile')
     else:
-        form = UserProfileForm()
+        form = UserProfileForm(instance=user_profile_instance)
     return render(request, 'mainapp/profile.html', {'form': form})
 
 # def user_profile(request):
@@ -108,43 +108,34 @@ def chat_app(request, user_id=None):
 # signup page
 def user_signup(request):
     if request.method == 'POST':
-        # form = UserCreationForm(request.POST)
-        # form = SignupForm(request.POST)
-        # if form.is_valid():
-        #     user = form.save(commit= False)
-        #     user.save()
-            # loginForm = LoginForm()
-            # return render(request, 'login.html', {'form' : loginForm})
-
         form = SignupForm(request.POST)
         if form.is_valid():
-            firstname = form.cleaned_data['firstname']
-            lastname = form.cleaned_data['lastname']
+            # Extracting data from the form
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
             username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
             email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            phone_number = form.cleaned_data['phone_number']
+            address = form.cleaned_data['address']
+            date_of_birth = form.cleaned_data['date_of_birth']
 
-            if(UserProfile.objects.filter(username=username).exists()):
-                response = HttpResponse()
-                response.write("<p>Username already exists, choose different username</p>")
-                return response
+            # Creating User object
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
 
-            userprofileobj = UserProfile()
-            userprofileobj.firstname = firstname
-            userprofileobj.last_name = lastname
-            userprofileobj.username = username
-            userprofileobj.password = password
-            userprofileobj.email = email
-            userprofileobj.save()
+            # Creating UserProfile object
+            user_profile = UserProfile.objects.create(user=user, phone_number=phone_number, address=address,
+                                                       date_of_birth=date_of_birth)
+            user_profile.save()
+
+            # Redirect to login page after successful signup
             return redirect('mainapp:login')
-        else:
-            response = HttpResponse()
-            response.write("<p>Something went wrong</p>")
-            return response
     else:
-        # form = UserCreationForm()
         form = SignupForm()
-        return render(request, 'registration/signup.html', {'form': form})
+    return render(request, 'registration/signup.html', {'form': form})
 
 
 # login page
