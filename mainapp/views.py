@@ -57,6 +57,8 @@ def chat_app(request):
     return render(request, 'mainapp/messages.html', {'groups': groups})
 
 
+#manual way for sign-up and login
+"""
 # signup page
 def user_signup(request):
     if request.method == 'POST':
@@ -119,7 +121,22 @@ def user_login(request):
     else:
         form = LoginForm()
         return render(request, 'mainapp/login.html', {'form': form})
+"""
 
+def user_signup(request):
+    if request.method == 'POST':
+        redirect('mainapp:home')
+    else:
+        form = SignupForm()
+        return render(request, 'mainapp/signup.html', {'form': form})
+
+# login page
+def user_login(request):
+    if request.method == 'POST':
+        return redirect('mainapp:home')
+    else:
+        form = LoginForm()
+        return render(request, 'mainapp/login.html', {'form': form})
 
 # logout page
 def user_logout(request):

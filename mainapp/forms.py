@@ -2,6 +2,10 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
+from mainapp.models import UserProfile
+
+# for manual sign-up and login
+"""
 # class SignupForm(UserCreationForm):
 #     class Meta:
 #         model = User
@@ -25,6 +29,16 @@ class SignupForm(forms.Form):
 #         model = User
 #         fields = ['username', 'email', 'phone_no', 'password1', 'password2']
 
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+"""
+
+
+class SignupForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['username','first_name',  'last_name', 'password', 'email']
 
 class LoginForm(forms.Form):
     username = forms.CharField()
