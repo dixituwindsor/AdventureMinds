@@ -2,6 +2,8 @@ from django import forms
 from .models import UserProfile, UserPreferences
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django import forms
+from .models import UserPreferences, PreferenceCategory
 
 
 from django.contrib.auth.models import User
@@ -34,23 +36,35 @@ class UserProfileForm(forms.ModelForm):
 
 
 
+
 class UserPreferencesForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        initial_data = kwargs.pop('initial', {})
+        super(UserPreferencesForm, self).__init__(*args, **kwargs)
+
+        # Dynamically generate fields for each preference category
+        categories = PreferenceCategory.objects.all()
+        for category in categories:
+            choices = category.preferencechoice_set.all()
+            field_name = category.name
+            self.fields[field_name] = forms.ModelMultipleChoiceField(
+                queryset=choices,
+                widget=forms.CheckboxSelectMultiple,
+                required=False  # Make fields not required
+            )
+            # Modify choice labels to remove category name
+            self.fields[field_name].label_from_instance = lambda obj: obj.value
+
+            # Set initial values based on fetched data
+            initial_values = initial_data.get(field_name, [])
+            self.initial[field_name] = initial_values  # Use choice objects directly
+
     class Meta:
         model = UserPreferences
-        fields = ['travel_style', 'activity_preferences', 'destination_preferences',
-                  'accommodation_preferences', 'transportation_preferences', 'meal_preferences',
-                  'language_preferences', 'budget_range', 'special_interests']
-        labels = {
-            'travel_style': 'Travel Style',
-            'activity_preferences': 'Activity Preferences',
-            'destination_preferences': 'Destination Preferences',
-            'accommodation_preferences': 'Accommodation Preferences',
-            'transportation_preferences': 'Transportation Preferences',
-            'meal_preferences': 'Meal Preferences',
-            'language_preferences': 'Language Preferences',
-            'budget_range': 'Budget Range',
-            'special_interests': 'Special Interests'
-        }
+        fields = []  # No need to specify fields as they are dynamically generated
+
+
+
 
 
 class SignupForm(forms.ModelForm):

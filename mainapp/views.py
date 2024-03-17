@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .models import UserProfile, UserPreferences
+from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice
 from .forms import UserProfileForm, UserPreferencesForm
 
 from django.http import HttpResponse
@@ -27,51 +27,48 @@ def user_profile(request):
         form = UserProfileForm(instance=user_profile_instance)
     return render(request, 'mainapp/profile.html', {'form': form})
 
-# def user_profile(request):
-#     try:
-#         profile = request.user.userprofile
-#     except UserProfile.DoesNotExist:
-#         profile = None
-#
-#     if request.method == 'POST':
-#         form = UserProfileForm(request.POST, instance=profile)
-#         if form.is_valid():
-#             user_profile = form.save(commit=False)
-#             user_profile.user = request.user
-#             user_profile.save()
-#             return redirect('mainapp:profile')
-#     else:
-#         form = UserProfileForm(instance=profile)
-#     return render(request, 'mainapp/profile.html', {'form': form})
 
-
+@login_required
 def user_preferences(request):
+    user = request.user
+    try:
+        user_profile_instance = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        user_profile_instance = None
+
     if request.method == 'POST':
         form = UserPreferencesForm(request.POST)
         if form.is_valid():
-            preferences = form.save(commit=False)
-            preferences.user_profile = request.user.userprofile
-            preferences.save()
+            cleaned_data = form.cleaned_data
+            print("Cleaned form data:", cleaned_data)  # Print cleaned form data
+
+            preferences = UserPreferences.objects.create(user_profile=user_profile_instance)
+            for category_name, choices in cleaned_data.items():
+                category = PreferenceCategory.objects.get(name=category_name)
+                preferences.preferences.add(*choices)
+
             return redirect(reverse('mainapp:profile'))
     else:
-        form = UserPreferencesForm()
+        form = UserPreferencesForm(instance=user_profile_instance.preferences)
     return render(request, 'mainapp/userPreferences.html', {'form': form})
-
 
 def messenger(request):
     template = "mainapp/messenger.html"
     context = {}
     return render(request=request, template_name=template, context=context)
 
+
 def homepage(request):
     template = "mainapp/homepage.html"
     context = {}
     return render(request=request, template_name=template, context=context)
 
+
 def terms_conditions(request):
     template = "mainapp/terms_conditions.html"
     context = {}
     return render(request=request, template_name=template, context=context)
+
 
 # def messenger(request):
 #     resonse = HttpResponse()
@@ -81,6 +78,7 @@ def terms_conditions(request):
 def getusers(request):
     users = UserProfile.objects.all().values('username', 'id')
     return JsonResponse(list(users), safe=False)
+
 
 @login_required
 def chat_app(request, user_id=None):
@@ -102,7 +100,6 @@ def chat_app(request, user_id=None):
         users = User.objects.all()
         context = {'users': users}
         return render(request, 'mainapp/messages.html', context)
-
 
 
 # signup page
@@ -128,7 +125,7 @@ def user_signup(request):
 
             # Creating UserProfile object
             user_profile = UserProfile.objects.create(user=user, phone_number=phone_number, address=address,
-                                                       date_of_birth=date_of_birth)
+                                                      date_of_birth=date_of_birth)
             user_profile.save()
 
             # Redirect to login page after successful signup
@@ -162,4 +159,3 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
-
