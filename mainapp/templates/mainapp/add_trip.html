@@ -1,12 +1,16 @@
-{% extends 'mainapp/base.html' %}
-
-{% block content %}
-  <h2>Add Trip</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    {{ form.preferences }}
-    {{ photo_formset.as_table }}
-    <button type="submit">Add Trip</button>
-  </form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Trip</title>
+</head>
+<body>
+    <h1>Add Trip</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Trip</button>
+    </form>
+</body>
+</html>
