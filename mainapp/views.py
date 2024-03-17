@@ -214,3 +214,18 @@ def place_added(request):
 def interest_added(request):
     return render(request, 'trip_feature_app/interest_added.html')
 
+def upload_photos(request):
+    if request.method == 'POST':
+        form = PhotoForm(request.POST, request.FILES)
+        if form.is_valid():
+            uploaded_images = form.cleaned_data['photo']
+            for image in uploaded_images:
+                user = CustomUser.objects.filter(username=request.user)
+                Photo.objects.create(user=user[0], image=image)
+            return redirect('trip_feature_app:trip_added')  # Redirect to your home or another page after successful upload
+    else:
+        form = PhotoForm()
+
+    return render(request, 'GrowLivApp/upload_photos.html', {'form': form})
+
+

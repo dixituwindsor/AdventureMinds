@@ -121,3 +121,8 @@ class TripChirag(models.Model):
 
     def __str__(self):
         return f"{self.person_name}'s trip to {self.destination_place}"
+
+class Photo(models.Model):
+    user = models.ForeignKey(TripChirag, on_delete=models.CASCADE, null=True, default=None)
+    image = models.ImageField(upload_to='destination_photos/')
+    description = models.TextField(blank=True, null=True)

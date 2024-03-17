@@ -113,7 +113,28 @@ class LoginForm(forms.Form):
     username = forms.CharField(label='Username')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
 
+
+from .models import Photo
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+
 class TripForm(forms.ModelForm):
+    destination_place_photos = MultipleFileField(label='Select files', required=False)
     class Meta:
         model = TripChirag
         fields = ['person_name', 'date_of_trip', 'source_place', 'destination_place', 'destination_place_photos', 'interest_compatibility']
