@@ -4,6 +4,11 @@
 
     <h1>Login</h1>
     <form method="POST">
+
+        {% if msg is not null %}
+            <h5>{{  msg }}</h5>
+        {% endif %}
+
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Login</button>

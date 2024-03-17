@@ -1,44 +1,18 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-
 from mainapp.models import UserProfile
 
-# for manual sign-up and login
-"""
-# class SignupForm(UserCreationForm):
-#     class Meta:
-#         model = User
-#         # fields = ['username', 'password1', 'password2']
-#         fields = '__all__'
-
-class SignupForm(forms.Form):
-    firstname = forms.CharField()
-    lastname = forms.CharField()
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
-    email = forms.EmailField()
-
-# class SignupForm(UserCreationForm):
-#     username = forms.CharField(max_length=20)
-#     email = forms.EmailField()
-#     phone_no = forms.CharField(max_length = 20)
-#     first_name = forms.CharField(max_length = 20)
-#     last_name = forms.CharField(max_length = 20)
-#     class Meta:
-#         model = User
-#         fields = ['username', 'email', 'phone_no', 'password1', 'password2']
-
-class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
-"""
-
-
 class SignupForm(forms.ModelForm):
+    #defined outsite to provide password widget
+    password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
         model = UserProfile
-        fields = ['username','first_name',  'last_name', 'password', 'email']
+        fields = ['username', 'first_name',  'last_name', 'password', 'email']
+    # def save(self, commit=True):
+    #     user = super(SignupForm, self).save(commit=False)
+    #     user.password = make_password(self.cleaned_data['password'])
+    #     if commit:
+    #         user.save()
+    #     return user
 
 class LoginForm(forms.Form):
     username = forms.CharField()

@@ -3,11 +3,18 @@
 {% block body_block %}
     <h1>Signup</h1>
     <form method="POST">
+    
+        {% if msg is not null %}
+            <h5>{{  msg }}</h5>
+        {% endif %}
+        
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Signup</button>
 {#        <a href="{% url 'login' %}">Already have account?</a>#}
 {#    <a href="/login">Already have account?</a>#}
-    <a href="{% url 'mainapp:login' %}"><h3 class="agileinfo_sign">Sign In </h3></a>
+{#    <a href="{% url 'mainapp:login' %}"><h3 class="agileinfo_sign">Sign In </h3></a>#}
+    
+    <a href="{% url 'mainapp:login' %}">Already have account?</a>
     </form>
 {% endblock %}
