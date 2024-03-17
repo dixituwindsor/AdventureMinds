@@ -8,20 +8,15 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 """
 
 import os
-import django
-from channels.routing import get_default_application
-
-
 from django.core.asgi import get_asgi_application
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 
-import mainapp.routing
 from mainapp import routing
+from mainapp.routing import websocket_urlpatterns
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "AdventureMinds.settings")
 
-application = get_asgi_application()
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),

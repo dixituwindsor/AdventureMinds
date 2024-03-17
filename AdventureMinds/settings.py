@@ -130,8 +130,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 ASGI_APPLICATION = "AdventureMinds.asgi.application"
-CHANNELS_LAYERS = {
+CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        # "CONFIG": {
+        #     'hosts': [('127.0.0.1', 8001)],
+        # }
     }
 }
