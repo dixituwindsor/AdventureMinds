@@ -55,6 +55,16 @@ class UserPreferences(models.Model):
         return [preference.value for preference in self.preferences.all()]
 
 
+class Trip(models.Model):
+    uploader = models.ForeignKey(User, on_delete=models.CASCADE)
+    destination = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    description = models.TextField()
+    preferences = models.ManyToManyField('mainapp.PreferenceChoice', related_name='trips')
+
+    def __str__(self):
+        return f"{self.destination} Trip"
 
 
 class ThreadManager(models.Manager):

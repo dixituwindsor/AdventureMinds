@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice
-from .forms import UserProfileForm, UserPreferencesForm
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -159,3 +159,17 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
+
+
+@login_required
+def add_trip(request):
+    if request.method == 'POST':
+        form = AddTripForm(request.POST)
+        if form.is_valid():
+            trip = form.save(commit=False)
+            trip.uploader = request.user
+            trip.save()
+            return redirect('mainapp:homepage')  # Assuming 'home' is the name of your home page URL
+    else:
+        form = AddTripForm()
+    return render(request, 'mainapp/add_trip.html', {'form': form})

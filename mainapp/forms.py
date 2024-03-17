@@ -1,5 +1,5 @@
 from django import forms
-from .models import UserProfile, UserPreferences
+from .models import UserProfile, UserPreferences, Trip, PreferenceChoice
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
@@ -64,6 +64,27 @@ class UserPreferencesForm(forms.ModelForm):
         fields = []  # No need to specify fields as they are dynamically generated
 
 
+class AddTripForm(forms.ModelForm):
+    destination = forms.CharField(max_length=100)
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
+
+    class Meta:
+        model = Trip
+        fields = ['destination', 'start_date', 'end_date', 'description']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        categories = PreferenceCategory.objects.all()
+        for category in categories:
+            choices = PreferenceChoice.objects.filter(category=category)
+            choices_field = forms.MultipleChoiceField(
+                choices=[(choice.pk, choice.value) for choice in choices],
+                widget=forms.CheckboxSelectMultiple,
+                required=False
+            )
+            self.fields[f'{category.name}'] = choices_field
 
 
 
