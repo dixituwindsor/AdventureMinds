@@ -1,0 +1,12 @@
+{% extends 'mainapp/base.html' %}
+
+{% block body_block %}
+    <div>
+      {% for notification in notifications %}
+          <h4>  {{ notification.titles }}</h4>
+          <div>
+          {{ notification.content }}
+          </div>
+    {% endfor %}
+    </div>
+{% endblock %}

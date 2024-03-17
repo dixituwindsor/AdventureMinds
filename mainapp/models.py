@@ -6,12 +6,14 @@ from django.contrib.auth.models import User, AbstractUser
 class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
+
     def __str__(self):
         return self.name
 
 
 class UserProfile(User):
     interested_places = models.ManyToManyField(Place)
+
     def __str__(self):
         return self.get_full_name()
 
@@ -27,10 +29,20 @@ class ChatGroups(models.Model):
 class Message(models.Model):
     sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="sent_messages")
     chat_group = models.ForeignKey(ChatGroups, on_delete=models.CASCADE, null=True, blank=True)
-    recipient = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name="received_messages")
+    recipient = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True,
+                                  related_name="received_messages")
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.sender.username} -> {self.recipient.username if self.recipient else self.chat_group.name}: {self.content}"
 
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="received_notifications")
+    content = models.TextField(max_length=150)
+    title = models.CharField(max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.recipient} -> {self.title}"

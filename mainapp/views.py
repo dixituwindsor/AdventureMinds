@@ -1,9 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import ChatGroups, Message, UserProfile
+from .models import ChatGroups, Message, UserProfile, Notification
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
+
 
 # Create your views here.
 
@@ -30,10 +31,12 @@ def chat_app(request):
             if group_id:
                 group = ChatGroups.objects.get(id=group_id)
                 Message.objects.create(sender=request.user, chat_group=group, content=content)
+                #TODO end to the group's users
             elif recipient_username:
                 recipient = UserProfile.objects.get(username=recipient_username)
                 Message.objects.create(sender=request.user, recipient=recipient, content=content)
-            return redirect('chat_app')
+                Notification.objects.create(recipient=recipient, content=content, title=request.user.username)
+            return redirect(reversed('mainapp:chat_app'))
     groups = ChatGroups.objects.filter(members=request.user)
     return render(request, 'mainapp/messages.html', {'groups': groups})
 
@@ -82,3 +85,10 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
+
+
+@login_required
+def notifications_view(request):
+
+    notifications = Notification.objects.filter(recipient__username=request.user.username).order_by('timestamp')
+    return render(request, 'mainapp/notifications.html', {'notifications': notifications})
