@@ -117,7 +117,9 @@ class TripForm(forms.ModelForm):
     class Meta:
         model = TripChirag
         fields = ['person_name', 'date_of_trip', 'source_place', 'destination_place', 'destination_place_photos', 'interest_compatibility']
-
+        widgets = {
+            'date_of_trip': forms.DateInput(attrs={'type': 'date'})
+        }
 class PlaceForm(forms.ModelForm):
     class Meta:
         model = Place
