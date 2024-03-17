@@ -95,3 +95,29 @@ class ChatMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+class Place(models.Model):
+    name = models.CharField(max_length=100)
+    # Add any other fields related to places if needed
+
+    def __str__(self):
+        return self.name
+
+class Interest(models.Model):
+    name = models.CharField(max_length=100)
+    # Add any other fields related to interests if needed
+
+    def __str__(self):
+        return self.name
+
+class TripChirag(models.Model):
+    person_name = models.CharField(max_length=100)
+    date_of_trip = models.DateField()
+    source_place = models.ForeignKey(Place, related_name='source_trips', on_delete=models.CASCADE)
+    destination_place = models.ForeignKey(Place, related_name='destination_trips', on_delete=models.CASCADE)
+    destination_place_photos = models.ImageField(upload_to='destination_photos/')
+    interest_compatibility = models.ManyToManyField(Interest)
+    # Add any other fields related to trips if needed
+
+    def __str__(self):
+        return f"{self.person_name}'s trip to {self.destination_place}"

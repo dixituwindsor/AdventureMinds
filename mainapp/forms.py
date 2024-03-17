@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from .models import UserPreferences, PreferenceCategory
+from .models import TripChirag, Place, Interest
 
 
 from django.contrib.auth.models import User
@@ -111,3 +112,18 @@ class SignupForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
+
+class TripForm(forms.ModelForm):
+    class Meta:
+        model = TripChirag
+        fields = ['person_name', 'date_of_trip', 'source_place', 'destination_place', 'destination_place_photos', 'interest_compatibility']
+
+class PlaceForm(forms.ModelForm):
+    class Meta:
+        model = Place
+        fields = ['name']
+
+class InterestForm(forms.ModelForm):
+    class Meta:
+        model = Interest
+        fields = ['name']

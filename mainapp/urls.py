@@ -15,4 +15,10 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('getusers/', views.getusers, name='getusers'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('add/', views.trip_add, name='trip_add'),
+    path('added/', views.trip_added, name='trip_added'),
+    path('place/add/', views.place_add, name='place_add'),
+    path('interest/add/', views.interest_add, name='interest_add'),
+    path('place/added/', views.place_added, name='place_added'),
+    path('interest/added/', views.interest_added, name='interest_added'),
 ]

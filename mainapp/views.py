@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
+from .forms import TripForm, PlaceForm, InterestForm
 from .models import UserProfile, Thread, User, ChatMessage
 
 
@@ -173,3 +174,43 @@ def add_trip(request):
     else:
         form = AddTripForm()
     return render(request, 'mainapp/add_trip.html', {'form': form})
+
+def trip_add(request):
+    if request.method == 'POST':
+        form = TripForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('trip_feature_app:trip_add')
+    else:
+        form = TripForm()
+    return render(request, 'trip_feature_app/trip_add.html', {'form': form})
+
+def trip_added(request):
+    return render(request, 'trip_feature_app/trip_added.html')
+
+def place_add(request):
+    if request.method == 'POST':
+        form = PlaceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('trip_feature_app:place_added')
+    else:
+        form = PlaceForm()
+    return render(request, 'trip_feature_app/place_add.html', {'form': form})
+
+def interest_add(request):
+    if request.method == 'POST':
+        form = InterestForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('trip_feature_app:interest_added')
+    else:
+        form = InterestForm()
+    return render(request, 'trip_feature_app/interest_add.html', {'form': form})
+
+def place_added(request):
+    return render(request, 'trip_feature_app/place_added.html')
+
+def interest_added(request):
+    return render(request, 'trip_feature_app/interest_added.html')
+
