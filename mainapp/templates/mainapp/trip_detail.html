@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Detail</title>
+</head>
+<body>
+    <h1>{{ trip.destination }}</h1>
+    <p><strong>Start Date:</strong> {{ trip.start_date }}</p>
+    <p><strong>End Date:</strong> {{ trip.end_date }}</p>
+    <p><strong>Description:</strong> {{ trip.description }}</p>
+    <p><strong>Uploader:</strong> <a href="{% url 'mainapp:view_profile' trip.uploader.username%}">{{ trip.uploader.username }}</a></p>
+    <h2>Photos</h2>
+    <ul>
+        {% for photo in trip.trip_photos.all %}
+            <li><img src="{{ photo.photo.url }}" alt="Trip Photo"></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

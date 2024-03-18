@@ -68,7 +68,7 @@ class Trip(models.Model):
 
 class TripPhoto(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='trip_photos')
-    photo = models.ImageField(upload_to='trip_photos')
+    photo = models.ImageField(upload_to='')
 
     def __str__(self):
         return f"Photo for {self.trip.place}"

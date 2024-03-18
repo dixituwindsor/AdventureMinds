@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip List</title>
+</head>
+<body>
+    <h1>Trip List</h1>
+    
+    <form method="GET" action="{% url 'mainapp:trip_list' %}">
+    {{ search_form.as_p }}
+    <button type="submit">Search</button>
+</form>
+    
+    <ul>
+        {% for trip in trips %}
+            <li><a href="{% url 'mainapp:trip_detail' trip.id %}">{{ trip.place }}</a> by {{ trip.uploader.username }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

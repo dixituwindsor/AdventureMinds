@@ -108,6 +108,10 @@ class TripPreferenceForm(forms.ModelForm):
 
 
 
+class TripSearchForm(forms.Form):
+    query = forms.CharField(label='Search', max_length=100)
+
+
 class SignupForm(forms.ModelForm):
     class Meta:
         model = User

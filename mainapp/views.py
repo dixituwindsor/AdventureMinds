@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice, TripPreference, TripPhoto
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm
+from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice, TripPreference, TripPhoto, Trip
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
 from .models import UserProfile, Thread, User, ChatMessage
+from django.db.models import Q
 
 
 # Create your views here.
@@ -193,3 +194,21 @@ def add_trip(request):
         preference_form = TripPreferenceForm()
     return render(request, 'mainapp/add_trip.html', {'trip_form': trip_form, 'preference_form': preference_form})
 
+
+
+def trip_list(request):
+    trips = Trip.objects.all()
+    search_form = TripSearchForm(request.GET)
+    query = request.GET.get('query')
+    if query:
+        trips = trips.filter(Q(place__name__icontains=query) | Q(description__icontains=query))
+    return render(request, 'mainapp/trip_list.html', {'trips': trips, 'search_form': search_form})
+
+def trip_detail(request, trip_id):
+    trip = get_object_or_404(Trip, pk=trip_id)
+    return render(request, 'mainapp/trip_detail.html', {'trip': trip})
+
+
+def view_profile(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    return render(request, 'mainapp/view_profile.html', {'profile_user': profile_user})
