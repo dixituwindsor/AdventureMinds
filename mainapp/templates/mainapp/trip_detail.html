@@ -4,18 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trip Detail</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        h1, h2, p {
+            margin: 0;
+            padding: 0;
+        }
+        .trip-header {
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        .trip-header h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .trip-header p {
+            font-size: 16px;
+            color: #666;
+        }
+        .trip-details {
+            margin-bottom: 20px;
+        }
+        .trip-details h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .trip-details p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .photos {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+        .photo-item {
+            flex: 0 0 calc(25% - 20px);
+            margin: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .photo-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ trip.destination }}</h1>
-    <p><strong>Start Date:</strong> {{ trip.start_date }}</p>
-    <p><strong>End Date:</strong> {{ trip.end_date }}</p>
-    <p><strong>Description:</strong> {{ trip.description }}</p>
-    <p><strong>Uploader:</strong> <a href="{% url 'mainapp:view_profile' trip.uploader.username%}">{{ trip.uploader.username }}</a></p>
-    <h2>Photos</h2>
-    <ul>
-        {% for photo in trip.trip_photos.all %}
-            <li><img src="{{ photo.photo.url }}" alt="Trip Photo"></li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <div class="trip-header">
+            <h1>{{ trip.destination }}</h1>
+            <p><strong>Start Date:</strong> {{ trip.start_date }}</p>
+            <p><strong>End Date:</strong> {{ trip.end_date }}</p>
+            <p><strong>Uploader:</strong> <a href="{% url 'mainapp:view_profile' trip.uploader.username%}">{{ trip.uploader.username }}</a></p>
+        </div>
+        <div class="trip-details">
+            <h2>Trip Details</h2>
+            <p>{{ trip.place.address }}</p>
+            <p>{{ trip.place.description }}</p>
+        </div>
+        <h2>Photos</h2>
+        <div class="photos">
+            {% for photo in trip.trip_photos.all %}
+                <div class="photo-item">
+                    <img src="{{ photo.photo.url }}" alt="Trip Photo">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>

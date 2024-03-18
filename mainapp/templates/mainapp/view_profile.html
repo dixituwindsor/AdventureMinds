@@ -10,7 +10,9 @@
     <p><strong>Username:</strong> {{ profile_user.username }}</p>
     <p><strong>Email:</strong> {{ profile_user.email }}</p>
     {% if request.user != profile_user %}
-        <p><a href="{% url 'mainapp:chat_app' profile_user.id %}">Message {{ profile_user.username }}</a></p>
+{#        <p><a href="{% url 'mainapp:chat_app' profile_user.id %}">Message {{ profile_user.username }}</a></p>#}
+
+        <p><a>Message {{ profile_user.username }}</a></p>
     {% endif %}
 </body>
 </html>

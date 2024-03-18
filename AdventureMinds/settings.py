@@ -124,6 +124,7 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "mainapp/static"]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mainapp/media')
+LOGIN_REDIRECT_URL = 'mainapp:homepage'
 
 
 # Default primary key field type

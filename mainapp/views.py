@@ -48,6 +48,10 @@ def user_preferences(request):
                 category = PreferenceCategory.objects.get(name=category_name)
                 preferences.preferences.add(*choices)
 
+            # Assign the created preferences to the UserProfile instance
+            user_profile_instance.preferences = preferences
+            user_profile_instance.save()
+
             return redirect(reverse('mainapp:profile'))
     else:
         form = UserPreferencesForm(instance=user_profile_instance.preferences)
@@ -147,7 +151,12 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None and user.is_active:
                 login(request, user)
-                return redirect('mainapp:profile')
+
+                # Check if user has preferences
+                if not UserPreferences.objects.filter(user_profile__user=user).exists():
+                    return redirect('mainapp:user_preferences')
+                else:
+                    return redirect('mainapp:homepage')
             else:
                 response = HttpResponse()
                 response.write("<p>Wrong credentials</p>")
@@ -211,26 +220,41 @@ def add_trip(request):
 
 
 
-@login_required
 def trip_list(request):
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    user_preferences = user_profile.preferences.preferences.prefetch_related('preferences')
+    if request.user.is_authenticated:
+        # For logged-in users
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        user_preferences = user_profile.preferences.preferences.prefetch_related('preferences')
 
-    trips = Trip.objects.all()
+        trips = Trip.objects.all()
 
-    # Calculate similarity scores for each trip
-    similarity_scores = {}
-    for trip in trips:
-        # Get the TripPreference associated with the trip
-        trip_preference = trip.preferences
-        if trip_preference:
-            similarity_score = calculate_similarity(user_preferences, trip_preference.preferences.prefetch_related('preferences'))
-            similarity_scores[trip.id] = similarity_score
+        # Apply search filter if query parameter exists
+        query = request.GET.get('query')
+        if query:
+            trips = trips.filter(Q(place__name__icontains=query) | Q(place__address__icontains=query))
 
-    # Sort trips based on similarity scores
-    sorted_trips = sorted(trips, key=lambda x: similarity_scores.get(x.id, 0), reverse=True)
+        # Sorting
+        sort_by = request.GET.get('sort_by')
+        if sort_by == 'recommendation':
+            # Calculate similarity scores for each trip
+            similarity_scores = {}
+            for trip in trips:
+                # Get the TripPreference associated with the trip
+                trip_preference = trip.preferences
+                if trip_preference:
+                    similarity_score = calculate_similarity(user_preferences, trip_preference.preferences.prefetch_related('preferences'))
+                    similarity_scores[trip.id] = similarity_score
 
-    return render(request, 'mainapp/trip_list.html', {'trips': sorted_trips})
+            # Sort trips based on similarity scores
+            trips = sorted(trips, key=lambda x: similarity_scores.get(x.id, 0), reverse=True)
+        elif sort_by == 'alphabetical':
+            trips = trips.order_by('place__name')
+
+        return render(request, 'mainapp/trip_list.html', {'trips': trips})
+    else:
+        # For guest users
+        trips = Trip.objects.all()
+        return render(request, 'mainapp/guest_trip_list.html', {'trips': trips})
 
 
 
