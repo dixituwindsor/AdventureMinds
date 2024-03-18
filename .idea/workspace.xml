@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="90677a49-940c-414b-bf14-de6b39741ac2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +42,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "django.template.preview.state": "SHOW_EDITOR",
     "git-widget-placeholder": "chirag",
-    "last_opened_file_path": "D:/AdventureMindsProject/AdventureMinds/mainapp/templates/trip_feature_app",
+    "last_opened_file_path": "D:/AdventureMindsProject/AdventureMinds/mainapp/static/mainapp",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -104,6 +104,7 @@
       <workItem from="1710212580898" duration="2694000" />
       <workItem from="1710433832447" duration="2622000" />
       <workItem from="1710693442303" duration="5568000" />
+      <workItem from="1710791762193" duration="669000" />
     </task>
     <servers />
   </component>
