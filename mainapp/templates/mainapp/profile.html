@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{% static 'mainapp/style.css' %}">
-
     <title>User Profile</title>
 </head>
 <body>
@@ -13,12 +12,24 @@
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_name">Name:</label>
-                {{ form.name }}
+                <label for="id_username">Username:</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label for="id_first_name">First Name:</label>
+                {{ form.first_name }}
+            </div>
+            <div class="form-group">
+                <label for="id_last_name">Last Name:</label>
+                {{ form.last_name }}
             </div>
             <div class="form-group">
                 <label for="id_email">Email:</label>
                 {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label for="id_date_of_birth">Date of Birth:</label>
+                {{ form.date_of_birth }}
             </div>
             <div class="form-group">
                 <label for="id_address">Address:</label>
@@ -29,7 +40,7 @@
                 {{ form.phone_number }}
             </div>
             <div class="form-group">
-                <a href="{% url 'mainapp:user_preferences' %}" class="btn btn-primary">Add Preferences</a>
+                <a href="{% url 'mainapp:user_preferences' %}" class="btn btn-primary">Edit Preferences</a>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>

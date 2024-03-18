@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .models import UserProfile, UserPreferences
+from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice
 from .forms import UserProfileForm, UserPreferencesForm
-
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
@@ -11,50 +11,50 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
 from .models import UserProfile, Thread, User, ChatMessage
+from django.db.models import Q
+from django.db.models import Prefetch
+
 
 
 # Create your views here.
 
+@login_required
 def user_profile(request):
+    user_profile_instance, created = UserProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        form = UserProfileForm(request.POST)
+        form = UserProfileForm(request.POST, instance=user_profile_instance)
         if form.is_valid():
-            user_profile = form.save(commit=False)
-            user_profile.user = request.user
-            user_profile.save()
-            return redirect('mainapp:profile')
+            form.save()
+            return redirect('mainapp:homepage')
     else:
-        form = UserProfileForm()
+        form = UserProfileForm(instance=user_profile_instance)
     return render(request, 'mainapp/profile.html', {'form': form})
 
-# def user_profile(request):
-#     try:
-#         profile = request.user.userprofile
-#     except UserProfile.DoesNotExist:
-#         profile = None
-#
-#     if request.method == 'POST':
-#         form = UserProfileForm(request.POST, instance=profile)
-#         if form.is_valid():
-#             user_profile = form.save(commit=False)
-#             user_profile.user = request.user
-#             user_profile.save()
-#             return redirect('mainapp:profile')
-#     else:
-#         form = UserProfileForm(instance=profile)
-#     return render(request, 'mainapp/profile.html', {'form': form})
 
-
+@login_required
 def user_preferences(request):
+    user = request.user
+    try:
+        user_profile_instance = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        user_profile_instance = None
+
     if request.method == 'POST':
         form = UserPreferencesForm(request.POST)
         if form.is_valid():
-            preferences = form.save(commit=False)
-            preferences.user_profile = request.user.userprofile
-            preferences.save()
+            cleaned_data = form.cleaned_data
+            preferences = UserPreferences.objects.create(user_profile=user_profile_instance)
+            for category_name, choices in cleaned_data.items():
+                category = PreferenceCategory.objects.get(name=category_name)
+                preferences.preferences.add(*choices)
+
+            # Assign the created preferences to the UserProfile instance
+            user_profile_instance.preferences = preferences
+            user_profile_instance.save()
+
             return redirect(reverse('mainapp:profile'))
     else:
-        form = UserPreferencesForm()
+        form = UserPreferencesForm(instance=user_profile_instance.preferences)
     return render(request, 'mainapp/userPreferences.html', {'form': form})
 
 
@@ -63,24 +63,25 @@ def messenger(request):
     context = {}
     return render(request=request, template_name=template, context=context)
 
+
 def homepage(request):
     template = "mainapp/homepage.html"
     context = {}
     return render(request=request, template_name=template, context=context)
+
 
 def terms_conditions(request):
     template = "mainapp/terms_conditions.html"
     context = {}
     return render(request=request, template_name=template, context=context)
 
-# def messenger(request):
-#     resonse = HttpResponse()
-#     resonse.write("<h1>Hello World</h1>")
-#     return resonse
+
+
 
 def getusers(request):
     users = UserProfile.objects.all().values('username', 'id')
     return JsonResponse(list(users), safe=False)
+
 
 @login_required
 def chat_app(request, user_id=None):
@@ -104,71 +105,58 @@ def chat_app(request, user_id=None):
         return render(request, 'mainapp/messages.html', context)
 
 
-
 # signup page
 def user_signup(request):
     if request.method == 'POST':
-        # form = UserCreationForm(request.POST)
-        # form = SignupForm(request.POST)
-        # if form.is_valid():
-        #     user = form.save(commit= False)
-        #     user.save()
-            # loginForm = LoginForm()
-            # return render(request, 'login.html', {'form' : loginForm})
+        username = request.POST.get('username')
+        fullname = request.POST.get('fullname')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
 
-        form = SignupForm(request.POST)
-        if form.is_valid():
-            firstname = form.cleaned_data['firstname']
-            lastname = form.cleaned_data['lastname']
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            email = form.cleaned_data['email']
+        # if User.objects.filter(user__username=username).exists():
+        #     response = HttpResponse()
+        #     response.write("<p>Username already exists, choose different username</p>")
+        #     return response
 
-            if(UserProfile.objects.filter(username=username).exists()):
-                response = HttpResponse()
-                response.write("<p>Username already exists, choose different username</p>")
-                return response
+        names = fullname.split()
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.first_name = names[0]
+        user.last_name = names[-1]
+        user.save()
 
-            userprofileobj = UserProfile()
-            userprofileobj.firstname = firstname
-            userprofileobj.last_name = lastname
-            userprofileobj.username = username
-            userprofileobj.password = password
-            userprofileobj.email = email
-            userprofileobj.save()
-            return redirect('mainapp:login')
-        else:
-            response = HttpResponse()
-            response.write("<p>Something went wrong</p>")
-            return response
+        userprofileobj = UserProfile.objects.create(user=user)
+        userprofileobj.save()
+
+        return redirect('mainapp:login')
     else:
-        # form = UserCreationForm()
-        form = SignupForm()
-        return render(request, 'registration/signup.html', {'form': form})
+        return render(request, 'registration/signup.html')
+
+
+
 
 
 # login page
 def user_login(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user is not None and user.is_active:
-                login(request, user)
-                return redirect('mainapp:chat_app')
-            else:
-                response = HttpResponse()
-                response.write("<p>Wrong credentials</p>")
-                return response
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None and user.is_active:
+            login(request, user)
+            return redirect('mainapp:homepage')
+        else:
+            response = HttpResponse()
+            response.write("<p>Wrong credentials</p>")
+            return response
     else:
-        form = LoginForm()
-        return render(request, 'registration/login.html', {'form': form})
+        return render(request, 'registration/login.html')
+
 
 
 # logout page
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
+
 
