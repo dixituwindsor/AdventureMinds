@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm
-
+from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice, TripPreference, TripPhoto
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
@@ -40,8 +40,6 @@ def user_preferences(request):
         form = UserPreferencesForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            print("Cleaned form data:", cleaned_data)  # Print cleaned form data
-
             preferences = UserPreferences.objects.create(user_profile=user_profile_instance)
             for category_name, choices in cleaned_data.items():
                 category = PreferenceCategory.objects.get(name=category_name)
@@ -51,6 +49,7 @@ def user_preferences(request):
     else:
         form = UserPreferencesForm(instance=user_profile_instance.preferences)
     return render(request, 'mainapp/userPreferences.html', {'form': form})
+
 
 def messenger(request):
     template = "mainapp/messenger.html"
@@ -145,7 +144,7 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None and user.is_active:
                 login(request, user)
-                return redirect('mainapp:chat_app')
+                return redirect('mainapp:profile')
             else:
                 response = HttpResponse()
                 response.write("<p>Wrong credentials</p>")
@@ -164,12 +163,33 @@ def user_logout(request):
 @login_required
 def add_trip(request):
     if request.method == 'POST':
-        form = AddTripForm(request.POST)
-        if form.is_valid():
-            trip = form.save(commit=False)
+        trip_form = AddTripForm(request.POST, request.FILES, user=request.user)
+        preference_form = TripPreferenceForm(request.POST)
+        if trip_form.is_valid() and preference_form.is_valid():
+            # Save the trip data
+            trip = trip_form.save(commit=False)
             trip.uploader = request.user
+
+
+            # Retrieve the selected preference choices from the form data
+            selected_preferences = [int(choice_id) for field in preference_form.cleaned_data.values() for choice_id in field]
+
+            # Get the PreferenceChoice objects corresponding to the selected preference choices
+            preferences = PreferenceChoice.objects.filter(id__in=selected_preferences)
+
+            # Create a TripPreference object and associate it with the trip
+            trip_preference = TripPreference.objects.create(related_trip=trip)
+            trip_preference.preferences.add(*preferences)
             trip.save()
-            return redirect('mainapp:homepage')  # Assuming 'home' is the name of your home page URL
+
+            # Save uploaded photos
+            for photo in request.FILES.getlist('photos'):
+                trip_photo = TripPhoto(trip=trip, photo=photo)
+                trip_photo.save()
+
+            return redirect('mainapp:homepage')  # Redirect to some success URL
     else:
-        form = AddTripForm()
-    return render(request, 'mainapp/add_trip.html', {'form': form})
+        trip_form = AddTripForm(user=request.user)
+        preference_form = TripPreferenceForm()
+    return render(request, 'mainapp/add_trip.html', {'trip_form': trip_form, 'preference_form': preference_form})
+
