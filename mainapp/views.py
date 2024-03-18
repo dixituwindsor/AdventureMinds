@@ -12,6 +12,8 @@ from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
 from .models import UserProfile, Thread, User, ChatMessage
 from django.db.models import Q
+from django.db.models import Prefetch
+
 
 
 # Create your views here.
@@ -167,20 +169,33 @@ def add_trip(request):
         trip_form = AddTripForm(request.POST, request.FILES, user=request.user)
         preference_form = TripPreferenceForm(request.POST)
         if trip_form.is_valid() and preference_form.is_valid():
+
+            # Print form data for debugging
+            print("Trip Form Data:", request.POST)
+            print("Trip Form Files:", request.FILES)
+            print("Trip Form Errors:", trip_form.errors)
+            print("Preference Form Errors:", preference_form.errors)
             # Save the trip data
             trip = trip_form.save(commit=False)
             trip.uploader = request.user
 
+            # Create a new TripPreference object
+            trip_preference = TripPreference.objects.create()
 
             # Retrieve the selected preference choices from the form data
-            selected_preferences = [int(choice_id) for field in preference_form.cleaned_data.values() for choice_id in field]
+            selected_preferences = [int(choice_id) for field in preference_form.cleaned_data.values() for choice_id in
+                                    field]
 
             # Get the PreferenceChoice objects corresponding to the selected preference choices
             preferences = PreferenceChoice.objects.filter(id__in=selected_preferences)
 
-            # Create a TripPreference object and associate it with the trip
-            trip_preference = TripPreference.objects.create(related_trip=trip)
-            trip_preference.preferences.add(*preferences)
+            # Associate preferences with the TripPreference object
+            trip_preference.preferences.set(preferences)
+
+            # Link the TripPreference object to the Trip object
+            trip.preferences = trip_preference
+
+            # Save the Trip object
             trip.save()
 
             # Save uploaded photos
@@ -196,13 +211,48 @@ def add_trip(request):
 
 
 
+@login_required
 def trip_list(request):
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+    user_preferences = user_profile.preferences.preferences.prefetch_related('preferences')
+
     trips = Trip.objects.all()
-    search_form = TripSearchForm(request.GET)
-    query = request.GET.get('query')
-    if query:
-        trips = trips.filter(Q(place__name__icontains=query) | Q(description__icontains=query))
-    return render(request, 'mainapp/trip_list.html', {'trips': trips, 'search_form': search_form})
+
+    # Calculate similarity scores for each trip
+    similarity_scores = {}
+    for trip in trips:
+        # Get the TripPreference associated with the trip
+        trip_preference = trip.preferences
+        if trip_preference:
+            similarity_score = calculate_similarity(user_preferences, trip_preference.preferences.prefetch_related('preferences'))
+            similarity_scores[trip.id] = similarity_score
+
+    # Sort trips based on similarity scores
+    sorted_trips = sorted(trips, key=lambda x: similarity_scores.get(x.id, 0), reverse=True)
+
+    return render(request, 'mainapp/trip_list.html', {'trips': sorted_trips})
+
+
+
+def calculate_similarity(user_preferences, trip_preferences):
+    # Convert user preferences to a set for easier comparison
+    user_pref_set = set(user_preferences.values_list('id', flat=True))
+
+    # Get preference choices for the trip
+    trip_pref_set = set(trip_preferences.values_list('id', flat=True))
+
+    # Calculate Jaccard similarity coefficient
+    intersection = len(user_pref_set.intersection(trip_pref_set))
+    union = len(user_pref_set.union(trip_pref_set))
+
+    if union == 0:
+        return 0.0
+
+    jaccard_similarity = intersection / union
+
+    return jaccard_similarity
+
+
 
 def trip_detail(request, trip_id):
     trip = get_object_or_404(Trip, pk=trip_id)

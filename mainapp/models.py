@@ -60,6 +60,7 @@ class Trip(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     description = models.TextField()
+    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
 
 
     def __str__(self):
@@ -76,10 +77,7 @@ class TripPhoto(models.Model):
 
 
 class TripPreference(models.Model):
-    related_trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='preferences')
     preferences = models.ManyToManyField(PreferenceChoice)
-    def __str__(self):
-        return f"Preferences for {self.related_trip.place.name} by {self.related_trip.uploader}"
 
 
 class ThreadManager(models.Manager):

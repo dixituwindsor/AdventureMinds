@@ -15,7 +15,7 @@
     
     <ul>
         {% for trip in trips %}
-            <li><a href="{% url 'mainapp:trip_detail' trip.id %}">{{ trip.place }}</a> by {{ trip.uploader.username }}</li>
+            <li><a href="{% url 'mainapp:trip_detail' trip.id %}">{{ trip.place.name }}</a> by {{ trip.uploader.username }}</li>
         {% endfor %}
     </ul>
 </body>
