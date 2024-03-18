@@ -13,10 +13,10 @@ class Place(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=12)
-    address = models.CharField(max_length=200)
-    date_of_birth = models.DateField()
-    interested_places = models.ManyToManyField(Place, null=True, blank=True)
+    phone_number = models.CharField(max_length=12, null=True, blank=True)
+    address = models.CharField(max_length=200, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='mainapp/media/profile', null=True, blank=True)
     preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
@@ -51,33 +51,6 @@ class UserPreferences(models.Model):
     def get_selected_preferences(self):
         return [preference.value for preference in self.preferences.all()]
 
-
-
-
-class Trip(models.Model):
-    uploader = models.ForeignKey(User, on_delete=models.CASCADE)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    description = models.TextField()
-    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
-
-
-    def __str__(self):
-        return f"Trip to {self.place.name}"
-
-
-class TripPhoto(models.Model):
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='trip_photos')
-    photo = models.ImageField(upload_to='')
-
-    def __str__(self):
-        return f"Photo for {self.trip.place}"
-
-
-
-class TripPreference(models.Model):
-    preferences = models.ManyToManyField(PreferenceChoice)
 
 
 class ThreadManager(models.Manager):

@@ -86,6 +86,7 @@ body {
   <form method="post" id="preferences-form">
     {% csrf_token %}
     <div class="preferences-container">
+    <h1>Add Your Preferences</h1>
       {% for field in form %}
         <div class="preference-field">
           <div class="title">{{ field.label }}</div>

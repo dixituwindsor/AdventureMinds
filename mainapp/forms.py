@@ -1,11 +1,10 @@
 from django import forms
-from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference
+from .models import UserProfile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from .models import UserPreferences, PreferenceCategory
 from multiupload.fields import MultiFileField
-from .models import Trip
 
 
 from django.contrib.auth.models import User
@@ -65,51 +64,6 @@ class UserPreferencesForm(forms.ModelForm):
     class Meta:
         model = UserPreferences
         fields = []  # No need to specify fields as they are dynamically generated
-
-
-
-class AddTripForm(forms.ModelForm):
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
-    photos = MultiFileField(min_num=1, max_num=10, max_file_size=1024*1024*5)
-
-    class Meta:
-        model = Trip
-        fields = ['place', 'start_date', 'end_date', 'description']
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-
-    def save(self, commit=True):
-        trip = super().save(commit=False)
-        trip.uploader = self.user
-        if commit:
-            trip.save()
-        return trip
-
-class TripPreferenceForm(forms.ModelForm):
-    class Meta:
-        model = TripPreference
-        fields = []
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        categories = PreferenceCategory.objects.all()
-        for category in categories:
-            choices = PreferenceChoice.objects.filter(category=category)
-            choices_list = [(choice.pk, choice.value) for choice in choices]
-            self.fields[f'{category.name}'] = forms.MultipleChoiceField(
-                choices=choices_list,
-                widget=forms.CheckboxSelectMultiple,
-                label=category.name
-            )
-
-
-
-class TripSearchForm(forms.Form):
-    query = forms.CharField(label='Search', max_length=100)
 
 
 class SignupForm(forms.ModelForm):
