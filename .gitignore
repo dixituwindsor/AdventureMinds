@@ -2,6 +2,7 @@
 .venv/
 db.sqlite3
 .idea
-.idea/AdventureMinds.iml
 /.idea/
 test.py
+mainapp/migrations
+mainapp/media

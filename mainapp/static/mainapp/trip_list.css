@@ -1,0 +1,94 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    margin: 0;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+/* Trip tile styles */
+.trip-tile {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    padding: 20px;
+    width: calc(33.33% - 40px); /* Adjust the width as needed */
+}
+
+.trip-tile h2 {
+    color: #333;
+    margin-top: 0;
+}
+
+.trip-tile p {
+    color: #666;
+}
+
+/* Search form styles */
+#search-form {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#search-input {
+    border: 2px solid #333;
+    border-radius: 5px;
+    padding: 10px;
+    width: 60%;
+}
+
+#search-input:focus {
+    outline: none;
+}
+
+button {
+    background-color: #333;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 20px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+button:focus {
+    outline: none;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+    main {
+        padding: 10px;
+    }
+
+    .trip-tile {
+        width: calc(50% - 40px); /* Adjust the width as needed */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .trip-tile {
+        width: calc(100% - 40px);
+    }
+}

@@ -1,0 +1,190 @@
+
+html {
+	font-size:60%;
+}
+* {
+	margin: 0;
+	padding: 0;
+}
+ul, li {
+	list-style: none;
+}
+input {
+	border: none;
+}
+body {
+  width: 100%;
+  height: 100%;
+}
+.login-jLS {
+  box-sizing: border-box;
+  padding: 0 19.983rem 9.6rem 7.3rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background-color: #f0ebdf;
+}
+.login-jLS .blue-white-leafy-background-vector53876-136080-1-FZg {
+  margin-left: 20rem;
+  margin-right: 10rem;
+  width: 35%;
+  height: 70%;
+  object-fit: cover;
+  vertical-align: top;
+  border-radius: 0 2rem 2rem 0;
+  flex-shrink: 0;
+}
+.login-jLS .auto-group-vxcj-99G {
+  margin-bottom: 0.7167rem;
+  width: 50.4167rem;
+  height: 71.2833rem;
+  position: relative;
+  flex-shrink: 0;
+}
+.login-jLS .auto-group-vxcj-99G .auto-group-edee-4GE {
+  width: auto;
+  height: 3.5rem;
+  position: absolute;
+  left: 7.2rem;
+  top: 38.6rem;
+  display: flex;
+  align-items: center;
+}
+.login-jLS .auto-group-vxcj-99G .auto-group-edee-4GE .enter-password-Bre {
+  margin-right: 1rem;
+  width: 38rem;
+  height: 3.5rem;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.5500000119);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 1rem;
+  background-color: #F0EBDF;
+  border: none;
+  outline: none;
+  flex-grow: 1;
+}
+.login-jLS .auto-group-vxcj-99G .auto-group-edee-4GE .basil-eye-closed-solid-JRU {
+  margin-top: 0.1053rem;
+  width: 2.6917rem;
+  height: 2.4792rem;
+  position: relative;
+  object-fit: contain;
+  vertical-align: top;
+  flex-shrink: 0;
+}
+.login-jLS .auto-group-vxcj-99G .frame-1-S1t {
+  box-sizing: border-box;
+  padding-left: 1.5rem;
+  width: 27.7rem;
+  height: 5.5rem;
+  position: absolute;
+  left: 9.5rem;
+  top: 19.3rem;
+  border-bottom: solid 0.3rem #1a472a;
+}
+.login-jLS .auto-group-vxcj-99G .frame-1-S1t .auto-group-gr5q-m4A {
+  width: 100%;
+  height: 5.2rem;
+  display: flex;
+  align-items: center;
+}
+.login-jLS .auto-group-vxcj-99G .frame-1-S1t .auto-group-gr5q-m4A .login-uAN {
+  margin-right: 4.7rem;
+  font-size: 3.6rem;
+  font-weight: 700;
+  line-height: 1.44;
+  color: #1a472a;
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.login-jLS .auto-group-vxcj-99G .frame-1-S1t .auto-group-gr5q-m4A .signup-dcA {
+  font-size: 3.6rem;
+  font-weight: 700;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.3899999857);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+
+}
+.login-jLS .auto-group-vxcj-99G .or-wcr {
+  width: 2.7rem;
+  height: 3.5rem;
+  position: absolute;
+  left: 27.4rem;
+  top: 60.3rem;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.5500000119);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+}
+.login-jLS .auto-group-vxcj-99G .flat-color-icons-google-eXG {
+  width: 3.1667rem;
+  height: 3.1667rem;
+  position: absolute;
+  left: 26.7167rem;
+  top: 68.1167rem;
+  object-fit: contain;
+  vertical-align: top;
+}
+.login-jLS .auto-group-vxcj-99G .auto-group-gy1c-yZY {
+  width: 43.2rem;
+  height: 5.3rem;
+  position: absolute;
+  left: 7.2rem;
+  top: 48.6rem;
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.44;
+  color: #ffffff;
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a472a;
+}
+.login-jLS .auto-group-vxcj-99G .enter-your-email-efg {
+  width: 42rem;
+  height: 3.5rem;
+  position: absolute;
+  left: 7.2rem;
+  top: 29.8rem;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.5500000119);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  margin-left: 1rem;
+  margin-bottom: 0.1rem;
+  background-color: #f0ebdf;
+  border: none;
+  outline: none;
+}
+
+
+.login-jLS .auto-group-vxcj-99G .line-3-M4J {
+  width: 43.2167rem;
+  height: 0.3rem;
+  position: absolute;
+  left: 7.2rem;
+  top: 43.3rem;
+  background-color: #1a472a;
+}
+.login-jLS .auto-group-vxcj-99G .line-2-Uuc {
+  width: 43.2167rem;
+  height: 0.3rem;
+  position: absolute;
+  left: 7.2rem;
+  top: 34.5rem;
+  background-color: rgba(26, 71, 42, 0.8666666746);
+}
