@@ -31,11 +31,7 @@ class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
-# class ReviewForm(forms.ModelForm):
-#     review = forms.CharField(widget=forms.Textarea(attrs={ 'placeholder': 'Enter your Reviews'}))
-#     class Meta:
-#         model = TripReview
-#         fields = ['review', 'rating']
+
 
 class ReviewForm(forms.ModelForm):
     class Meta:

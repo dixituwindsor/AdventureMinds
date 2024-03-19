@@ -109,98 +109,7 @@ def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
 
-# def destination_detail(request, destination_id):
-#     destination = get_object_or_404(Destination, pk=destination_id)
-#     reviews = Review.objects.filter(destination=destination)
-#     if request.method == 'POST':
-#         form = ReviewForm(request.POST)
-#         if form.is_valid():
-#             review = form.save(commit=False)
-#             review.destination = destination
-#             review.user = request.user  # Assuming user is authenticated
-#             review.save()
-#             return redirect('destination_detail', destination_id=destination_id)
-#     else:
-#         form = ReviewForm()
-#     return render(request, 'destination_detail.html', {'destination': destination, 'reviews': reviews, 'form': form})
 
-
-
-# def trip_detail(request):
-#     trip = Trip.objects.filter(trip_date= '2023-01-12').first()
-#     reviews = Review.objects.filter(trip=trip)
-#     form = ReviewForm()
-#
-#     if request.method == 'POST':
-#         form = ReviewForm(request.POST)
-#         if form.is_valid():
-#             review = form.save(commit=False)
-#             #review.user = request.trip.user.userprofile
-#             review.trip = trip
-#             review.save()
-#             return redirect('mainapp:messenger')
-#
-#     return render(request, 'mainapp/trip_detail.html', {'trip': trip, 'reviews': reviews, 'form': form})
-
-# def trip_info(request,id):
-#     trip = Trip.objects.get(pk=id)
-#     trips = Trip.objects.filter(trip_date= trip.trip_date).exclude(id=id)
-#     reviews = TripReview.objects.filter(trip=trip).order_by("-date")
-#
-#     average_rating = TripReview.objects.filter(trip=trip).aggregate(rating=Avg('rating'))
-#     review_form = ReviewForm()
-#
-#     context ={
-#         't': trip,
-#         'trips': trips,
-#         'reviews': reviews,
-#         'average_rating':average_rating,
-#         'review_form':review_form,
-#     }
-#     return render(request, 'mainapp/trip_info.html',context)
-#
-# def trip_detail(request, trip_id):
-#     trip = get_object_or_404(Trip, pk=trip_id)
-#     reviews = TripReview.objects.filter(trip=trip)
-#     return render(request, 'mainapp/trip_detail.html', {'trip': trip, 'reviews': reviews})
-#
-# # def add_review(request,trip_id):
-# #     trip = Trip.objects.get(pk=trip_id)
-# #     user = request.user
-# #
-# #     review = TripReview.objects.create(
-# #         user=user,
-# #         trip=trip,
-# #         review=request.POST['review'],
-# #         rating=request.POST['rating'],
-# #
-# #     )
-# #
-# #     context = {
-# #         'user': user.username,
-# #         'review': request.POST['review'],
-# #         'rating': request.POST['rating'],
-# #     }
-# #
-# #     average_reviews = TripReview.objects.filter(trip=trip).aggregate(rating=Avg('rating'))
-# #     # response = {'bool': 'True','context': context,'average_reviews': average_reviews}
-# #     return render(request, 'mainapp/trip_info.html', context)
-#
-#     # return JsonResponse({'bool': True, 'context': context, 'average_reviews': average_reviews})
-#
-#
-# def add_trip(request):
-#     # Example data
-#     trip_data = {
-#         'name': 'Trip to Rome',
-#         'description': 'An adventure in Italy'
-#     }
-#
-#     # Create and save a new trip
-#     trip = Trip(**trip_data)
-#     # trip.save()
-#
-#     return HttpResponse("Trip added successfully")
 
 class PlaceDetailView(DetailView):
     model = Place
@@ -240,18 +149,3 @@ def add_rating(request, place_id):
 
     return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
 
-# def trip_detail(request):
-#     trip = Trip.objects.filter(trip_date= '2023-01-12').first()
-#     reviews = Review.objects.filter(trip=trip)
-#     form = ReviewForm()
-#
-#     if request.method == 'POST':
-#         form = ReviewForm(request.POST)
-#         if form.is_valid():
-#             review = form.save(commit=False)
-#             #review.user = request.trip.user.userprofile
-#             review.trip = trip
-#             review.save()
-#             return redirect('adventureapp:messenger')
-#
-#     return render(request, 'adventureapp/trip_detail.html', {'trip': trip, 'reviews': reviews, 'form': form})
