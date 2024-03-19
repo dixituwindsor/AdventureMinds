@@ -1,19 +1,67 @@
 from django.db import models
-from django.contrib.auth.models import User, AbstractUser
+from django.contrib.auth.models import User
 
 
-# Create your models here.
+
 class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
+    description = models.TextField(max_length=200, blank=True)
+
     def __str__(self):
         return self.name
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=12, null=True, blank=True)
+    address = models.CharField(max_length=200, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='mainapp/media/profile', null=True, blank=True)
+    preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
 
-class UserProfile(User):
-    interested_places = models.ManyToManyField(Place)
     def __str__(self):
-        return self.get_username()
+        return self.user.username
+
+
+class PreferenceCategory(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+# class Trip(models.Model):
+#     uploader = models.ForeignKey(User, on_delete=models.CASCADE)
+#     place = models.ForeignKey(Place, on_delete=models.CASCADE)
+#     start_date = models.DateField()
+#     end_date = models.DateField()
+#     description = models.TextField()
+#     preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
+#
+#     def __str__(self):
+#         return f"Trip to {self.place.name}"
+
+
+class PreferenceChoice(models.Model):
+    category = models.ForeignKey(PreferenceCategory, on_delete=models.CASCADE)
+    value = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.category.name}: {self.value}"
+
+
+class UserPreferences(models.Model):
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True, blank=True)
+    preferences = models.ManyToManyField(PreferenceChoice)
+
+    def __str__(self):
+        if self.user_profile:
+            return f"Preferences for {self.user_profile.user.username}"
+        else:
+            return "No associated user profile"
+
+    def get_selected_preferences(self):
+        return [preference.value for preference in self.preferences.all()]
+
 
 
 class ThreadManager(models.Manager):
@@ -25,8 +73,10 @@ class ThreadManager(models.Manager):
 
 
 class Thread(models.Model):
-    first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='thread_first_person')
-    second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='thread_second_person')
+    first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
+                                     related_name='thread_first_person')
+    second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
+                                      related_name='thread_second_person')
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -37,7 +87,8 @@ class Thread(models.Model):
 
 
 class ChatMessage(models.Model):
-    thread = models.ForeignKey(Thread, null=True, blank=True, on_delete=models.CASCADE, related_name='chatmessage_thread')
+    thread = models.ForeignKey(Thread, null=True, blank=True, on_delete=models.CASCADE,
+                               related_name='chatmessage_thread')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
