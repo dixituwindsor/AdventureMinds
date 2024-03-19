@@ -1,21 +1,42 @@
-{% extends 'mainapp/base.html' %}
-
-{% block body_block %}
-
-    <h1>Login</h1>
-    <form method="POST">
-
-        {% if msg is not null %}
-            <h5>{{  msg }}</h5>
-        {% endif %}
-
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-{#        <a href="{% url 'signup' %}">Dont have Account Create</a>#}
-{#        <a href="/signup">Dont have Account Create</a>#}
-
-         <a href="{% url 'mainapp:signup' %}">Dont have Account Create</a>
-    </form>
-
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title>login</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Istok+Web%3A400%2C700"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C700"/>
+    <link rel="stylesheet" href="{% static 'mainapp/login.css' %}"/>
+</head>
+<body>
+    <div class="login-jLS">
+        <img class="blue-white-leafy-background-vector53876-136080-1-FZg" src="{% static 'mainapp/login.png' %}"/>
+        <div class="auto-group-vxcj-99G">
+            <form method="post" action="{% url 'mainapp:login' %}">
+                {% csrf_token %}
+                <div class="auto-group-edee-4GE">
+                    <input type="password" name="password" class="enter-password-Bre" placeholder="Enter your password">
+                    <img class="basil-eye-closed-solid-JRU" src="{% static 'mainapp/login1.png' %}", alt="Password visibility toggle"/>
+                </div>
+                <div class="frame-1-S1t">
+                    <div class="auto-group-gr5q-m4A">
+                        <p class="login-uAN">Login</p>
+                        <a href="{% url 'mainapp:signup' %}" class="signup-dcA">SignUp</a>
+                    </div>
+                </div>
+                <p class="or-wcr">Or</p>
+                <img class="flat-color-icons-google-eXG" src="{% static 'mainapp/login2.png' %}"/>
+                <button type="submit" class="auto-group-gy1c-yZY">Login</button>
+                <input type="text" name="username" class="enter-your-email-efg" placeholder="Enter your username">
+                <div class="line-3-M4J">
+                </div>
+                <div class="line-2-Uuc">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

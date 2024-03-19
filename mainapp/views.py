@@ -1,15 +1,12 @@
-from django.contrib.auth.hashers import make_password
-from django.urls import reverse
-from .models import UserPreferences, PreferenceCategory
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm
-
-from django.http import JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from .forms import SignupForm, LoginForm
-from .models import UserProfile, Thread, User, ChatMessage
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 
+from .forms import UserProfileForm, UserPreferencesForm
+from .models import UserPreferences, PreferenceCategory
+from .models import UserProfile, Thread, User, ChatMessage
 
 
 # Create your views here.
@@ -21,7 +18,7 @@ def user_profile(request):
         form = UserProfileForm(request.POST, instance=user_profile_instance)
         if form.is_valid():
             form.save()
-            return redirect('mainapp:profile')
+            return redirect('mainapp:homepage')
     else:
         form = UserProfileForm(instance=user_profile_instance)
     return render(request, 'mainapp/profile.html', {'form': form})
@@ -39,12 +36,14 @@ def user_preferences(request):
         form = UserPreferencesForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            print("Cleaned form data:", cleaned_data)  # Print cleaned form data
-
             preferences = UserPreferences.objects.create(user_profile=user_profile_instance)
             for category_name, choices in cleaned_data.items():
                 category = PreferenceCategory.objects.get(name=category_name)
                 preferences.preferences.add(*choices)
+
+            # Assign the created preferences to the UserProfile instance
+            user_profile_instance.preferences = preferences
+            user_profile_instance.save()
 
             return redirect(reverse('mainapp:profile'))
     else:
@@ -70,10 +69,7 @@ def terms_conditions(request):
     return render(request=request, template_name=template, context=context)
 
 
-# def messenger(request):
-#     resonse = HttpResponse()
-#     resonse.write("<h1>Hello World</h1>")
-#     return resonse
+
 
 def getusers(request):
     users = UserProfile.objects.all().values('username', 'id')
@@ -104,59 +100,49 @@ def chat_app(request, user_id=None):
 # sign in
 def user_signup(request):
     if request.method == 'POST':
-        form = SignupForm(request.POST)
-        if form.is_valid():
-            # form.save()
-            # commit false to save current object in db
-            userobj = form.save(commit=False)
-            # making some necessary change in obj then saving it in db
-            userobj.username = form.cleaned_data['username'].lower()
-            if UserProfile.objects.filter(username=userobj.username).exists():
-                form = SignupForm()
-                return render(request, 'mainapp/signup.html', {'form': form, 'msg':'username already taken, use different one'})
+        username = request.POST.get('username')
+        fullname = request.POST.get('fullname')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
 
-            if UserProfile.objects.filter(username=userobj.email).exists():
-                form = SignupForm()
-                return render(request, 'mainapp/signup.html', {'form': form, 'msg': 'Use different email id'})
+        # if User.objects.filter(user__username=username).exists():
+        #     response = HttpResponse()
+        #     response.write("<p>Username already exists, choose different username</p>")
+        #     return response
 
-            userobj.email = form.cleaned_data['email'].lower()
-            userobj.password = make_password(form.cleaned_data['password'])
-            userobj.save()
-            return redirect('mainapp:login')
-        else:
-            form = SignupForm()
-            return render(request, 'mainapp/signup.html', {'form': form, 'msg':'Something went wrong, try again'})
+        names = fullname.split()
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.first_name = names[0]
+        user.last_name = names[-1]
+        user.save()
+
+        userprofileobj = UserProfile.objects.create(user=user)
+        userprofileobj.save()
+
+        return redirect('mainapp:login')
     else:
-        form = SignupForm()
-    return render(request, 'registration/signup.html', {'form': form})
+        return render(request, 'registration/signup.html')
+
+
+
 
 # login page
 def user_login(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-
-            if user:
-                if user.is_active:
-                    login(request, user)
-                    return redirect('mainapp:homepage')
-                    # return redirect('mainapp:chat_app')
-                else:
-                    form = LoginForm()
-                    return render(request, 'mainapp/login.html',
-                                  {'form': form, 'msg': 'user account is inactive'})
-            else:
-                form = LoginForm()
-                return render(request, 'mainapp/login.html', {'form': form, 'msg': 'Wrong credentials provided, try again'})
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None and user.is_active:
+            login(request, user)
+            return redirect('mainapp:homepage')
         else:
-            form = LoginForm()
-            return render(request, 'mainapp/login.html', {'form': form, 'msg': 'Something went wrong, try again'})
+            response = HttpResponse()
+            response.write("<p>Wrong credentials</p>")
+            return response
     else:
-        form = LoginForm()
-        return render(request, 'registration/login.html', {'form': form})
+        return render(request, 'registration/login.html')
+
 
 # logout page
 def user_logout(request):
@@ -164,15 +150,3 @@ def user_logout(request):
     return redirect('mainapp:login')
 
 
-@login_required
-def add_trip(request):
-    if request.method == 'POST':
-        form = AddTripForm(request.POST)
-        if form.is_valid():
-            trip = form.save(commit=False)
-            trip.uploader = request.user
-            trip.save()
-            return redirect('mainapp:homepage')  # Assuming 'home' is the name of your home page URL
-    else:
-        form = AddTripForm()
-    return render(request, 'mainapp/add_trip.html', {'form': form})

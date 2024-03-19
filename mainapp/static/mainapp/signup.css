@@ -1,0 +1,300 @@
+
+html {
+	font-size:62.5%;
+}
+* {
+	margin: 0;
+	padding: 0;
+}
+ul, li {
+	list-style: none;
+}
+input {
+	border: none;
+}
+body {
+  width: 100%;
+  height: 100%;
+}
+.signup-9bk {
+  width: 100%;
+  height: 100%;
+}
+.signup-9bk .signup-uav {
+  box-sizing: border-box;
+  padding: 0 19.983rem 9.6rem 7.3rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: #f0ebdf;
+}
+.signup-9bk .signup-uav .flatten-1-qUa {
+  margin-left: 20rem;
+  margin-right: 10rem;
+  width: 35%;
+  height: 70%;
+  object-fit: cover;
+  vertical-align: top;
+  border-radius: 0 2rem 2rem 0;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr {
+  width: 49.1rem;
+  height: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE {
+  box-sizing: border-box;
+  padding-top: 6.6rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .title-MbL {
+  margin: 0rem 0rem 6rem 3.4rem;
+  box-sizing: border-box;
+  padding-left: 1.4rem;
+  width: 34.1rem;
+  height: 5.5rem;
+  border-bottom: solid 0.3rem #1a472a;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .title-MbL .auto-group-xam4-spa {
+  width: 100%;
+  height: 5.2rem;
+  display: flex;
+  align-items: center;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .title-MbL .auto-group-xam4-spa .sign-up-1vn {
+  margin-right: 11.2rem;
+  font-size: 3.6rem;
+  font-weight: 700;
+  line-height: 1.44;
+  color: #1a472a;
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .title-MbL .auto-group-xam4-spa .login-jrn {
+  font-size: 3.6rem;
+  font-weight: 700;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.3899999857);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g {
+  width: 43.2167rem;
+  height: 55.8rem;
+  position: relative;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-lequ-13c {
+  width: 42.8458rem;
+  height: 4.4369rem;
+  position: absolute;
+  left: 0;
+  top: 21.4631rem;
+  display: flex;
+  align-items: flex-start;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-lequ-13c .enter-password-LLn {
+  margin: 0.937rem 1rem 0rem 0rem;
+  width: 38rem;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.5500000119);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  flex-shrink: 0;
+  background-color: #F0EBDF;
+  border: none;
+  outline: none;
+  flex-grow: 1;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-lequ-13c .basil-eye-closed-solid-Sei {
+  width: 2.6917rem;
+  height: 2.4792rem;
+  position: relative;
+  object-fit: contain;
+  vertical-align: top;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-rbu8-nCn {
+  box-sizing: border-box;
+  padding: 5rem 0rem 0.317rem 0rem;
+  width: 43.2167rem;
+  height: 21.5rem;
+  position: absolute;
+  left: 0;
+  top: 34.3rem;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-rbu8-nCn .auto-group-i6cn-ryL {
+  margin: 0rem 0.017rem 1.9rem 0rem;
+  width: calc(100% - 0.0167rem);
+  height: 5.3rem;
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.44;
+  color: #ffffff;
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a472a;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-rbu8-nCn .or-8AA {
+  margin: 0rem 0.117rem 2.317rem 0rem;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.5500000119);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-rbu8-nCn .flat-color-icons-google-ePQ {
+  margin-right: 0.0167rem;
+  width: 3.1667rem;
+  height: 3.1667rem;
+  position: relative;
+  object-fit: contain;
+  vertical-align: top;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-hnaz-yga {
+  width: 42.8458rem;
+  height: 4.5369rem;
+  position: absolute;
+  left: 0;
+  top: 29.0631rem;
+  display: flex;
+  align-items: flex-start;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-hnaz-yga .confirm-password-iPG {
+  margin: 1.037rem 1rem 0rem 0rem;
+  width: 38rem;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.5500000119);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  flex-shrink: 0;
+  background-color: #F0EBDF;
+  border: none;
+  outline: none;
+  flex-grow: 1;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .auto-group-hnaz-yga .basil-eye-closed-solid-dWE {
+  width: 2.6917rem;
+  height: 2.4792rem;
+  position: relative;
+  object-fit: contain;
+  vertical-align: top;
+  flex-shrink: 0;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .last-name-aAa {
+  width: 42rem;
+  height: 3.5rem;
+  position: absolute;
+  left: 0;
+  top: 7.7rem;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.5500000119);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  background-color: #F0EBDF;
+  border: none;
+  outline: none;
+  flex-grow: 1;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .first-name-gjQ {
+  width: 42rem;
+  height: 3.5rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.5500000119);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  background-color: #F0EBDF;
+  border: none;
+  outline: none;
+  flex-grow: 1;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .enter-your-email-1Wn {
+  width: 42rem;
+  height: 3.5rem;
+  position: absolute;
+  left: 0;
+  top: 14.4rem;
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.44;
+  color: rgba(26, 71, 42, 0.5500000119);
+  font-family: Istok Web, 'Source Sans Pro';
+  white-space: nowrap;
+  background-color: #F0EBDF;
+  border: none;
+  outline: none;
+  flex-grow: 1;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .line-2-XV8 {
+  width: 43.2167rem;
+  height: 0.3rem;
+  position: absolute;
+  left: 0;
+  top: 3.5rem;
+  background-color: rgba(26, 71, 42, 0.8666666746);
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .line-5-Tta {
+  width: 43.2167rem;
+  height: 0.3rem;
+  position: absolute;
+  left: 0;
+  top: 26.5rem;
+  background-color: #1a472a;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .line-6-zNi {
+  width: 43.2167rem;
+  height: 0.3rem;
+  position: absolute;
+  left: 0;
+  top: 34rem;
+  background-color: #1a472a;
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .line-3-7y8 {
+  width: 43.2167rem;
+  height: 0.3rem;
+  position: absolute;
+  left: 0;
+  top: 11.2rem;
+  background-color: rgba(26, 71, 42, 0.8666666746);
+}
+.signup-9bk .signup-uav .auto-group-3hwv-jpr .auto-group-g2dc-DEE .details-U3g .line-4-GLE {
+  width: 43.2167rem;
+  height: 0.3rem;
+  position: absolute;
+  left: 0;
+  top: 18.9rem;
+  background-color: rgba(26, 71, 42, 0.8666666746);
+}

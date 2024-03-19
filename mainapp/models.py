@@ -2,24 +2,21 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+
 class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
+    description = models.TextField(max_length=200, blank=True)
 
     def __str__(self):
         return self.name
 
-    def __str__(self):
-        return self.user.username
-
-
-class UserProfile(User):
-    # user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=12)
-    address = models.CharField(max_length=200)
-    # email = models.EmailField(null=True, blank=True)
-    date_of_birth = models.DateField()
-    interested_places = models.ManyToManyField(Place, null=True, blank=True)
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=12, null=True, blank=True)
+    address = models.CharField(max_length=200, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='mainapp/media/profile', null=True, blank=True)
     preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
@@ -31,6 +28,17 @@ class PreferenceCategory(models.Model):
 
     def __str__(self):
         return self.name
+
+# class Trip(models.Model):
+#     uploader = models.ForeignKey(User, on_delete=models.CASCADE)
+#     place = models.ForeignKey(Place, on_delete=models.CASCADE)
+#     start_date = models.DateField()
+#     end_date = models.DateField()
+#     description = models.TextField()
+#     preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
+#
+#     def __str__(self):
+#         return f"Trip to {self.place.name}"
 
 
 class PreferenceChoice(models.Model):
@@ -54,17 +62,6 @@ class UserPreferences(models.Model):
     def get_selected_preferences(self):
         return [preference.value for preference in self.preferences.all()]
 
-
-class Trip(models.Model):
-    uploader = models.ForeignKey(User, on_delete=models.CASCADE)
-    destination = models.CharField(max_length=100)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    description = models.TextField()
-    preferences = models.ManyToManyField('mainapp.PreferenceChoice', related_name='trips')
-
-    def __str__(self):
-        return f"{self.destination} Trip"
 
 
 class ThreadManager(models.Manager):

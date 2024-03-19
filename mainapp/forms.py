@@ -1,23 +1,25 @@
 from django import forms
-from mainapp.models import UserProfile, PreferenceCategory, UserPreferences, Trip, PreferenceChoice
 
-class SignupForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ['first_name', 'last_name', 'username', 'email', 'password']
-        labels = {
-            'first_name': 'First Name',
-            'last_name': 'Last Name',
-            'username': 'Username',
-            'email': 'Email',
-            'password': 'Password'
-        }
-        widgets = {
-            'password': forms.PasswordInput()
-        }
-    phone_number = forms.CharField(label='Phone Number')
-    address = forms.CharField(label='Address')
-    date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
+from mainapp.consumers import User
+from mainapp.models import UserProfile, PreferenceCategory, UserPreferences, PreferenceChoice
+
+# class SignupForm(forms.ModelForm):
+#     class Meta:
+#         model = UserProfile
+#         fields = ['first_name', 'last_name', 'username', 'email', 'password']
+#         labels = {
+#             'first_name': 'First Name',
+#             'last_name': 'Last Name',
+#             'username': 'Username',
+#             'email': 'Email',
+#             'password': 'Password'
+#         }
+#         widgets = {
+#             'password': forms.PasswordInput()
+#         }
+#     phone_number = forms.CharField(label='Phone Number')
+#     address = forms.CharField(label='Address')
+#     date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
 
     # def save(self, commit=True):
     #         user = super(SignupForm, self).save(commit=False)
@@ -26,11 +28,9 @@ class SignupForm(forms.ModelForm):
     #             user.save()
     #         return user
 
-
-
-class LoginForm(forms.Form):
-    username = forms.CharField(label='Username')
-    password = forms.CharField(widget=forms.PasswordInput, label='Password')
+# class LoginForm(forms.Form):
+#     username = forms.CharField(label='Username')
+#     password = forms.CharField(widget=forms.PasswordInput, label='Password')
 
 
 class UserProfileForm(forms.ModelForm):
@@ -60,8 +60,6 @@ class UserProfileForm(forms.ModelForm):
         return self.instance.user.email
 
 
-
-
 class UserPreferencesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         initial_data = kwargs.pop('initial', {})
@@ -89,24 +87,48 @@ class UserPreferencesForm(forms.ModelForm):
         fields = []  # No need to specify fields as they are dynamically generated
 
 
-class AddTripForm(forms.ModelForm):
-    destination = forms.CharField(max_length=100)
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
+# class AddTripForm(forms.ModelForm):
+#     destination = forms.CharField(max_length=100)
+#     start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+#     end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+#     description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
+#
+#     class Meta:
+#         model = Trip
+#         fields = ['destination', 'start_date', 'end_date', 'description']
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         categories = PreferenceCategory.objects.all()
+#         for category in categories:
+#             choices = PreferenceChoice.objects.filter(category=category)
+#             choices_field = forms.MultipleChoiceField(
+#                 choices=[(choice.pk, choice.value) for choice in choices],
+#                 widget=forms.CheckboxSelectMultiple,
+#                 required=False
+#             )
+#             self.fields[f'{category.name}'] = choices_field
 
+
+class SignupForm(forms.ModelForm):
     class Meta:
-        model = Trip
-        fields = ['destination', 'start_date', 'end_date', 'description']
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email', 'password']
+        labels = {
+            'first_name': 'First Name',
+            'last_name': 'Last Name',
+            'username': 'Username',
+            'email': 'Email',
+            'password': 'Password'
+        }
+        widgets = {
+            'password': forms.PasswordInput()
+        }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        categories = PreferenceCategory.objects.all()
-        for category in categories:
-            choices = PreferenceChoice.objects.filter(category=category)
-            choices_field = forms.MultipleChoiceField(
-                choices=[(choice.pk, choice.value) for choice in choices],
-                widget=forms.CheckboxSelectMultiple,
-                required=False
-            )
-            self.fields[f'{category.name}'] = choices_field
+    phone_number = forms.CharField(label='Phone Number')
+    address = forms.CharField(label='Address')
+    date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
+
+class LoginForm(forms.Form):
+    username = forms.CharField(label='Username')
+    password = forms.CharField(widget=forms.PasswordInput, label='Password')
