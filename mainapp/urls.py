@@ -8,6 +8,7 @@ urlpatterns = [
     path('myprofile/', views.user_profile, name='profile'),
     path('preferences/', views.user_preferences, name='user_preferences'),
     path('chat_app/', views.chat_app, name='chat_app'),
+    path('message_button/', views.message_button, name='message_button'),
     path('h/', views.homepage, name='homepage'),
     path('t/', views.terms_conditions, name='terms_conditions'),
     path('login/', views.user_login, name='login'),

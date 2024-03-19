@@ -76,28 +76,6 @@ def getusers(request):
     return JsonResponse(list(users), safe=False)
 
 
-@login_required
-def chat_app(request, user_id=None):
-    if user_id:
-        # Assuming the logged-in user is the first person in the thread
-        first_person = request.user
-        second_person = get_object_or_404(User, id=user_id)
-        thread, created = Thread.objects.get_or_create(
-            first_person=first_person,
-            second_person=second_person,
-        )
-        messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp')
-        context = {
-            'thread': thread,
-            'messages': messages,
-        }
-        return render(request, 'mainapp/messages.html', context)
-    else:
-        users = User.objects.all()
-        context = {'users': users}
-        return render(request, 'mainapp/messages.html', context)
-
-# sign in
 def user_signup(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -125,8 +103,6 @@ def user_signup(request):
         return render(request, 'registration/signup.html')
 
 
-
-
 # login page
 def user_login(request):
     if request.method == 'POST':
@@ -150,3 +126,25 @@ def user_logout(request):
     return redirect('mainapp:login')
 
 
+def message_button(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        second_person = get_object_or_404(User, id=user_id)
+        first_person = request.user
+        if first_person != second_person:
+            thread, created = Thread.objects.get_or_create(
+                first_person=first_person,
+                second_person=second_person,
+            )
+            return redirect('mainapp:chat_app')
+        else:
+            return redirect('mainapp:chat_app')
+
+
+@login_required
+def chat_app(request):
+    threads = Thread.objects.by_user(user=request.user).prefetch_related('chatmessage_thread').order_by('timestamp')
+    context = {
+        'Threads': threads
+    }
+    return render(request, 'mainapp/messages.html', context)
