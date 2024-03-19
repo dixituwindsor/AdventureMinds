@@ -1,16 +1,11 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm
-
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
-from .forms import UserCreationForm, SignupForm, LoginForm
-from .forms import TripForm, PlaceForm, InterestForm
+from django.urls import reverse
+
+from .forms import UserProfileForm, UserPreferencesForm
+from .models import UserPreferences, PreferenceCategory
 from .models import UserProfile, Thread, User, ChatMessage
 
 
@@ -23,7 +18,7 @@ def user_profile(request):
         form = UserProfileForm(request.POST, instance=user_profile_instance)
         if form.is_valid():
             form.save()
-            return redirect('mainapp:profile')
+            return redirect('mainapp:homepage')
     else:
         form = UserProfileForm(instance=user_profile_instance)
     return render(request, 'mainapp/profile.html', {'form': form})
@@ -41,23 +36,31 @@ def user_preferences(request):
         form = UserPreferencesForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            print("Cleaned form data:", cleaned_data)  # Print cleaned form data
-
             preferences = UserPreferences.objects.create(user_profile=user_profile_instance)
             for category_name, choices in cleaned_data.items():
                 category = PreferenceCategory.objects.get(name=category_name)
                 preferences.preferences.add(*choices)
+
+            # Assign the created preferences to the UserProfile instance
+            user_profile_instance.preferences = preferences
+            user_profile_instance.save()
 
             return redirect(reverse('mainapp:profile'))
     else:
         form = UserPreferencesForm(instance=user_profile_instance.preferences)
     return render(request, 'mainapp/userPreferences.html', {'form': form})
 
+
 def messenger(request):
     template = "mainapp/messenger.html"
     context = {}
     return render(request=request, template_name=template, context=context)
 
+
+def homepage(request):
+    template = "mainapp/homepage.html"
+    context = {}
+    return render(request=request, template_name=template, context=context)
 
 
 def terms_conditions(request):
@@ -66,10 +69,7 @@ def terms_conditions(request):
     return render(request=request, template_name=template, context=context)
 
 
-# def messenger(request):
-#     resonse = HttpResponse()
-#     resonse.write("<h1>Hello World</h1>")
-#     return resonse
+
 
 def getusers(request):
     users = UserProfile.objects.all().values('username', 'id')
@@ -97,119 +97,54 @@ def chat_app(request, user_id=None):
         context = {'users': users}
         return render(request, 'mainapp/messages.html', context)
 
-
-# signup page
+# sign in
 def user_signup(request):
     if request.method == 'POST':
-        form = SignupForm(request.POST)
-        if form.is_valid():
-            # Extracting data from the form
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            username = form.cleaned_data['username']
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            phone_number = form.cleaned_data['phone_number']
-            address = form.cleaned_data['address']
-            date_of_birth = form.cleaned_data['date_of_birth']
+        username = request.POST.get('username')
+        fullname = request.POST.get('fullname')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
 
-            # Creating User object
-            user = User.objects.create_user(username=username, email=email, password=password)
-            user.first_name = first_name
-            user.last_name = last_name
-            user.save()
+        # if User.objects.filter(user__username=username).exists():
+        #     response = HttpResponse()
+        #     response.write("<p>Username already exists, choose different username</p>")
+        #     return response
 
-            # Creating UserProfile object
-            user_profile = UserProfile.objects.create(user=user, phone_number=phone_number, address=address,
-                                                      date_of_birth=date_of_birth)
-            user_profile.save()
+        names = fullname.split()
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.first_name = names[0]
+        user.last_name = names[-1]
+        user.save()
 
-            # Redirect to login page after successful signup
-            return redirect('mainapp:login')
+        userprofileobj = UserProfile.objects.create(user=user)
+        userprofileobj.save()
+
+        return redirect('mainapp:login')
     else:
-        form = SignupForm()
-    return render(request, 'registration/signup.html', {'form': form})
+        return render(request, 'registration/signup.html')
+
+
 
 
 # login page
 def user_login(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user is not None and user.is_active:
-                login(request, user)
-                return redirect('mainapp:chat_app')
-            else:
-                response = HttpResponse()
-                response.write("<p>Wrong credentials</p>")
-                return response
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None and user.is_active:
+            login(request, user)
+            return redirect('mainapp:homepage')
+        else:
+            response = HttpResponse()
+            response.write("<p>Wrong credentials</p>")
+            return response
     else:
-        form = LoginForm()
-        return render(request, 'registration/login.html', {'form': form})
+        return render(request, 'registration/login.html')
 
 
 # logout page
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
-
-
-@login_required
-def add_trip(request):
-    if request.method == 'POST':
-        form = AddTripForm(request.POST)
-        if form.is_valid():
-            trip = form.save(commit=False)
-            trip.uploader = request.user
-            trip.save()
-            return redirect('mainapp:homepage')  # Assuming 'home' is the name of your home page URL
-    else:
-        form = AddTripForm()
-    return render(request, 'mainapp/add_trip.html', {'form': form})
-
-def trip_add(request):
-    if request.method == 'POST':
-        form = TripForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('trip_feature_app:trip_add')
-    else:
-        form = TripForm()
-    return render(request, 'trip_feature_app/trip_add.html', {'form': form})
-
-def trip_added(request):
-    return render(request, 'trip_feature_app/trip_added.html')
-
-def place_add(request):
-    if request.method == 'POST':
-        form = PlaceForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('trip_feature_app:place_added')
-    else:
-        form = PlaceForm()
-    return render(request, 'trip_feature_app/place_add.html', {'form': form})
-
-def interest_add(request):
-    if request.method == 'POST':
-        form = InterestForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('trip_feature_app:interest_added')
-    else:
-        form = InterestForm()
-    return render(request, 'trip_feature_app/interest_add.html', {'form': form})
-
-def place_added(request):
-    return render(request, 'trip_feature_app/place_added.html')
-
-def interest_added(request):
-    return render(request, 'trip_feature_app/interest_added.html')
-
-@login_required
-def homepage(request):
-    return render(request, 'mainapp/homepage.html')
-

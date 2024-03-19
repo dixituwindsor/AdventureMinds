@@ -1,13 +1,37 @@
 from django import forms
-from .models import UserProfile, UserPreferences, Trip, PreferenceChoice
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from django import forms
-from .models import UserPreferences, PreferenceCategory
-from .models import TripChirag, Place, Interest
 
+from mainapp.consumers import User
+from mainapp.models import UserProfile, PreferenceCategory, UserPreferences, PreferenceChoice
 
-from django.contrib.auth.models import User
+# class SignupForm(forms.ModelForm):
+#     class Meta:
+#         model = UserProfile
+#         fields = ['first_name', 'last_name', 'username', 'email', 'password']
+#         labels = {
+#             'first_name': 'First Name',
+#             'last_name': 'Last Name',
+#             'username': 'Username',
+#             'email': 'Email',
+#             'password': 'Password'
+#         }
+#         widgets = {
+#             'password': forms.PasswordInput()
+#         }
+#     phone_number = forms.CharField(label='Phone Number')
+#     address = forms.CharField(label='Address')
+#     date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
+
+    # def save(self, commit=True):
+    #         user = super(SignupForm, self).save(commit=False)
+    #         user.password = make_password(self.cleaned_data['password'])
+    #         if commit:
+    #             user.save()
+    #         return user
+
+# class LoginForm(forms.Form):
+#     username = forms.CharField(label='Username')
+#     password = forms.CharField(widget=forms.PasswordInput, label='Password')
+
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
@@ -34,8 +58,6 @@ class UserProfileForm(forms.ModelForm):
 
     def clean_email(self):
         return self.instance.user.email
-
-
 
 
 class UserPreferencesForm(forms.ModelForm):
@@ -65,28 +87,27 @@ class UserPreferencesForm(forms.ModelForm):
         fields = []  # No need to specify fields as they are dynamically generated
 
 
-class AddTripForm(forms.ModelForm):
-    destination = forms.CharField(max_length=100)
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
-
-    class Meta:
-        model = Trip
-        fields = ['destination', 'start_date', 'end_date', 'description']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        categories = PreferenceCategory.objects.all()
-        for category in categories:
-            choices = PreferenceChoice.objects.filter(category=category)
-            choices_field = forms.MultipleChoiceField(
-                choices=[(choice.pk, choice.value) for choice in choices],
-                widget=forms.CheckboxSelectMultiple,
-                required=False
-            )
-            self.fields[f'{category.name}'] = choices_field
-
+# class AddTripForm(forms.ModelForm):
+#     destination = forms.CharField(max_length=100)
+#     start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+#     end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+#     description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
+#
+#     class Meta:
+#         model = Trip
+#         fields = ['destination', 'start_date', 'end_date', 'description']
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         categories = PreferenceCategory.objects.all()
+#         for category in categories:
+#             choices = PreferenceChoice.objects.filter(category=category)
+#             choices_field = forms.MultipleChoiceField(
+#                 choices=[(choice.pk, choice.value) for choice in choices],
+#                 widget=forms.CheckboxSelectMultiple,
+#                 required=False
+#             )
+#             self.fields[f'{category.name}'] = choices_field
 
 
 class SignupForm(forms.ModelForm):
@@ -108,45 +129,6 @@ class SignupForm(forms.ModelForm):
     address = forms.CharField(label='Address')
     date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
 
-
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
-
-
-from .models import Photo
-
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-class MultipleFileField(forms.FileField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("widget", MultipleFileInput())
-        super().__init__(*args, **kwargs)
-
-    def clean(self, data, initial=None):
-        single_file_clean = super().clean
-        if isinstance(data, (list, tuple)):
-            result = [single_file_clean(d, initial) for d in data]
-        else:
-            result = single_file_clean(data, initial)
-        return result
-
-
-class TripForm(forms.ModelForm):
-    destination_place_photos = MultipleFileField(label='Select files', required=False)
-    class Meta:
-        model = TripChirag
-        fields = ['person_name', 'date_of_trip', 'source_place', 'destination_place', 'destination_place_photos', 'interest_compatibility']
-        widgets = {
-            'date_of_trip': forms.DateInput(attrs={'type': 'date'})
-        }
-class PlaceForm(forms.ModelForm):
-    class Meta:
-        model = Place
-        fields = ['name']
-
-class InterestForm(forms.ModelForm):
-    class Meta:
-        model = Interest
-        fields = ['name']
