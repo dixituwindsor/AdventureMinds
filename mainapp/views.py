@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, TripPhoto
 from django.http import HttpResponse, JsonResponse
@@ -5,6 +6,17 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
 from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
+=======
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+
+from .forms import UserProfileForm, UserPreferencesForm
+from .models import UserPreferences, PreferenceCategory
+from .models import UserProfile, Thread, User, ChatMessage
+>>>>>>> 548eb86299f72c39eb1c41e2df1dbefe9a0b58e5
 
 
 # Create your views here.
@@ -47,6 +59,7 @@ def user_preferences(request):
     else:
         form = UserPreferencesForm(instance=user_profile_instance.preferences)
     return render(request, 'mainapp/userPreferences.html', {'form': form})
+
 
 def messenger(request):
     template = "mainapp/messenger.html"
@@ -183,12 +196,17 @@ def calculate_similarity(user_preferences, trip_preferences):
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 548eb86299f72c39eb1c41e2df1dbefe9a0b58e5
 
 def getusers(request):
     users = UserProfile.objects.all().values('username', 'id')
     return JsonResponse(list(users), safe=False)
 
 
+<<<<<<< HEAD
 @login_required
 def chat_app(request, user_id=None):
     if user_id:
@@ -211,6 +229,8 @@ def chat_app(request, user_id=None):
         return render(request, 'mainapp/messages.html', context)
 
 # sign in
+=======
+>>>>>>> 548eb86299f72c39eb1c41e2df1dbefe9a0b58e5
 def user_signup(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -236,8 +256,11 @@ def user_signup(request):
         return redirect('mainapp:login')
     else:
         return render(request, 'registration/signup.html')
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 548eb86299f72c39eb1c41e2df1dbefe9a0b58e5
 
 
 # login page
@@ -260,4 +283,32 @@ def user_login(request):
 # logout page
 def user_logout(request):
     logout(request)
+<<<<<<< HEAD
     return redirect('mainapp:login')
+=======
+    return redirect('mainapp:login')
+
+
+def message_button(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        second_person = get_object_or_404(User, id=user_id)
+        first_person = request.user
+        if first_person != second_person:
+            thread, created = Thread.objects.get_or_create(
+                first_person=first_person,
+                second_person=second_person,
+            )
+            return redirect('mainapp:chat_app')
+        else:
+            return redirect('mainapp:chat_app')
+
+
+@login_required
+def chat_app(request):
+    threads = Thread.objects.by_user(user=request.user).prefetch_related('chatmessage_thread').order_by('timestamp')
+    context = {
+        'Threads': threads
+    }
+    return render(request, 'mainapp/messages.html', context)
+>>>>>>> 548eb86299f72c39eb1c41e2df1dbefe9a0b58e5

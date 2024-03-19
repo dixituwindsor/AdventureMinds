@@ -7,62 +7,8 @@ from .models import UserPreferences, PreferenceCategory
 from multiupload.fields import MultiFileField
 from .models import Trip
 
-# class SignupForm(forms.ModelForm):
-#     class Meta:
-#         model = UserProfile
-#         fields = ['first_name', 'last_name', 'username', 'email', 'password']
-#         labels = {
-#             'first_name': 'First Name',
-#             'last_name': 'Last Name',
-#             'username': 'Username',
-#             'email': 'Email',
-#             'password': 'Password'
-#         }
-#         widgets = {
-#             'password': forms.PasswordInput()
-#         }
-#     phone_number = forms.CharField(label='Phone Number')
-#     address = forms.CharField(label='Address')
-#     date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
-
-    # def save(self, commit=True):
-    #         user = super(SignupForm, self).save(commit=False)
-    #         user.password = make_password(self.cleaned_data['password'])
-    #         if commit:
-    #             user.save()
-    #         return user
-
-# class LoginForm(forms.Form):
-#     username = forms.CharField(label='Username')
-#     password = forms.CharField(widget=forms.PasswordInput, label='Password')
-
-
-class UserProfileForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ['phone_number', 'address', 'date_of_birth']  # Removed 'email' field
-
-        labels = {
-            'phone_number': 'Phone Number',
-            'address': 'Address',
-            'date_of_birth': 'Date of Birth'
-        }
-        widgets = {
-            'date_of_birth': forms.DateInput(attrs={'type': 'date'})
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(UserProfileForm, self).__init__(*args, **kwargs)
-        # Add fields from the User model
-        if self.instance.user:
-            self.fields['username'] = forms.CharField(label='Username', initial=self.instance.user.username, disabled=True)
-            self.fields['first_name'] = forms.CharField(label='First Name', initial=self.instance.user.first_name, disabled=True)
-            self.fields['last_name'] = forms.CharField(label='Last Name', initial=self.instance.user.last_name, disabled=True)
-            self.fields['email'] = forms.EmailField(label='Email', initial=self.instance.user.email, disabled=True, required=False)
-
-    def clean_email(self):
-        return self.instance.user.email
-
+from mainapp.consumers import User
+from mainapp.models import UserProfile, PreferenceCategory, UserPreferences, PreferenceChoice
 
 
 class UserPreferencesForm(forms.ModelForm):
@@ -130,7 +76,6 @@ class TripPreferenceForm(forms.ModelForm):
                 widget=forms.CheckboxSelectMultiple,
                 label=category.name
             )
-
 
 
 class TripSearchForm(forms.Form):

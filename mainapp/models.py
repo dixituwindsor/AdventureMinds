@@ -29,6 +29,17 @@ class PreferenceCategory(models.Model):
     def __str__(self):
         return self.name
 
+# class Trip(models.Model):
+#     uploader = models.ForeignKey(User, on_delete=models.CASCADE)
+#     place = models.ForeignKey(Place, on_delete=models.CASCADE)
+#     start_date = models.DateField()
+#     end_date = models.DateField()
+#     description = models.TextField()
+#     preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
+#
+#     def __str__(self):
+#         return f"Trip to {self.place.name}"
+
 
 class PreferenceChoice(models.Model):
     category = models.ForeignKey(PreferenceCategory, on_delete=models.CASCADE)
@@ -51,36 +62,6 @@ class UserPreferences(models.Model):
     def get_selected_preferences(self):
         return [preference.value for preference in self.preferences.all()]
 
-
-
-
-class Trip(models.Model):
-    uploader = models.ForeignKey(User, on_delete=models.CASCADE)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    description = models.TextField()
-    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
-
-
-    def __str__(self):
-        return f"Trip to {self.place.name}"
-
-
-class TripPhoto(models.Model):
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='trip_photos')
-    photo = models.ImageField(upload_to='')
-
-    def __str__(self):
-        return f"Photo for {self.trip.place}"
-
-
-
-class TripPreference(models.Model):
-    preferences = models.ManyToManyField(PreferenceChoice)
-
-
-
 class ThreadManager(models.Manager):
     def by_user(self, **kwargs):
         user = kwargs.get('user')
@@ -102,6 +83,9 @@ class Thread(models.Model):
     class Meta:
         unique_together = ['first_person', 'second_person']
 
+    def __str__(self):
+        return f"Conversation between {self.first_person} and {self.second_person}"
+
 
 class ChatMessage(models.Model):
     thread = models.ForeignKey(Thread, null=True, blank=True, on_delete=models.CASCADE,
@@ -109,3 +93,4 @@ class ChatMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)

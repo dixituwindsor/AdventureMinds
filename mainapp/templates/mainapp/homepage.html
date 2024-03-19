@@ -64,6 +64,7 @@
                 <img class="heart-R6N" src="{% static 'mainapp/heart-q8r.png' %}"/>
                 <img class="ellipses-hJn" src="{% static 'mainapp/ellipses-eU6.png' %}"/>
             </div>
+<<<<<<< HEAD
             <div class="auto-group-p4uk-xVc">
                 <div class="location-dates-rqt">
                     <div class="info-BdG">
@@ -114,6 +115,29 @@
                 <img class="group-2-V2v" src="{% static 'mainapp/group-2.png' %}"/>
             </div>
         </div>
+=======
+        </nav>
+    </div>
+    <button class="btn btn-success back-to-top-btn" onclick="topFunction()">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas_content" aria-labelledby="offcanvasLabel">
+          <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasLabel">Hii, Name</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+                <ul>
+                    <li><a href="{% url 'mainapp:profile' %}">Profile info</a></li>
+                    <li><a href="{% url 'mainapp:terms_conditions' %}">Terms & Conditions</a></li>
+                    <li><a href="#">Help</a></li>
+                </ul>
+                </ul>
+          </div>
+    </div>
+    <div class="content  container">
+{% block body_block %}  {% endblock %}
+>>>>>>> 548eb86299f72c39eb1c41e2df1dbefe9a0b58e5
     </div>
 </body>
 </html>

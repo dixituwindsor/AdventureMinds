@@ -23,4 +23,8 @@ from AdventureMinds import settings
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', include('mainapp.urls')),
+<<<<<<< HEAD
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+=======
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+>>>>>>> 548eb86299f72c39eb1c41e2df1dbefe9a0b58e5
