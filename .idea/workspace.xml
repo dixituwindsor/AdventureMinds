@@ -6,15 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="90677a49-940c-414b-bf14-de6b39741ac2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventureMinds/asgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/AdventureMinds/asgi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventureMinds/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/AdventureMinds/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventureMinds/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/AdventureMinds/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventureMinds/wsgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/AdventureMinds/wsgi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/apps.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/routing.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/routing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/add_trip.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/add_trip.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/trip_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/trip_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/userPreferences.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/userPreferences.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/interest_add.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/interest_added.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/place_add.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/place_added.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/trip_add.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/trip_added.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/views.py" afterDir="false" />
     </list>
@@ -44,29 +46,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Django Server.AdventureMinds.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;chirag&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/AdventureMindsProject/AdventureMinds/mainapp/static/mainapp&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Django Server.AdventureMinds.executor": "Run",
+    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "django.template.preview.state": "SHOW_EDITOR",
+    "git-widget-placeholder": "chirag",
+    "last_opened_file_path": "D:/AdventureMindsProject/AdventureMinds/mainapp",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\AdventureMindsProject\AdventureMinds\mainapp\static\mainapp" />
+      <recent name="D:\AdventureMindsProject\AdventureMinds\mainapp" />
       <recent name="D:\AdventureMindsProject\AdventureMinds\mainapp\templates\mainapp" />
+      <recent name="D:\AdventureMindsProject\AdventureMinds\mainapp\static\mainapp" />
       <recent name="D:\AdventureMindsProject\AdventureMinds\mainapp\templates\trip_feature_app" />
     </key>
   </component>
@@ -120,7 +123,7 @@
       <workItem from="1710791762193" duration="1327000" />
       <workItem from="1710804366533" duration="21000" />
       <workItem from="1710804564380" duration="581000" />
-      <workItem from="1710864074614" duration="3299000" />
+      <workItem from="1710864074614" duration="5709000" />
     </task>
     <servers />
   </component>

@@ -1,8 +1,9 @@
+import datetime
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 
 
-
+# Create your models here.
 class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
@@ -22,23 +23,11 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-
 class PreferenceCategory(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
-
-# class Trip(models.Model):
-#     uploader = models.ForeignKey(User, on_delete=models.CASCADE)
-#     place = models.ForeignKey(Place, on_delete=models.CASCADE)
-#     start_date = models.DateField()
-#     end_date = models.DateField()
-#     description = models.TextField()
-#     preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
-#
-#     def __str__(self):
-#         return f"Trip to {self.place.name}"
 
 
 class PreferenceChoice(models.Model):
@@ -61,6 +50,34 @@ class UserPreferences(models.Model):
 
     def get_selected_preferences(self):
         return [preference.value for preference in self.preferences.all()]
+
+
+
+
+class Trip(models.Model):
+    uploader = models.ForeignKey(User, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    description = models.TextField()
+    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
+
+
+    def __str__(self):
+        return f"Trip to {self.place.name}"
+
+
+class TripPhoto(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='trip_photos')
+    photo = models.ImageField(upload_to='')
+
+    def __str__(self):
+        return f"Photo for {self.trip.place}"
+
+
+
+class TripPreference(models.Model):
+    preferences = models.ManyToManyField(PreferenceChoice)
 
 
 

@@ -1,7 +1,11 @@
 from django import forms
-
-from mainapp.consumers import User
-from mainapp.models import UserProfile, PreferenceCategory, UserPreferences, PreferenceChoice
+from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django import forms
+from .models import UserPreferences, PreferenceCategory
+from multiupload.fields import MultiFileField
+from .models import Trip
 
 # class SignupForm(forms.ModelForm):
 #     class Meta:
@@ -60,6 +64,7 @@ class UserProfileForm(forms.ModelForm):
         return self.instance.user.email
 
 
+
 class UserPreferencesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         initial_data = kwargs.pop('initial', {})
@@ -87,27 +92,49 @@ class UserPreferencesForm(forms.ModelForm):
         fields = []  # No need to specify fields as they are dynamically generated
 
 
-# class AddTripForm(forms.ModelForm):
-#     destination = forms.CharField(max_length=100)
-#     start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-#     end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-#     description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
-#
-#     class Meta:
-#         model = Trip
-#         fields = ['destination', 'start_date', 'end_date', 'description']
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         categories = PreferenceCategory.objects.all()
-#         for category in categories:
-#             choices = PreferenceChoice.objects.filter(category=category)
-#             choices_field = forms.MultipleChoiceField(
-#                 choices=[(choice.pk, choice.value) for choice in choices],
-#                 widget=forms.CheckboxSelectMultiple,
-#                 required=False
-#             )
-#             self.fields[f'{category.name}'] = choices_field
+
+class AddTripForm(forms.ModelForm):
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
+    photos = MultiFileField(min_num=1, max_num=10, max_file_size=1024*1024*5)
+
+    class Meta:
+        model = Trip
+        fields = ['place', 'start_date', 'end_date', 'description']
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        trip = super().save(commit=False)
+        trip.uploader = self.user
+        if commit:
+            trip.save()
+        return trip
+
+class TripPreferenceForm(forms.ModelForm):
+    class Meta:
+        model = TripPreference
+        fields = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        categories = PreferenceCategory.objects.all()
+        for category in categories:
+            choices = PreferenceChoice.objects.filter(category=category)
+            choices_list = [(choice.pk, choice.value) for choice in choices]
+            self.fields[f'{category.name}'] = forms.MultipleChoiceField(
+                choices=choices_list,
+                widget=forms.CheckboxSelectMultiple,
+                label=category.name
+            )
+
+
+
+class TripSearchForm(forms.Form):
+    query = forms.CharField(label='Search', max_length=100)
 
 
 class SignupForm(forms.ModelForm):
