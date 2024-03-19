@@ -77,32 +77,32 @@ class Message(models.Model):
 #     def __str__(self):
 #         return f"{self.trip.user.username}'s review for {self.trip.destination.name}"
 
-class TripReview(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE, null=True, blank=True)
-    review = models.TextField()
-    rating = models.IntegerField(default=None)
-    date = models.DateTimeField(auto_now_add=True)
+# class TripReview(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+#     place = models.ForeignKey(Place, on_delete=models.CASCADE, null=True, blank=True)
+#     review = models.TextField()
+#     date = models.DateTimeField(auto_now_add=True)
 
-    # class Meta:
-    #     verbose_name_plural = "Trip Reviews"
 
     def __str__(self):
         return self.place.name
-    #
-    # def get_rating(self):
-    #     return self.rating
 
 
 
-# class Review(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
-#     text = models.TextField()
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-# class Rating(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
-#     value = models.IntegerField()
-#     created_at = models.DateTimeField(auto_now_add=True)
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    review = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class Rating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(choices=(('1','1 star'),('b','2 star'),('c', '3 star'),('d', '4 star'),('e', '5 star')))
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'place')
+
+    def __str__(self):
+        return f"{self.user}'s {self.rating}- star rating for {self.place}"
