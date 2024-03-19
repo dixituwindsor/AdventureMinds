@@ -1,10 +1,10 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ChatGroups, Message, UserProfile
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
-from .models import UserProfile
+from .models import UserProfile, Trip
 
 # Create your views here.
 
@@ -121,3 +121,10 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
+
+# remove START CODE
+def trip_details(request):
+    trips = Trip.objects.all()
+    return render(request, 'mainapp/test.html', {'trips': trips})
+
+# END CODE

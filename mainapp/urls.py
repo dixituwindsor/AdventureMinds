@@ -11,4 +11,7 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('signup/', views.user_signup, name='signup'),
     path('logout/', views.user_logout, name='logout'),
-
+    # remove START CODE
+    path('trips/', views.trip_details, name='trip_detail'),
+    # END CODE
+]
