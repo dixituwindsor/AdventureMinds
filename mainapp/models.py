@@ -2,81 +2,64 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class PreferenceChoice(models.Model):
-    category = models.CharField(max_length=100)
-    value = models.CharField(max_length=100)
+class Place(models.Model):
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=300)
+    description = models.TextField(max_length=200, blank=True)
 
     def __str__(self):
-        return self.value
-
+        return self.name
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    interested_places = models.ManyToManyField('Place', related_name='interested_users')
+    phone_number = models.CharField(max_length=12, null=True, blank=True)
+    address = models.CharField(max_length=200, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='mainapp/media/profile', null=True, blank=True)
+    preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.user.username
 
 
-class Place(models.Model):
+class PreferenceCategory(models.Model):
     name = models.CharField(max_length=100)
-    address = models.CharField(max_length=300)
 
     def __str__(self):
         return self.name
 
+# class Trip(models.Model):
+#     uploader = models.ForeignKey(User, on_delete=models.CASCADE)
+#     place = models.ForeignKey(Place, on_delete=models.CASCADE)
+#     start_date = models.DateField()
+#     end_date = models.DateField()
+#     description = models.TextField()
+#     preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
+#
+#     def __str__(self):
+#         return f"Trip to {self.place.name}"
 
-class UserPreferences(models.Model):
-    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='preferences')
-    travel_style = models.ForeignKey(PreferenceChoice, on_delete=models.CASCADE, related_name='user_travel_style_preferences')
-    activity_preferences = models.ManyToManyField(PreferenceChoice, related_name='user_activity_preferences')
-    destination_preferences = models.ManyToManyField(PreferenceChoice, related_name='user_destination_preferences')
-    accommodation_preferences = models.ManyToManyField(PreferenceChoice, related_name='user_accommodation_preferences')
-    transportation_preferences = models.ManyToManyField(PreferenceChoice, related_name='user_transportation_preferences')
-    meal_preferences = models.ManyToManyField(PreferenceChoice, related_name='user_meal_preferences')
-    language_preferences = models.ManyToManyField(PreferenceChoice, related_name='user_language_preferences')
-    budget_range = models.ForeignKey(PreferenceChoice, on_delete=models.CASCADE, related_name='user_budget_range_preferences')
-    special_interests = models.ManyToManyField(PreferenceChoice, related_name='user_special_interests_preferences')
+
+class PreferenceChoice(models.Model):
+    category = models.ForeignKey(PreferenceCategory, on_delete=models.CASCADE)
+    value = models.CharField(max_length=100)
 
     def __str__(self):
-        return f'Preferences for {self.user.user.username}'
+        return f"{self.category.name}: {self.value}"
 
 
-class Trip(models.Model):
-    uploader = models.ForeignKey(User, on_delete=models.CASCADE)
-    destination = models.CharField(max_length=100)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    description = models.TextField()
-    travel_style = models.ForeignKey(PreferenceChoice, on_delete=models.CASCADE, related_name='trip_travel_style')
-    activity_preferences = models.ManyToManyField(PreferenceChoice, related_name='trip_activity_preferences')
-    destination_preferences = models.ManyToManyField(PreferenceChoice, related_name='trip_destination_preferences')
-    accommodation_preferences = models.ManyToManyField(PreferenceChoice, related_name='trip_accommodation_preferences')
-    transportation_preferences = models.ManyToManyField(PreferenceChoice, related_name='trip_transportation_preferences')
-    meal_preferences = models.ManyToManyField(PreferenceChoice, related_name='trip_meal_preferences')
-    language_preferences = models.ManyToManyField(PreferenceChoice, related_name='trip_language_preferences')
-    budget_range = models.ForeignKey(PreferenceChoice, on_delete=models.CASCADE, related_name='trip_budget_range')
-    special_interests = models.ManyToManyField(PreferenceChoice, related_name='trip_special_interests')
-    created_at = models.DateTimeField(auto_now_add=True)
+class UserPreferences(models.Model):
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True, blank=True)
+    preferences = models.ManyToManyField(PreferenceChoice)
 
+    def __str__(self):
+        if self.user_profile:
+            return f"Preferences for {self.user_profile.user.username}"
+        else:
+            return "No associated user profile"
 
-class JoinRequest(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
-    status_choices = [
-        ('pending', 'Pending'),
-        ('accepted', 'Accepted'),
-        ('declined', 'Declined')
-    ]
-    status = models.CharField(max_length=10, choices=status_choices, default='pending')
-
-
-class Review(models.Model):
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
-    reviewer = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField()
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    def get_selected_preferences(self):
+        return [preference.value for preference in self.preferences.all()]
 
 
 class ThreadManager(models.Manager):
@@ -88,8 +71,10 @@ class ThreadManager(models.Manager):
 
 
 class Thread(models.Model):
-    first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='thread_first_person')
-    second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='thread_second_person')
+    first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
+                                     related_name='thread_first_person')
+    second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
+                                      related_name='thread_second_person')
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -103,7 +88,8 @@ class Thread(models.Model):
 
 
 class ChatMessage(models.Model):
-    thread = models.ForeignKey(Thread, null=True, blank=True, on_delete=models.CASCADE, related_name='chatmessage_thread')
+    thread = models.ForeignKey(Thread, null=True, blank=True, on_delete=models.CASCADE,
+                               related_name='chatmessage_thread')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)

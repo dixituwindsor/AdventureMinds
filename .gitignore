@@ -6,3 +6,5 @@ db.sqlite3
 test.py
 mainapp/migrations
 mainapp/media
+mainapp/trip_photos
+
