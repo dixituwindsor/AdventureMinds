@@ -1,14 +1,14 @@
-from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse, get_object_or_404
+
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, ForgotPasswordForm, \
+    SignupForm, LoginForm
 from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, \
     TripPhoto, Thread, ChatMessage
-from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
-from django.db.models import Q
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm, \
-    ForgotPasswordForm, SignupForm, LoginForm
 
 
 @login_required
@@ -216,6 +216,7 @@ def user_signup(request):
                 form = SignupForm()
                 return render(request, 'registration/signup_new.html', {'form': form, 'msg': 'Use different email id'})
 
+            user_obj.password = make_password(form.cleaned_data['password'])
             user_obj.save()
             user_profile_obj = UserProfile()
             user_profile_obj.user = user_obj
@@ -242,7 +243,7 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                return redirect('mainapp:home')
+                return redirect('mainapp:homepage')
             else:
                 form = LoginForm()
                 return render(request, 'registration/login_new.html', {'form': form, 'msg': 'Wrong credentials provided, try again'})
