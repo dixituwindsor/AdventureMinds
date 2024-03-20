@@ -1,4 +1,5 @@
 from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, \
     TripPhoto, Thread, ChatMessage
@@ -7,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
 from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm, \
-    ForgotPasswordForm
+    ForgotPasswordForm, SignupForm, LoginForm
 
 
 @login_required
@@ -184,51 +185,73 @@ def view_profile(request, username):
     return render(request, 'mainapp/view_profile.html', {'profile_user': profile_user})
 
 
-
-# Create your views here.
 def user_signup(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        fullname = request.POST.get('fullname')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            # form.save()
+            # commit false to save current object in db
+            # userobj = form.save(commit=False)
+            # # making some necessary change in obj then saving it in db
+            # userobj.username = form.cleaned_data['username'].lower()
+            # if UserProfile.objects.filter(username=userobj.username).exists():
+            #     form = SignupForm()
+            #     return render(request, 'registration/signup_new.html', {'form': form, 'msg':'username already taken, use different one'})
+            #
+            # if UserProfile.objects.filter(username=userobj.email).exists():
+            #     form = SignupForm()
+            #     return render(request, 'registration/signup_new.html', {'form': form, 'msg': 'Use different email id'})
+            #
+            # userobj.email = form.cleaned_data['email'].lower()
+            # userobj.password = make_password(form.cleaned_data['password'])
+            # userobj.save()
 
-        # if User.objects.filter(user__username=username).exists():
-        #     response = HttpResponse()
-        #     response.write("<p>Username already exists, choose different username</p>")
-        #     return response
+            user_obj = form.save(commit=False)
+            user_obj.username = form.cleaned_data['username'].lower()
+            if User.objects.filter(username=user_obj.username).exists():
+                form = SignupForm()
+                return render(request, 'registration/signup_new.html', {'form': form, 'msg': 'username already taken, use different one'})
 
-        names = fullname.split()
-        user = User.objects.create_user(username=username, email=email, password=password)
-        user.first_name = names[0]
-        user.last_name = names[-1]
-        user.save()
+            if User.objects.filter(username=user_obj.email).exists():
+                form = SignupForm()
+                return render(request, 'registration/signup_new.html', {'form': form, 'msg': 'Use different email id'})
 
-        userprofileobj = UserProfile.objects.create(user=user)
-        userprofileobj.save()
-
-        return redirect('mainapp:login')
+            user_obj.save()
+            user_profile_obj = UserProfile()
+            user_profile_obj.user = user_obj
+            user_profile_obj.phone_number = form.cleaned_data['phone_number']
+            user_profile_obj.address = form.cleaned_data['address']
+            user_profile_obj.date_of_birth = form.cleaned_data['date_of_birth']
+            user_profile_obj.save()
+            return redirect('mainapp:login')
+        else:
+            form = SignupForm()
+            return render(request, 'registration/signup_new.html', {'form': form, 'msg':'Something went wrong, try again'})
     else:
-        return render(request, 'registration/signup.html')
+        form = SignupForm()
+        return render(request, 'registration/signup_new.html', {'form': form})
 
 
 # login page
 def user_login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None and user.is_active:
-            login(request, user)
-            return redirect('mainapp:homepage')
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
+                return redirect('mainapp:home')
+            else:
+                form = LoginForm()
+                return render(request, 'registration/login_new.html', {'form': form, 'msg': 'Wrong credentials provided, try again'})
         else:
-            response = HttpResponse()
-            response.write("<p>Wrong credentials</p>")
-            return response
+            form = LoginForm()
+            return render(request, 'registration/login_new.html', {'form': form, 'msg': 'Something went wrong, try again'})
     else:
-        return render(request, 'registration/login.html')
-
+        form = LoginForm()
+        return render(request, 'registration/login_new.html', {'form': form})
 
 @login_required
 def homepage(request):
