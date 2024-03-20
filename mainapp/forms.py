@@ -135,3 +135,11 @@ class SignupForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
+
+class ForgotPasswordForm(forms.Form):
+    username = forms.CharField(label='Username')
+    email = forms.EmailField(label='Email')
+    last_three_digits_of_phone_number = forms.CharField(label='Last Three Digits of Phone Number')
+    date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
+    new_password = forms.CharField(widget=forms.PasswordInput, label='New Password')
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label='Confirm Password')

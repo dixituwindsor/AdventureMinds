@@ -26,7 +26,10 @@
                     <div class="details-U3g">
                         <form method="post" action="{% url 'mainapp:signup' %}">
                             {% csrf_token %}
-                            <div class="auto-group-lequ-13c">
+                            <input type="text" name="username" class="last-name-aAa" placeholder="Enter username">
+                            <input type="text" name="fullname" class="first-name-gjQ" placeholder="Enter full name">
+                            <input type="email" name="email" class="enter-your-email-1Wn" placeholder="Enter your email">
+                             <div class="auto-group-lequ-13c">
                                 <input type="password" name="password" class="enter-password-LLn" placeholder="Enter Password">
                                 <img class="basil-eye-closed-solid-Sei" src="{% static 'mainapp/basil-eye-closed-solid-As8.png' %}"/>
                             </div>
@@ -39,9 +42,8 @@
                                 <input type="password" name="confirm_password" class="confirm-password-iPG" placeholder="Confirm Password">
                                 <img class="basil-eye-closed-solid-dWE" src="{% static 'mainapp/basil-eye-closed-solid.png' %}"/>
                             </div>
-                            <input type="text" name="username" class="last-name-aAa" placeholder="Enter username">
-                            <input type="text" name="fullname" class="first-name-gjQ" placeholder="Enter full name">
-                            <input type="email" name="email" class="enter-your-email-1Wn" placeholder="Enter your email">
+
+
                             <div class="line-2-XV8"></div>
                             <div class="line-5-Tta"></div>
                             <div class="line-6-zNi"></div>

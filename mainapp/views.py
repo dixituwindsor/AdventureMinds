@@ -1,10 +1,13 @@
+from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, TripPhoto
+from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, \
+    TripPhoto, Thread, ChatMessage
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm, \
+    ForgotPasswordForm
 
 
 @login_required
@@ -256,4 +259,36 @@ def chat_app(request, user_id=None):
         users = User.objects.all()
         context = {'users': users}
         return render(request, 'mainapp/messages.html', context)
+
+
+def forgot_password(request):
+    if request.method == 'POST':
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            form = ForgotPasswordForm()
+            username = form.cleaned_data['username'].lower()
+
+            if User.objects.get(username=username) is not None:
+                userProgileObj = UserProfile.objects.get(username=username)
+                if (userProgileObj.email == form.cleaned_data['email']
+                    and userProgileObj.phone_number[-3:] == form.cleaned_data['last_three_digits_of_phone_number']
+                    and userProgileObj.date_of_birth == form.cleaned_data['date_of_birth']):
+                        # login form with message 'password changed sucessfully can be passed'
+                        return redirect('mainapp:login')
+                else:
+                    form = ForgotPasswordForm()
+                    return render(request, 'registration/forgot_password.html',
+                                  {'form': form, 'msg': 'Verification details did not match'})
+
+            else:
+                form = ForgotPasswordForm()
+                return render(request, 'registration/forgot_password.html',
+                              {'form': form, 'msg': 'Username not found'})
+        else:
+            form = ForgotPasswordForm()
+            return render(request, 'registration/forgot_password.html', {'form': form, 'msg':'Something went wrong try again'})
+
+    else:
+        form = ForgotPasswordForm()
+        return render(request, 'registration/forgot_password.html', {'form': form})
 
