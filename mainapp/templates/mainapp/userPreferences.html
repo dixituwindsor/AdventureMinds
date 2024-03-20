@@ -6,7 +6,8 @@
 <title>User Preferences Form</title>
 <style>
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif; /* Updated font family */
+  background-color: #f0ebdf; /* Updated background color */
 }
 
 .container {
@@ -16,6 +17,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff; /* Updated container background color */
 }
 
 .preferences-container {
@@ -32,6 +34,7 @@ body {
   font-weight: bold;
   font-size: 20px;
   margin-bottom: 10px;
+  color: #1a472a; /* Updated title color */
 }
 
 .options {
@@ -46,6 +49,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 20px;
   transition: background-color 0.3s;
+  color: #1a472a; /* Updated label color */
 }
 
 .options label:hover {
@@ -57,7 +61,7 @@ body {
 }
 
 .options input[type="checkbox"]:checked + label {
-  background-color: #007bff;
+  background-color: rgba(26, 71, 42, 0.5500000119);
   color: #fff;
 }
 
@@ -68,7 +72,7 @@ body {
   margin-top: 20px;
   border: none;
   border-radius: 5px;
-  background-color: #007bff;
+  background-color: #1a472a; /* Updated button background color */
   color: #fff;
   font-size: 16px;
   cursor: pointer;
@@ -76,32 +80,35 @@ body {
 }
 
 .submit-button:hover {
-  background-color: #007bff;
+  background-color: rgba(26, 71, 42, 0.9); /* Updated button hover background color */
 }
 </style>
 </head>
 <body>
-
 <div class="container">
   <form method="post" id="preferences-form">
     {% csrf_token %}
     <div class="preferences-container">
-    <h1>Add Your Preferences</h1>
+{#      <h1 class="title">Add Your Preferences</h1> <!-- Updated title class -->#}
       {% for field in form %}
         <div class="preference-field">
-          <div class="title">{{ field.label }}</div>
-          <div class="options">
-            {% for choice in field.field.queryset %}
-              <input type="checkbox" id="choice_{{ choice.pk }}" name="{{ field.html_name }}" value="{{ choice.pk }}" {% if choice in field.value %}checked{% endif %}>
-              <label for="choice_{{ choice.pk }}">{{ choice.value }}</label>
-            {% endfor %}
-          </div>
+            <div class="title">{{ field.label }}</div>
+            <div class="options" id="{{ field.html_name }}">
+                {% for choice in field.field.queryset %}
+                    <input type="checkbox" id="choice_{{ choice.pk }}" name="{{ field.html_name }}" value="{{ choice.pk }}" {% if choice.value in existing_preferences %}checked{% endif %}>
+                    <label for="choice_{{ choice.pk }}">{{ choice.value }}</label>
+                {% endfor %}
+            </div>
         </div>
       {% endfor %}
     </div>
     <button type="submit" class="submit-button">Submit</button>
   </form>
 </div>
+
+<script>
+    console.log("Existing Preferences in template:", {{ existing_preferences}});
+</script>
 
 </body>
 </html>
