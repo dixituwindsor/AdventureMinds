@@ -1,6 +1,7 @@
+
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 
 
 class Place(models.Model):
@@ -16,7 +17,7 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=12, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    profile_photo = models.ImageField(upload_to='mainapp/media/profile', null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='profile/', null=True, blank=True)
     preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
@@ -50,6 +51,67 @@ class UserPreferences(models.Model):
 
     def get_selected_preferences(self):
         return [preference.value for preference in self.preferences.all()]
+
+
+
+
+class Trip(models.Model):
+    uploader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_trips')
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    max_capacity = models.PositiveIntegerField(default=10)
+    cost_per_person = models.DecimalField(max_digits=8, decimal_places=2, default=1000)  # Cost per person for the trip
+    meeting_point = models.CharField(max_length=255, blank=True)  # Meeting point for the trip
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    participants = models.ManyToManyField(User, related_name='participating_trips', blank=True)
+    is_past = models.BooleanField(default=False)
+    is_future = models.BooleanField(default=True)
+    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Define methods to filter past and future trips
+    def get_past_trips(self):
+        return Trip.objects.filter(pk=self.pk, is_past=True)
+
+    def get_future_trips(self):
+        return Trip.objects.filter(pk=self.pk, is_future=True)
+
+    def __str__(self):
+        return self.title
+
+
+
+
+class JoinRequest(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='join_requests')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('declined', 'Declined'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Request to join {self.trip} by {self.user}"
+
+
+
+
+
+class TripPhoto(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='photos')
+    photo = models.ImageField(upload_to='')
+
+    def __str__(self):
+        return f"Photo for {self.trip.title}"
+
+class TripPreference(models.Model):
+    preferences = models.ManyToManyField(PreferenceChoice)
 
 
 
