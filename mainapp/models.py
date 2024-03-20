@@ -70,21 +70,31 @@ class ThreadManager(models.Manager):
         return qs
 
 
+class ChatGroup(models.Model):
+    name = models.CharField(max_length=100)
+    members = models.ManyToManyField(User)
+
+    def __str__(self):
+        return self.name
+
+
 class Thread(models.Model):
     first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
                                      related_name='thread_first_person')
     second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
                                       related_name='thread_second_person')
+    group = models.ForeignKey(ChatGroup, on_delete=models.CASCADE, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    objects = ThreadManager()
-
     class Meta:
-        unique_together = ['first_person', 'second_person']
+        unique_together = ['first_person', 'second_person', 'group']
 
     def __str__(self):
-        return f"Conversation between {self.first_person} and {self.second_person}"
+        if self.group:
+            return f"Group chat: {self.group.name}"
+        else:
+            return f"Conversation between {self.first_person} and {self.second_person}"
 
 
 class ChatMessage(models.Model):

@@ -1,11 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from .forms import UserProfileForm, UserPreferencesForm
-from .models import UserPreferences, PreferenceCategory
+from .models import UserPreferences, PreferenceCategory, ChatGroup
 from .models import UserProfile, Thread, User, ChatMessage
 
 
@@ -49,12 +51,6 @@ def user_preferences(request):
     else:
         form = UserPreferencesForm(instance=user_profile_instance.preferences)
     return render(request, 'mainapp/userPreferences.html', {'form': form})
-
-
-def messenger(request):
-    template = "mainapp/messenger.html"
-    context = {}
-    return render(request=request, template_name=template, context=context)
 
 
 def homepage(request):
@@ -136,15 +132,55 @@ def message_button(request):
                 first_person=first_person,
                 second_person=second_person,
             )
-            return redirect('mainapp:chat_app')
+            return redirect('mainapp:messages')
         else:
-            return redirect('mainapp:chat_app')
+            return redirect('mainapp:messages')
 
 
 @login_required
-def chat_app(request):
-    threads = Thread.objects.by_user(user=request.user).prefetch_related('chatmessage_thread').order_by('timestamp')
+def messages(request):
+    threads = Thread.objects.filter(Q(first_person=request.user) | Q(second_person=request.user) | Q(group__members=request.user)).prefetch_related('chatmessage_thread').order_by('timestamp').distinct()
+
     context = {
         'Threads': threads
     }
     return render(request, 'mainapp/messages.html', context)
+
+
+def create_group(request):
+    if request.method == 'POST':
+        group_name = request.POST.get('group_name')
+        selected_users = request.POST.getlist('selected_users')
+
+        group = ChatGroup.objects.create(name=group_name)
+        group.members.add(request.user)
+        group.members.add(*selected_users)
+
+        first_person = request.user
+        thread, created = Thread.objects.get_or_create(
+            first_person=first_person,
+            group_id=group.id,
+        )
+
+        return redirect('mainapp:messages')
+    else:
+        threads = Thread.objects.filter(Q(first_person=request.user) | Q(second_person=request.user) | Q(group__members=request.user)).prefetch_related('chatmessage_thread').order_by('timestamp')
+        context = {
+            'Threads': threads
+        }
+        return render(request, 'mainapp/create_group.html', context)
+
+
+@require_POST
+@csrf_exempt
+def mark_messages_as_read(request):
+    thread_id = request.POST.get('thread_id')
+    user_id = request.POST.get('user_id')
+    if not thread_id:
+        return JsonResponse({'error': 'Thread ID is required'}, status=400)
+    try:
+        thread = Thread.objects.get(id=thread_id)
+        ChatMessage.objects.filter(thread=thread).exclude(user__id=user_id).update(read=True)
+        return JsonResponse({'success': True})
+    except Thread.DoesNotExist:
+        return JsonResponse({'error': 'Thread not found'}, status=404)
