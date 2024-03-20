@@ -1,9 +1,12 @@
 
+import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.contrib.auth.models import User, AbstractUser
 
 
+# Create your models here.
 class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
@@ -12,12 +15,14 @@ class Place(models.Model):
     def __str__(self):
         return self.name
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=12, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     profile_photo = models.ImageField(upload_to='profile/', null=True, blank=True)
+    interested_places = models.ManyToManyField(Place, null=True, blank=True)
     preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
@@ -124,10 +129,8 @@ class ThreadManager(models.Manager):
 
 
 class Thread(models.Model):
-    first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
-                                     related_name='thread_first_person')
-    second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
-                                      related_name='thread_second_person')
+    first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='thread_first_person')
+    second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='thread_second_person')
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 

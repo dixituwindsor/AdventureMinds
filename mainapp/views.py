@@ -7,20 +7,18 @@ from django.urls import reverse
 
 from AdventureMinds import settings
 from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice, TripPreference, TripPhoto, Trip, \
-    JoinRequest
+    JoinRequest, Thread, ChatMessage
 from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse, get_object_or_404
+from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, TripPhoto
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserCreationForm, SignupForm, LoginForm
-from .models import UserProfile, Thread, User, ChatMessage
 from django.db.models import Q
-from django.db.models import Prefetch
-
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
 
 
 # Create your views here.
@@ -85,29 +83,10 @@ def user_preferences(request):
     return render(request, 'mainapp/userPreferences.html', {'form': form, 'existing_preferences': existing_preferences})
 
 
-def messenger(request):
-    template = "mainapp/messenger.html"
-    context = {}
-    return render(request=request, template_name=template, context=context)
-
-
-def homepage(request):
-    template = "mainapp/homepage.html"
-    context = {}
-    return render(request=request, template_name=template, context=context)
-
-
 def terms_conditions(request):
     template = "mainapp/terms_conditions.html"
     context = {}
     return render(request=request, template_name=template, context=context)
-
-
-
-
-def getusers(request):
-    users = UserProfile.objects.all().values('username', 'id')
-    return JsonResponse(list(users), safe=False)
 
 
 @login_required
@@ -180,12 +159,39 @@ def user_login(request):
         return render(request, 'registration/login.html')
 
 
+@login_required
+def homepage(request):
+    return render(request, "mainapp/homepage1.html")
 
 # logout page
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
 
+def getusers(request):
+    users = UserProfile.objects.all().values('username', 'id')
+    return JsonResponse(list(users), safe=False)
+
+@login_required
+def chat_app(request, user_id=None):
+    if user_id:
+        # Assuming the logged-in user is the first person in the thread
+        first_person = request.user
+        second_person = get_object_or_404(User, id=user_id)
+        thread, created = Thread.objects.get_or_create(
+            first_person=first_person,
+            second_person=second_person,
+        )
+        messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp')
+        context = {
+            'thread': thread,
+            'messages': messages,
+        }
+        return render(request, 'mainapp/messages.html', context)
+    else:
+        users = User.objects.all()
+        context = {'users': users}
+        return render(request, 'mainapp/messages.html', context)
 
 @login_required(login_url='mainapp:login')
 def add_trip(request):
@@ -306,6 +312,8 @@ def calculate_similarity(user_preferences, trip_preferences):
     jaccard_similarity = intersection / union
 
     return jaccard_similarity
+
+
 
 
 
