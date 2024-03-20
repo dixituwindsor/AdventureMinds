@@ -5,18 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="90677a49-940c-414b-bf14-de6b39741ac2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mainapp/media/11.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mainapp/media/111.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/AdventureMinds.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AdventureMinds.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventureMinds/asgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/AdventureMinds/asgi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventureMinds/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/AdventureMinds/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventureMinds/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/AdventureMinds/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventureMinds/wsgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/AdventureMinds/wsgi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/migrations/0002_remove_userpreferences_user_remove_userprofile_name_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/migrations/0003_remove_userpreferences_user_profile_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/migrations/__init__.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/add_trip.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/add_trip.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/trip_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/trip_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/userPreferences.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/userPreferences.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/interest_add.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/interest_added.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/place_add.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/place_added.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/trip_add.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/trip_feature_app/trip_added.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/routing.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/routing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/static/mainapp/messages.css" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/static/mainapp/messages.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/static/mainapp/messages.js" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/static/mainapp/messages.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/homepage.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/homepage.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/messages.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/messages.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/views.py" afterDir="false" />
     </list>
@@ -42,6 +50,9 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2dVtPbrvJadYdxv1uO0O4VPM6ZJ" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -54,7 +65,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "django.template.preview.state": "SHOW_EDITOR",
-    "git-widget-placeholder": "chirag",
+    "git-widget-placeholder": "Merging nikunj",
     "last_opened_file_path": "D:/AdventureMindsProject/AdventureMinds/mainapp",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

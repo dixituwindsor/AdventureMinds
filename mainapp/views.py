@@ -1,23 +1,53 @@
+import os
+from uuid import uuid4
+
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.urls import reverse
+
+from AdventureMinds import settings
+from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice, TripPreference, TripPhoto, Trip, \
+    JoinRequest, Thread, ChatMessage
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, TripPhoto
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
 
 
+# Create your views here.
+
 @login_required
 def user_profile(request):
     user_profile_instance, created = UserProfile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=user_profile_instance)
+        form = UserProfileForm(request.POST, request.FILES, instance=user_profile_instance)
         if form.is_valid():
+            # Check if 'profile_photo' exists in request.FILES
+            if 'profile_photo' in request.FILES:
+                # Generate a unique filename
+                file_name = str(uuid4()) + os.path.splitext(request.FILES['profile_photo'].name)[1]
+                # Assign the unique filename to the profile_photo field
+                form.instance.profile_photo.name = 'profile/' + file_name
+            # Print form data before saving
+            print(form.cleaned_data)
             form.save()
+            messages.success(request, 'Profile updated successfully.')
             return redirect('mainapp:profile')
     else:
         form = UserProfileForm(instance=user_profile_instance)
+        user_profile_instance.user = request.user  # Set the user attribute
+
+
     return render(request, 'mainapp/profile.html', {'form': form})
+
 
 
 @login_required
@@ -43,8 +73,14 @@ def user_preferences(request):
 
             return redirect(reverse('mainapp:profile'))
     else:
-        form = UserPreferencesForm(instance=user_profile_instance.preferences)
-    return render(request, 'mainapp/userPreferences.html', {'form': form})
+        # Retrieve user's existing preferences if they exist
+        existing_preferences = user_profile_instance.preferences.get_selected_preferences() if user_profile_instance else None
+        print("Existing Preferences:", existing_preferences)  # Print existing preferences for debugging
+        # Pass existing preferences to the form
+        form = UserPreferencesForm(instance=user_profile_instance.preferences, initial={'existing_preferences': existing_preferences})
+
+    # Pass existing preferences to the template context
+    return render(request, 'mainapp/userPreferences.html', {'form': form, 'existing_preferences': existing_preferences})
 
 
 def terms_conditions(request):
@@ -54,17 +90,116 @@ def terms_conditions(request):
 
 
 @login_required
+def chat_app(request, user_id=None):
+    if user_id:
+        # Assuming the logged-in user is the first person in the thread
+        first_person = request.user
+        second_person = get_object_or_404(User, id=user_id)
+        thread, created = Thread.objects.get_or_create(
+            first_person=first_person,
+            second_person=second_person,
+        )
+        messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp')
+        context = {
+            'thread': thread,
+            'messages': messages,
+        }
+        return render(request, 'mainapp/messages.html', context)
+    else:
+        users = User.objects.all()
+        context = {'users': users}
+        return render(request, 'mainapp/messages.html', context)
+
+
+# signup page
+def user_signup(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        fullname = request.POST.get('fullname')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        # if User.objects.filter(user__username=username).exists():
+        #     response = HttpResponse()
+        #     response.write("<p>Username already exists, choose different username</p>")
+        #     return response
+
+        names = fullname.split()
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.first_name = names[0]
+        user.last_name = names[-1]
+        user.save()
+
+        userprofileobj = UserProfile.objects.create(user=user)
+        userprofileobj.save()
+
+        return redirect('mainapp:login')
+    else:
+        return render(request, 'registration/signup.html')
+
+
+
+
+
+# login page
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None and user.is_active:
+            login(request, user)
+            return redirect('mainapp:homepage')
+        else:
+            response = HttpResponse()
+            response.write("<p>Wrong credentials</p>")
+            return response
+    else:
+        return render(request, 'registration/login.html')
+
+
+@login_required
+def homepage(request):
+    return render(request, "mainapp/homepage1.html")
+
+# logout page
+def user_logout(request):
+    logout(request)
+    return redirect('mainapp:login')
+
+def getusers(request):
+    users = UserProfile.objects.all().values('username', 'id')
+    return JsonResponse(list(users), safe=False)
+
+@login_required
+def chat_app(request, user_id=None):
+    if user_id:
+        # Assuming the logged-in user is the first person in the thread
+        first_person = request.user
+        second_person = get_object_or_404(User, id=user_id)
+        thread, created = Thread.objects.get_or_create(
+            first_person=first_person,
+            second_person=second_person,
+        )
+        messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp')
+        context = {
+            'thread': thread,
+            'messages': messages,
+        }
+        return render(request, 'mainapp/messages.html', context)
+    else:
+        users = User.objects.all()
+        context = {'users': users}
+        return render(request, 'mainapp/messages.html', context)
+
+@login_required(login_url='mainapp:login')
 def add_trip(request):
     if request.method == 'POST':
         trip_form = AddTripForm(request.POST, request.FILES, user=request.user)
         preference_form = TripPreferenceForm(request.POST)
         if trip_form.is_valid() and preference_form.is_valid():
 
-            # Print form data for debugging
-            print("Trip Form Data:", request.POST)
-            print("Trip Form Files:", request.FILES)
-            print("Trip Form Errors:", trip_form.errors)
-            print("Preference Form Errors:", preference_form.errors)
             # Save the trip data
             trip = trip_form.save(commit=False)
             trip.uploader = request.user
@@ -93,6 +228,11 @@ def add_trip(request):
                 trip_photo = TripPhoto(trip=trip, photo=photo)
                 trip_photo.save()
 
+            # Debugging: Print data
+            print("Trip data:", trip.__dict__)
+            print("Trip preferences:", trip.preferences.__dict__)
+            print("Uploaded photos:", [photo.__dict__ for photo in trip.photos.all()])
+
             return redirect('mainapp:homepage')  # Redirect to some success URL
     else:
         trip_form = AddTripForm(user=request.user)
@@ -100,14 +240,13 @@ def add_trip(request):
     return render(request, 'mainapp/add_trip.html', {'trip_form': trip_form, 'preference_form': preference_form})
 
 
-
+@login_required
 def trip_list(request):
     if request.user.is_authenticated:
         # For logged-in users
         user_profile = get_object_or_404(UserProfile, user=request.user)
         if not user_profile.preferences:
             return redirect('mainapp:user_preferences')
-
         user_preferences = user_profile.preferences.preferences.prefetch_related('preferences')
 
         trips = Trip.objects.all()
@@ -116,6 +255,10 @@ def trip_list(request):
         query = request.GET.get('query')
         if query:
             trips = trips.filter(Q(place__name__icontains=query) | Q(place__address__icontains=query))
+
+        # Filter "My Trips" if requested
+        if 'my_trips' in request.GET:
+            trips = trips.filter(uploader=request.user)
 
         # Sorting
         sort_by = request.GET.get('sort_by')
@@ -143,11 +286,12 @@ def trip_list(request):
             # Save the search query to cookies
             saved_searches.append(query)
             saved_searches = list(set(saved_searches))[-5:]  # Limit to last 5 unique queries
-            response = render(request, 'mainapp/trip_list.html', {'trips': trips, 'saved_searches': saved_searches, 'query': query})
-            response.set_cookie('saved_searches', '|'.join(saved_searches), max_age=3600)  # Save for 1 hour
+            response = render(request, 'mainapp/homepage2.html', {'trips': trips, 'saved_searches': saved_searches, 'query': query})
+            response.set_cookie('saved_searches', '|'.join(saved_searches), max_age=3600*24*7)  # Save for 1 week
+
             return response
 
-        return render(request, 'mainapp/trip_list.html', {'trips': trips, 'saved_searches': saved_searches})
+        return render(request, 'mainapp/homepage2.html', {'trips': trips, 'saved_searches': saved_searches})
     else:
         # For guest users
         trips = Trip.objects.all()
@@ -171,9 +315,14 @@ def calculate_similarity(user_preferences, trip_preferences):
 
 
 
+
+
 def trip_detail(request, trip_id):
     trip = get_object_or_404(Trip, pk=trip_id)
-    return render(request, 'mainapp/trip_detail.html', {'trip': trip})
+    join_request = None
+    if request.user.is_authenticated:
+        join_request = JoinRequest.objects.filter(trip=trip, user=request.user).first()
+    return render(request, 'mainapp/trip_detail.html', {'trip': trip, 'join_request': join_request})
 
 
 def view_profile(request, username):
@@ -182,78 +331,40 @@ def view_profile(request, username):
 
 
 
-# Create your views here.
-def user_signup(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        fullname = request.POST.get('fullname')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-
-        # if User.objects.filter(user__username=username).exists():
-        #     response = HttpResponse()
-        #     response.write("<p>Username already exists, choose different username</p>")
-        #     return response
-
-        names = fullname.split()
-        user = User.objects.create_user(username=username, email=email, password=password)
-        user.first_name = names[0]
-        user.last_name = names[-1]
-        user.save()
-
-        userprofileobj = UserProfile.objects.create(user=user)
-        userprofileobj.save()
-
-        return redirect('mainapp:login')
-    else:
-        return render(request, 'registration/signup.html')
-
-
-# login page
-def user_login(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None and user.is_active:
-            login(request, user)
-            return redirect('mainapp:homepage')
-        else:
-            response = HttpResponse()
-            response.write("<p>Wrong credentials</p>")
-            return response
-    else:
-        return render(request, 'registration/login.html')
-
-
 @login_required
-def homepage(request):
-    return render(request, "mainapp/homepage1.html")
+def join_trip(request, trip_id):
+    trip = get_object_or_404(Trip, pk=trip_id)
+    user = request.user
+
+    # Check if the user has already requested to join the trip
+    existing_request = JoinRequest.objects.filter(trip=trip, user=user).exists()
+    if existing_request:
+        messages.warning(request, "You have already requested to join this trip.")
+        return redirect('mainapp:trip_detail', trip_id=trip_id)
+
+    # Create a new join request
+    join_request = JoinRequest.objects.create(trip=trip, user=user, status='pending')
+    messages.success(request, "Your join request has been submitted successfully.")
+    return redirect('mainapp:trip_detail', trip_id=trip_id)
 
 
-def getusers(request):
-    users = UserProfile.objects.all().values('username', 'id')
-    return JsonResponse(list(users), safe=False)
+def accept_join_request(request, trip_id, request_id):
+    trip = get_object_or_404(Trip, id=trip_id)
+    join_request = get_object_or_404(JoinRequest, id=request_id)
 
-@login_required
-def chat_app(request, user_id=None):
-    if user_id:
-        # Assuming the logged-in user is the first person in the thread
-        first_person = request.user
-        second_person = get_object_or_404(User, id=user_id)
-        thread, created = Thread.objects.get_or_create(
-            first_person=first_person,
-            second_person=second_person,
-        )
-        messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp')
-        context = {
-            'thread': thread,
-            'messages': messages,
-        }
-        return render(request, 'mainapp/messages.html', context)
-    else:
-        users = User.objects.all()
-        context = {'users': users}
-        return render(request, 'mainapp/messages.html', context)
+    # Add the user to the trip participants
+    trip.participants.add(join_request.user)
 
+    # Delete the join request
+    join_request.delete()
+
+    return redirect('mainapp:trip_detail', trip_id=trip_id)
+
+
+def decline_join_request(request, trip_id, request_id):
+    join_request = get_object_or_404(JoinRequest, id=request_id)
+
+    # Delete the join request
+    join_request.delete()
+
+    return redirect('mainapp:trip_detail', trip_id=trip_id)
