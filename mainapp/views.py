@@ -75,7 +75,7 @@ def user_preferences(request):
 
 
 def homepage(request):
-    template = "mainapp/homepage.html"
+    template = "mainapp/homepage2.html"
     context = {}
     return render(request=request, template_name=template, context=context)
     # Pass existing preferences to the template context
