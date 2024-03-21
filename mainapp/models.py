@@ -202,19 +202,6 @@ class ChatMessage(models.Model):
 
         # return f"{self.sender.username} -> {self.recipient.username if self.recipient else self.chat_group.name}: {self.content}"
 
-
-class Trip(models.Model):
-    uploader = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    start_date = models.DateField(default=None, null=True)
-    end_date = models.DateField(default=None, null=True)
-    description = models.TextField(null=True, blank=True)
-    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.uploader_id}"
-
-
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
