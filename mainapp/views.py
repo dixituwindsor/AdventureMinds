@@ -196,11 +196,11 @@ def user_signup(request):
             # userobj.username = form.cleaned_data['username'].lower()
             # if UserProfile.objects.filter(username=userobj.username).exists():
             #     form = SignupForm()
-            #     return render(request, 'registration/signup_new.html', {'form': form, 'msg':'username already taken, use different one'})
+            #     return render(request, 'registration/signup.html', {'form': form, 'msg':'username already taken, use different one'})
             #
             # if UserProfile.objects.filter(username=userobj.email).exists():
             #     form = SignupForm()
-            #     return render(request, 'registration/signup_new.html', {'form': form, 'msg': 'Use different email id'})
+            #     return render(request, 'registration/signup.html', {'form': form, 'msg': 'Use different email id'})
             #
             # userobj.email = form.cleaned_data['email'].lower()
             # userobj.password = make_password(form.cleaned_data['password'])
@@ -210,11 +210,11 @@ def user_signup(request):
             user_obj.username = form.cleaned_data['username'].lower()
             if User.objects.filter(username=user_obj.username).exists():
                 form = SignupForm()
-                return render(request, 'registration/signup_new.html', {'form': form, 'msg': 'username already taken, use different one'})
+                return render(request, 'registration/signup.html', {'form': form, 'msg': 'username already taken, use different one'})
 
             if User.objects.filter(username=user_obj.email).exists():
                 form = SignupForm()
-                return render(request, 'registration/signup_new.html', {'form': form, 'msg': 'Use different email id'})
+                return render(request, 'registration/signup.html', {'form': form, 'msg': 'Use different email id'})
 
             user_obj.password = make_password(form.cleaned_data['password'])
             user_obj.save()
@@ -227,10 +227,10 @@ def user_signup(request):
             return redirect('mainapp:login')
         else:
             form = SignupForm()
-            return render(request, 'registration/signup_new.html', {'form': form, 'msg':'Something went wrong, try again'})
+            return render(request, 'registration/signup.html', {'form': form, 'msg':'Something went wrong, try again'})
     else:
         form = SignupForm()
-        return render(request, 'registration/signup_new.html', {'form': form})
+        return render(request, 'registration/signup.html', {'form': form})
 
 
 # login page
@@ -246,13 +246,13 @@ def user_login(request):
                 return redirect('mainapp:homepage')
             else:
                 form = LoginForm()
-                return render(request, 'registration/login_new.html', {'form': form, 'msg': 'Wrong credentials provided, try again'})
+                return render(request, 'registration/login.html', {'form': form, 'msg': 'Wrong credentials provided, try again'})
         else:
             form = LoginForm()
-            return render(request, 'registration/login_new.html', {'form': form, 'msg': 'Something went wrong, try again'})
+            return render(request, 'registration/login.html', {'form': form, 'msg': 'Something went wrong, try again'})
     else:
         form = LoginForm()
-        return render(request, 'registration/login_new.html', {'form': form})
+        return render(request, 'registration/login.html', {'form': form})
 
 @login_required
 def homepage(request):

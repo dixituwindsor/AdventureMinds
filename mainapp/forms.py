@@ -21,6 +21,7 @@ class UserProfileForm(forms.ModelForm):
             'date_of_birth': 'Date of Birth'
         }
         widgets = {
+            'address' :  forms.Textarea(attrs={'rows': 5, 'cols': 40}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'})
         }
 
