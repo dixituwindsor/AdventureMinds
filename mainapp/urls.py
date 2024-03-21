@@ -14,4 +14,6 @@ urlpatterns = [
     # remove START CODE
     path('trips/', views.trip_details, name='trip_detail'),
     # END CODE
+    path('add_or_remove_wishlist/', views.add_or_remove_wishlist, name='add_or_remove_wishlist'),
+    path('wishlist/', views.view_wishlist, name='wishlist'),
 ]

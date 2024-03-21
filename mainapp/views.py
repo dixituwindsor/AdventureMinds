@@ -1,13 +1,12 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ChatGroups, Message, UserProfile
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
-from .models import UserProfile, Trip
+from .models import UserProfile, Trip, Wishlist
 
 # Create your views here.
-
 
 def messenger(request):
     template = "mainapp/messenger.html"
@@ -128,3 +127,46 @@ def trip_details(request):
     return render(request, 'mainapp/test.html', {'trips': trips})
 
 # END CODE
+
+def add_or_remove_wishlist(request):
+    if request.method == 'POST':
+        trip_id = request.POST.get('trip_id')
+        user_id = request.user.id
+        trip_id = get_object_or_404(Trip, id=int(trip_id))
+        user_id = get_object_or_404(UserProfile, id=int(33))
+
+        # Check if the item is already in the wishlist
+        try:
+            wishlist_item = Wishlist.objects.get(trip_id=trip_id, user_id=user_id)
+            wishlist_item.delete()
+            message = 'Item removed from wishlist successfully.'
+            action = 'remove'
+        except Wishlist.DoesNotExist:
+            # If the item is not in the wishlist, add it
+            wishlist_id = Wishlist.objects.create(trip_id=trip_id, user_id=user_id, notes="")
+
+            message = 'Item added to wishlist successfully.'
+            action = 'add'
+
+        # Get updated wishlist items
+
+        return JsonResponse({'success': True, 'message': message, 'action': action})
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+
+def view_wishlist(request):
+    # user_id = request.user.id
+    if request.method == 'POST':
+        wishlist_id = request.POST.get('wishlist_id')
+        if wishlist_id:
+            # breakpoint()
+            wishlist_item = Wishlist.objects.get(id=int(wishlist_id))
+            wishlist_item.delete()
+            # return redirect('wishlist')
+
+    user_id = get_object_or_404(UserProfile, id=int(33))
+    wishlist_items = Wishlist.objects.filter(user_id=user_id)
+    return render(request, 'mainapp/wishlist.html', {'wishlist_items': wishlist_items})
+
+

@@ -49,7 +49,7 @@ class Trip(models.Model):
 
 class Wishlist(models.Model):
     trip_id = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='wishlist_items')
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     notes = models.TextField(blank=True, null=True)
     priority = models.IntegerField(default=1)
     date_added = models.DateTimeField(auto_now_add=True)
