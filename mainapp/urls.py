@@ -1,5 +1,6 @@
 from django.urls import path, include
 from . import views
+from .views import PlaceDetailView
 
 app_name = 'mainapp'
 urlpatterns = [
@@ -26,4 +27,7 @@ urlpatterns = [
     path('getusers/', views.getusers, name='getusers'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('mark_messages_as_read/', views.mark_messages_as_read, name='mark_messages_as_read'),
+    path('add_rating/<int:place_id>/', views.add_rating, name='add_rating'),
+    path('add_review/<int:place_id>/', views.add_review, name='add_review'),
+    path('place/<int:pk>/', PlaceDetailView.as_view(), name='place_detail'),
 ]

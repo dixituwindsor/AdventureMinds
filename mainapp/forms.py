@@ -1,13 +1,10 @@
 from django import forms
-from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from .models import UserProfile, PreferenceChoice, TripPreference
 from django import forms
 from .models import UserPreferences, PreferenceCategory
 from multiupload.fields import MultiFileField
 from .models import Trip
-
-
+from .models import Review, Rating
 from django.contrib.auth.models import User
 
 class UserProfileForm(forms.ModelForm):
@@ -197,3 +194,19 @@ class SignupForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['review', 'place', 'user']
+
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['rating', 'place', 'user']
+
+

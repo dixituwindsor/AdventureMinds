@@ -1,9 +1,10 @@
 from django.contrib import admin
+<<<<<<< HEAD
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from .models import UserProfile, Place, ChatMessage, Thread, UserPreferences, PreferenceChoice, PreferenceCategory, Trip, TripPhoto, TripPreference, JoinRequest, ChatGroup
-
+from .models import ChatMessage, Thread, TripPhoto, JoinRequest, ChatGroup
+from .models import UserProfile, Place, Review, Rating, Trip, TripPreference, UserPreferences, PreferenceCategory, PreferenceChoice
 
 # Register your models here.
 admin.site.register(UserProfile)
@@ -49,3 +50,12 @@ class ThreadAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Thread, ThreadAdmin)
+=======
+admin.site.register(Review)
+admin.site.register(Rating)
+admin.site.register(Trip)
+admin.site.register(TripPreference)
+admin.site.register(UserPreferences)
+admin.site.register(PreferenceChoice)
+admin.site.register(PreferenceCategory)
+>>>>>>> Maitri

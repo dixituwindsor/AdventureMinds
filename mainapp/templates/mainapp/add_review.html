@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trip Detail</title>
+</head>
+<body>
+    <h1>Trip Detail</h1>
+    <p>User: {{ user.firstname }}</p>
+    <p>Destination: {{ trip.name}}</p>
+    <p>Date: {{ place.created_at }}</p>
+
+    <h2>Reviews</h2>
+    {% for review in reviews %}
+        <p>{{ review.user.user }} rated this trip as {{ review.rating }}.</p>
+        <p>{{ review.comment }}</p>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
+
+    <h2>Add Review</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ review_form.as_p }}
+        <button type="submit">Submit Review</button>
+    </form>
+</body>
+</html>

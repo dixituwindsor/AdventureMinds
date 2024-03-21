@@ -1,19 +1,22 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+import os
+
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, reverse, redirect, get_object_or_404
+
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
-from .models import *
-import os
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm
 from uuid import uuid4
 from django.contrib import messages
-from AdventureMinds import settings
-
-# Create your views here.
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Place, Rating, Review, User, UserPreferences, PreferenceCategory, ChatGroup, ChatMessage, \
+    TripPreference, PreferenceChoice, TripPhoto, Trip, JoinRequest
+from django.contrib.auth import authenticate, login, logout
+from .forms import  ReviewForm, RatingForm
+from .models import UserProfile
+from django.views.generic.detail import DetailView
 
 @login_required
 def user_profile(request):
@@ -154,6 +157,10 @@ def message_button(request):
 def getusers(request):
     users = UserProfile.objects.all().values('username', 'id')
     return JsonResponse(list(users), safe=False)
+
+
+class Thread:
+    pass
 
 
 @login_required
@@ -380,3 +387,43 @@ def decline_join_request(request, trip_id, request_id):
     join_request.delete()
 
     return redirect('mainapp:trip_detail', trip_id=trip_id)
+
+
+class PlaceDetailView(DetailView):
+    model = Place
+    template_name = 'mainapp/place_detail.html'
+    context_object_name = 'trip'
+
+# @login_required
+def add_review(request, place_id):
+    place = Place.objects.get(id=place_id)
+    reviews = Review.objects.filter(place=place)
+    review_form = ReviewForm()
+
+    if request.method == 'POST':
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            reviews = review_form.save(commit=False)
+            reviews.User = request.User
+            reviews.place = place
+            reviews.save()
+            return redirect('mainapp:add_review', place_id=place.id)
+
+    return render(request, 'mainapp/add_review.html', {'review_form': review_form, 'trip': place, 'review': reviews})
+
+# @login_required
+def add_rating(request, place_id):
+    place = Place.objects.get(id=place_id)
+    rating = Rating.objects.filter(place=place)
+    rating_form = RatingForm()
+
+    if request.method == 'POST':
+        rating_form = RatingForm(request.POST)
+        if rating_form.is_valid():
+            rating = rating_form.save(commit=False)
+            rating.user = request.user
+            rating.place = place
+            rating.save()
+            return redirect('place_detail', place_id=place.id)
+
+    return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
