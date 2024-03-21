@@ -1,9 +1,9 @@
 <!-- place_detail.html -->
-{% extends "mainapp/base.html" %}
+{% extends "mainapp/add_review.html" %}
 
 {% block content %}
- <h2>{{ object.name }}</h2>
- <p>{{ object.address }}</p>
+ <h2>{{ place.name }}</h2>
+ <p>{{ place.address }}</p>
 
  <h3>Reviews</h3>
  {% for review in object.review_set.all %}
