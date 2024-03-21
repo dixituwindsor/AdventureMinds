@@ -96,36 +96,8 @@ class UserPreferences(models.Model):
 
 
 
-
-class Trip(models.Model):
-    uploader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_trips')
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    max_capacity = models.PositiveIntegerField(default=10)
-    cost_per_person = models.DecimalField(max_digits=8, decimal_places=2, default=1000)  # Cost per person for the trip
-    meeting_point = models.CharField(max_length=255, blank=True)  # Meeting point for the trip
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
-    participants = models.ManyToManyField(User, related_name='participating_trips', blank=True)
-    is_past = models.BooleanField(default=False)
-    is_future = models.BooleanField(default=True)
-    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
-
-    # Define methods to filter past and future trips
-    def get_past_trips(self):
-        return Trip.objects.filter(pk=self.pk, is_past=True)
-
-    def get_future_trips(self):
-        return Trip.objects.filter(pk=self.pk, is_future=True)
-
-    def __str__(self):
-        return self.title
-
-
-
+####Chirag
+####
 
 class JoinRequest(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='join_requests')
@@ -146,12 +118,6 @@ class JoinRequest(models.Model):
 
 
 
-class TripPhoto(models.Model):
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='photos')
-    photo = models.ImageField(upload_to='')
-
-    def __str__(self):
-        return f"Photo for {self.trip.title}"
 
 class TripPreference(models.Model):
     preferences = models.ManyToManyField(PreferenceChoice)

@@ -78,75 +78,8 @@ class UserPreferencesForm(forms.ModelForm):
 
 
 
-class AddTripForm(forms.ModelForm):
-    start_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-        label='Start Date'
-    )
-    end_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-        label='End Date'
-    )
-    description = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
-        label='Description'
-    )
-    meeting_point = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control'}),
-        label='Meeting Point',
-        required=False
-    )
-    max_capacity = forms.IntegerField(
-        widget=forms.NumberInput(attrs={'class': 'form-control'}),
-        label='Max Capacity'
-    )
-    cost_per_person = forms.DecimalField(
-        widget=forms.NumberInput(attrs={'class': 'form-control'}),
-        label='Cost Per Person'
-    )
-    photos = MultiFileField(
-        min_num=1,
-        max_num=10,
-        max_file_size=1024*1024*5,
-        label='Upload Photos'
-    )
-
-    class Meta:
-        model = Trip
-        fields = ['title', 'place', 'start_date', 'end_date', 'description', 'meeting_point', 'max_capacity', 'cost_per_person', 'photos']
-        labels = {
-            'title': 'Title',
-            'place': 'Place',
-        }
-        widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'place': forms.Select(attrs={'class': 'form-select'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-
-
-    def clean(self):
-        cleaned_data = super().clean()
-        start_date = cleaned_data.get('start_date')
-        end_date = cleaned_data.get('end_date')
-
-        # Check if end date is greater than or equal to start date
-        if start_date and end_date and end_date < start_date:
-            raise forms.ValidationError("End date must be greater than or equal to start date.")
-
-        return cleaned_data
-
-    def save(self, commit=True):
-        trip = super().save(commit=False)
-        trip.uploader = self.user
-        if commit:
-            trip.save()
-            self.save_m2m()  # Save many-to-many fields after the trip is saved
-        return trip
-
+### Chirag
+###
 
 class TripPreferenceForm(forms.ModelForm):
     class Meta:

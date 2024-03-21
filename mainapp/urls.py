@@ -14,6 +14,7 @@ urlpatterns = [
     path('message_button/', views.message_button, name='message_button'),
     path('create_group/', views.create_group, name='create_group'),
     path('', views.homepage, name='homepage'),
+    path('homepage/', views.trip_list, name='trip_list'),
     path('add_trip/', views.add_trip, name='add_trip'),
     path('t/', views.terms_conditions, name='terms_conditions'),
     path('login/', views.user_login, name='login'),
