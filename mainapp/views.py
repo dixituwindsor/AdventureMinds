@@ -211,8 +211,122 @@ def mark_messages_as_read(request):
     except Thread.DoesNotExist:
         return JsonResponse({'error': 'Thread not found'}, status=404)
 
-####Chirag
-####
+@login_required(login_url='mainapp:login')
+def add_trip(request):
+    if request.method == 'POST':
+        trip_form = AddTripForm(request.POST, request.FILES, user=request.user)
+        preference_form = TripPreferenceForm(request.POST)
+        if trip_form.is_valid() and preference_form.is_valid():
+
+            # Save the trip data
+            trip = trip_form.save(commit=False)
+            trip.uploader = request.user
+
+            # Create a new TripPreference object
+            trip_preference = TripPreference.objects.create()
+
+            # Retrieve the selected preference choices from the form data
+            selected_preferences = [int(choice_id) for field in preference_form.cleaned_data.values() for choice_id in
+                                    field]
+
+            # Get the PreferenceChoice objects corresponding to the selected preference choices
+            preferences = PreferenceChoice.objects.filter(id__in=selected_preferences)
+
+            # Associate preferences with the TripPreference object
+            trip_preference.preferences.set(preferences)
+
+            # Link the TripPreference object to the Trip object
+            trip.preferences = trip_preference
+
+            # Save the Trip object
+            trip.save()
+
+            # Save uploaded photos
+            for photo in request.FILES.getlist('photos'):
+                trip_photo = TripPhoto(trip=trip, photo=photo)
+                trip_photo.save()
+
+            # Debugging: Print data
+            print("Trip data:", trip.__dict__)
+            print("Trip preferences:", trip.preferences.__dict__)
+            print("Uploaded photos:", [photo.__dict__ for photo in trip.photos.all()])
+
+            return redirect('mainapp:homepage')  # Redirect to some success URL
+    else:
+        trip_form = AddTripForm(user=request.user)
+        preference_form = TripPreferenceForm()
+    return render(request, 'mainapp/add_trip.html', {'trip_form': trip_form, 'preference_form': preference_form})
+
+def trip_list(request):
+    if request.user.is_authenticated:
+        # For logged-in users
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        if not user_profile.preferences:
+            return redirect('mainapp:user_preferences')
+        user_preferences = user_profile.preferences.preferences.prefetch_related('preferences')
+
+        trips = Trip.objects.all()
+
+        # Apply search filter if query parameter exists
+        query = request.GET.get('query')
+        if query:
+            trips = trips.filter(Q(place_nameicontains=query) | Q(placeaddress_icontains=query))
+
+        if 'my_trips' in request.GET:
+            trips = trips.filter(uploader=request.user)
+
+        # Sorting
+        sort_by = request.GET.get('sort_by')
+        if sort_by == 'recommendation':
+            # Calculate similarity scores for each trip
+            similarity_scores = {}
+            for trip in trips:
+                # Get the TripPreference associated with the trip
+                trip_preference = trip.preferences
+                if trip_preference:
+                    similarity_score = calculate_similarity(user_preferences,
+                                                            trip_preference.preferences.prefetch_related('preferences'))
+                    similarity_scores[trip.id] = similarity_score
+
+            # Sort trips based on similarity scores
+            trips = sorted(trips, key=lambda x: similarity_scores.get(x.id, 0), reverse=True)
+        elif sort_by == 'alphabetical':
+            trips = trips.order_by('place__name')
+
+        # Retrieve saved searches from cookies
+        saved_searches = request.COOKIES.get('saved_searches', '').split('|')
+
+        # Handle search query
+        if query:
+            # Save the search query to cookies
+            saved_searches.append(query)
+            saved_searches = list(set(saved_searches))[-5:]  # Limit to last 5 unique queries
+            response = render(request, 'mainapp/homepage2.html', {'trips': trips, 'saved_searches': saved_searches, 'query': query})
+            response.set_cookie('saved_searches', '|'.join(saved_searches), max_age=3600*24*7)  # Save for 1 week
+
+            return response
+
+        return render(request, 'mainapp/homepage2.html', {'trips': trips, 'saved_searches': saved_searches})
+    else:
+        # For guest users
+        trips = Trip.objects.all()
+        return render(request, 'mainapp/guest_trip_list.html', {'trips': trips})
+
+def calculate_similarity(user_preferences, trip_preferences):
+    user_pref_set = set(user_preferences.values_list('id', flat=True))
+    trip_pref_set = set(trip_preferences.values_list('id', flat=True))
+    #jaccard similarity
+    intersection = len(user_pref_set.intersection(trip_pref_set))
+    union = len(user_pref_set.union(trip_pref_set))
+
+    if union == 0:
+        return 0.0
+
+    jaccard_similarity = intersection / union
+
+    return jaccard_similarity
+
+
 
 def trip_detail(request, trip_id):
     trip = get_object_or_404(Trip, pk=trip_id)
