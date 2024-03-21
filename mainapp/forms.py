@@ -36,10 +36,10 @@ class LoginForm(forms.Form):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['review', 'trip', 'user']
+        fields = ['review', 'place', 'user']
 
 class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
-        fields = ['rating', 'trip', 'user']
+        fields = ['rating', 'place', 'user']
 

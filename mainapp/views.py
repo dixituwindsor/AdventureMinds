@@ -2,7 +2,7 @@ from django.db.models import Avg
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import ChatGroups, Message, UserProfile, Trip, Rating, Review, User
+from .models import ChatGroups, Message, UserProfile, Place, Rating, Review, User
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm, ReviewForm, RatingForm
 from .models import UserProfile
@@ -112,14 +112,14 @@ def user_logout(request):
 
 
 class PlaceDetailView(DetailView):
-    model = Trip
+    model = Place
     template_name = 'mainapp/place_detail.html'
     context_object_name = 'trip'
 
 # @login_required
-def add_review(request, trip_id):
-    trip = Trip.objects.get(id=trip_id)
-    reviews = Review.objects.filter(trip=trip)
+def add_review(request, place_id):
+    place = Place.objects.get(id=place_id)
+    reviews = Review.objects.filter(place=place)
     review_form = ReviewForm()
 
     if request.method == 'POST':
@@ -127,16 +127,16 @@ def add_review(request, trip_id):
         if review_form.is_valid():
             reviews = review_form.save(commit=False)
             reviews.User = request.User
-            reviews.trip = trip
+            reviews.place = place
             reviews.save()
-            return redirect('mainapp:place_detail', trip_id=trip.id)
+            return redirect('mainapp:add_review', place_id=place.id)
 
-    return render(request, 'mainapp/add_review.html', {'review_form': review_form, 'trip': trip, 'review': reviews})
+    return render(request, 'mainapp/add_review.html', {'review_form': review_form, 'trip': place, 'review': reviews})
 
 # @login_required
-def add_rating(request, trip_id):
-    trip = Trip.objects.get(id=trip_id)
-    rating = Rating.objects.filter(trip=trip)
+def add_rating(request, place_id):
+    place = Place.objects.get(id=place_id)
+    rating = Rating.objects.filter(place=place)
     rating_form = RatingForm()
 
     if request.method == 'POST':
@@ -144,9 +144,9 @@ def add_rating(request, trip_id):
         if rating_form.is_valid():
             rating = rating_form.save(commit=False)
             rating.user = request.user
-            rating.trip = trip
+            rating.place = place
             rating.save()
-            return redirect('place_detail', trip_id=trip.id)
+            return redirect('place_detail', place_id=place.id)
 
-    return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'trip': trip, 'rating': rating})
+    return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
 

@@ -11,7 +11,7 @@ class Place(models.Model):
         return 'pk=' +str (self.pk)+', name='+self.name
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=False, blank=True, primary_key=True, default=None)
     phone_number = models.CharField(max_length=12, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
@@ -80,34 +80,37 @@ class Message(models.Model):
 
 
 class Trip(models.Model):
-    uploader = models.ForeignKey(User, on_delete=models.CASCADE)
+    uploader = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    description = models.TextField()
+    start_date = models.DateField(default=None, null=True)
+    end_date = models.DateField(default=None, null=True)
+    description = models.TextField(null=True, blank=True)
     preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.uploader_id}"
 
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
     review = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.id) , self.user.first_name
+        return str(self.id), self.user.first_name
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField(choices=(('1','1 star'),('b','2 star'),('c', '3 star'),('d', '4 star'),('e', '5 star')))
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'trip')
+        unique_together = ('user', 'place')
 
     def __str__(self):
-        return f"{self.user}'s {self.rating}- star rating for {self.trip}"
+        return f"{self.user}'s {self.rating}- star rating for {self.place}"
 
 # class UserProfile(User):
 #     interested_places = models.ManyToManyField(Place)
