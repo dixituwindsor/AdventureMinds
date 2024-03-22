@@ -6,11 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="90677a49-940c-414b-bf14-de6b39741ac2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/registration/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/registration/login_new.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/registration/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/registration/signup.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/registration/signup_new.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/registration/forgot_password.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/registration/forgot_password.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -120,7 +116,8 @@
       <workItem from="1710804366533" duration="21000" />
       <workItem from="1710804564380" duration="581000" />
       <workItem from="1710864074614" duration="5709000" />
-      <workItem from="1711058987056" duration="1996000" />
+      <workItem from="1711058987056" duration="2217000" />
+      <workItem from="1711083164343" duration="2604000" />
     </task>
     <servers />
   </component>
