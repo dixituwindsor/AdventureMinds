@@ -1,7 +1,19 @@
 # created by virtualenv automatically
+<<<<<<< HEAD
 
 mainapp/migrations
 .venv
 .idea
 db.sqlite3
 /__pycache__/
+=======
+.venv/
+db.sqlite3
+.idea
+/.idea/
+test.py
+mainapp/migrations
+trip_photos
+mainapp/media
+mainapp/trip_photos
+>>>>>>> 3fd42ed27b72ca66522b523f10d4bf01195840df

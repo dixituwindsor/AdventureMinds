@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -121,6 +123,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "mainapp/static"]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mainapp/media')
+LOGIN_REDIRECT_URL = 'mainapp:homepage'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -129,8 +136,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 ASGI_APPLICATION = "AdventureMinds.asgi.application"
-CHANNELS_LAYERS = {
+CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        # "CONFIG": {
+        #     'hosts': [('127.0.0.1', 8001)],
+        # }
     }
 }

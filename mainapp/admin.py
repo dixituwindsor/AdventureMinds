@@ -1,13 +1,51 @@
 from django.contrib import admin
-from .models import UserProfile, Place, Review, Rating, Trip, TripPreference, UserPreferences, PreferenceCategory, PreferenceChoice
+from django import forms
+from django.core.exceptions import ValidationError
+from django.db.models import Q
+from .models import UserProfile, Place, ChatMessage, UserChat, Review, Rating, UserPreferences, PreferenceChoice, PreferenceCategory, Trip, TripPhoto, TripPreference, Thread, JoinRequest, ChatGroup
+
 
 # Register your models here.
 admin.site.register(UserProfile)
 admin.site.register(Place)
-admin.site.register(Review)
-admin.site.register(Rating)
-admin.site.register(Trip)
-admin.site.register(TripPreference)
+admin.site.register(ChatMessage)
 admin.site.register(UserPreferences)
 admin.site.register(PreferenceChoice)
 admin.site.register(PreferenceCategory)
+admin.site.register(ChatGroup)
+admin.site.register(Trip)
+admin.site.register(TripPhoto)
+admin.site.register(TripPreference)
+admin.site.register(JoinRequest)
+
+
+class ChatMessage(admin.TabularInline):
+    model = ChatMessage
+
+
+class userchatForm(forms.ModelForm):
+    def clean(self):
+        """
+        This is the function that can be used to
+        validate your model data from admin
+        """
+        super(userchatForm, self).clean()
+        first_person = self.cleaned_data.get('first_person')
+        second_person = self.cleaned_data.get('second_person')
+
+        lookup1 = Q(first_person=first_person) & Q(second_person=second_person)
+        lookup2 = Q(first_person=second_person) & Q(second_person=first_person)
+        lookup = Q(lookup1 | lookup2)
+        qs = UserChat.objects.filter(lookup)
+        if qs.exists():
+            raise ValidationError(f'Chat between {first_person} and {second_person} already exists.')
+
+
+class UserChatAdmin(admin.ModelAdmin):
+    inlines = [ChatMessage]
+
+    class Meta:
+        model = UserChat
+
+
+admin.site.register(UserChat, UserChatAdmin)

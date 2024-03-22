@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title>Signup</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C700"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Istok+Web%3A400%2C700"/>
+    <link rel="stylesheet" href="{% static 'mainapp/signup.css' %}"/>
+</head>
+<body>
+    <div class="signup-9bk">
+        <div class="signup-uav">
+            <img class="flatten-1-qUa" src="{% static 'mainapp/flatten-1.png' %}"/>
+            <div class="auto-group-3hwv-jpr">
+                <div class="auto-group-g2dc-DEE">
+                    <div class="title-MbL">
+                        <div class="auto-group-xam4-spa">
+                            <p class="sign-up-1vn">SignUp</p>
+                            <a href="{% url 'mainapp:login' %}" class="login-jrn">Login</a>
+                        </div>
+                    </div>
+                    <div class="details-U3g">
+                        <form method="post" action="{% url 'mainapp:signup' %}">
+                            {% csrf_token %}
+                            <div class="auto-group-lequ-13c">
+                                <input type="password" name="password" class="enter-password-LLn" placeholder="Enter Password">
+                                <img class="basil-eye-closed-solid-Sei" src="{% static 'mainapp/basil-eye-closed-solid-As8.png' %}"/>
+                            </div>
+                            <div class="auto-group-rbu8-nCn">
+                                <button type="submit" class="auto-group-i6cn-ryL">Continue</button>
+                                <p class="or-8AA">Or</p>
+                                <img class="flat-color-icons-google-ePQ" src="{% static 'mainapp/flat-color-icons-google.png' %}"/>
+                            </div>
+                            <div class="auto-group-hnaz-yga">
+                                <input type="password" name="confirm_password" class="confirm-password-iPG" placeholder="Confirm Password">
+                                <img class="basil-eye-closed-solid-dWE" src="{% static 'mainapp/basil-eye-closed-solid.png' %}"/>
+                            </div>
+                            <input type="text" name="username" class="last-name-aAa" placeholder="Enter username">
+                            <input type="text" name="fullname" class="first-name-gjQ" placeholder="Enter full name">
+                            <input type="email" name="email" class="enter-your-email-1Wn" placeholder="Enter your email">
+                            <div class="line-2-XV8"></div>
+                            <div class="line-5-Tta"></div>
+                            <div class="line-6-zNi"></div>
+                            <div class="line-3-7y8"></div>
+                            <div class="line-4-GLE"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

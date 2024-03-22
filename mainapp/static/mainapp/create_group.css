@@ -1,0 +1,73 @@
+/* General styles for page layout */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.container-fluid {
+    height: 100%;
+}
+
+.row {
+    justify-content: center;
+    height: 100%;
+    margin-top: 20px; /* Adjust as needed */
+}
+
+.card {
+    border: none;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles for contact list */
+.contacts_body {
+    padding: 0.75rem 0;
+    overflow-y: auto;
+}
+
+.contacts {
+    list-style: none;
+    padding: 0;
+}
+
+.contact-li {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+}
+
+.contact-li:hover {
+    background-color: #f0f0f0;
+}
+
+.user_info {
+    flex-grow: 1;
+}
+
+.user_info span {
+    font-weight: bold;
+}
+
+.user_info p {
+    margin: 0;
+    color: #666;
+}
+
+.user_img {
+    height: 40px;
+    width: 40px;
+}
+
+.img_cont {
+    margin-right: 10px;
+}
+
+.checkbox-container {
+    margin-left: auto; /* Push checkbox to the right */
+}
+
+.checkbox-container input[type="checkbox"] {
+    margin-left: 10px; /* Adjust as needed */
+}

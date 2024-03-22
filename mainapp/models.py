@@ -1,12 +1,19 @@
 
+
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
 from django.contrib.auth.models import User, AbstractUser
+from django.core.exceptions import ValidationError
+
 
 
 # Create your models here.
 class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
+    description = models.TextField(max_length=200, blank=True)
+
     def __str__(self):
         return 'pk=' +str (self.pk)+', name='+self.name
 
@@ -15,17 +22,47 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=12, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    interested_places = models.ManyToManyField(Place, blank=True)
+    profile_photo = models.ImageField(upload_to='profile/', null=True, blank=True)
+    # interested_places = models.ManyToManyField(Place, null=True, blank=True)
     preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
-    total_reviews = models.PositiveIntegerField(default=0)
-    total_ratings = models.PositiveIntegerField(default=0)
-    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
-
     def __str__(self):
         return self.user.username
 
-    def total_reviews(self):
-        return self.review_set.count()
+
+
+class PreferenceCategory(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+
+class PreferenceChoice(models.Model):
+    category = models.ForeignKey(PreferenceCategory, on_delete=models.CASCADE)
+    value = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.category.name}: {self.value}"
+
+
+class UserPreferences(models.Model):
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True, blank=True)
+    preferences = models.ManyToManyField(PreferenceChoice)
+
+    def __str__(self):
+        if self.user_profile:
+            return f"Preferences for {self.user_profile.user.username}"
+        else:
+            return "No associated user profile"
+
+    def get_selected_preferences(self):
+        return [preference.value for preference in self.preferences.all()]
+
+class TripPreference(models.Model):
+    preferences = models.ManyToManyField(PreferenceChoice)
+
+
 
 
 class PreferenceCategory(models.Model):
@@ -56,39 +93,141 @@ class UserPreferences(models.Model):
     def get_selected_preferences(self):
         return [preference.value for preference in self.preferences.all()]
 
+
+
+
+class Trip(models.Model):
+    uploader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_trips')
+    title = models.CharField(max_length=100, null=True)
+    description = models.TextField()
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    max_capacity = models.PositiveIntegerField(default=10)
+    cost_per_person = models.DecimalField(max_digits=8, decimal_places=2, default=1000)  # Cost per person for the trip
+    meeting_point = models.CharField(max_length=255, blank=True)  # Meeting point for the trip
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    participants = models.ManyToManyField(User, related_name='participating_trips', blank=True)
+    is_past = models.BooleanField(default=False)
+    is_future = models.BooleanField(default=True)
+    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Define methods to filter past and future trips
+    def get_past_trips(self):
+        return Trip.objects.filter(pk=self.pk, is_past=True)
+
+    def get_future_trips(self):
+        return Trip.objects.filter(pk=self.pk, is_future=True)
+
+    def _str_(self):
+        return self.title
+class TripPhoto(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='trip_photos')
+    photo = models.ImageField(upload_to='')
+
+    def __str__(self):
+        return f"Photo for {self.trip.place}"
+
+
+class JoinRequest(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='join_requests')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('declined', 'Declined'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+
+        return f"Request to join {self.trip} by {self.user}"
+
+
+
+
+
+
 class TripPreference(models.Model):
     preferences = models.ManyToManyField(PreferenceChoice)
 
 
-class ChatGroups(models.Model):
+
+class userchatManager(models.Manager):
+    def by_user(self, **kwargs):
+        user = kwargs.get('user')
+        lookup = models.Q(first_person=user) | models.Q(second_person=user)
+        qs = self.get_queryset().filter(lookup).distinct()
+        return qs
+
+
+class ChatGroup(models.Model):
     name = models.CharField(max_length=100)
-    members = models.ManyToManyField(UserProfile, related_name='chat_groups')
+    members = models.ManyToManyField(UserProfile)
 
     def __str__(self):
         return self.name
 
 
-class Message(models.Model):
-    sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="sent_messages")
-    chat_group = models.ForeignKey(ChatGroups, on_delete=models.CASCADE, null=True, blank=True)
-    recipient = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name="received_messages")
-    content = models.TextField()
+class UserChat(models.Model):
+    first_person = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True,
+                                     related_name='userchat_first_person')
+    second_person = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True,
+                                      related_name='userchat_second_person')
+    group = models.ForeignKey(ChatGroup, on_delete=models.CASCADE, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['first_person', 'second_person', 'group']
+
+    def clean(self):
+        if self.first_person == self.second_person:
+            raise ValidationError("First person and second person cannot be the same.")
+
+        if self.group:
+            if self.second_person is not None:
+                raise ValidationError("In a group chat, second person must be null.")
+
+            if UserChat.objects.filter(first_person=self.first_person, group=self.group).exists():
+                raise ValidationError("A chat with the same first user and group already exists.")
+        else:
+            if UserChat.objects.filter(first_person=self.second_person, second_person=self.first_person,
+                                     group=None).exists():
+                raise ValidationError("Conversation between these users already exists.")
+
+            if UserChat.objects.filter(first_person=self.first_person, second_person=self.second_person).exists():
+                raise ValidationError("Conversation between these users already exists.")
+
+            if not self.group and not self.second_person:
+                raise ValidationError("Second person or group is required.")
+
+    def __str__(self):
+        if self.group:
+            return f"Group chat: {self.group.name}"
+        else:
+            return f"Conversation between {self.first_person} and {self.second_person}"
+
+
+class ChatMessage(models.Model):
+    userchat = models.ForeignKey(UserChat, null=True, blank=True, on_delete=models.CASCADE,
+                                 related_name='chatmessage_userchat')
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+    
+
+class ContactMessage(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.sender.username} -> {self.recipient.username if self.recipient else self.chat_group.name}: {self.content}"
-
-
-class Trip(models.Model):
-    uploader = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    start_date = models.DateField(default=None, null=True)
-    end_date = models.DateField(default=None, null=True)
-    description = models.TextField(null=True, blank=True)
-    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.uploader_id}"
+        return f'{self.first_name} {self.last_name} - {self.timestamp}'
 
 
 class Review(models.Model):
@@ -139,3 +278,4 @@ class Rating(models.Model):
 #         if self.total_reviews() > 0:
 #             return self.review_set.all().aggregate(models.Avg('rating'))['rating__avg']
 #         return 0
+
