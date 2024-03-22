@@ -459,12 +459,3 @@ def add_rating(request, place_id):
             return redirect('place_detail', place_id=place.id)
 
     return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
-
-
-# def add_blog(request):
-#     posts = Post.objects.all()
-#     return render(request, 'mainapp/blog_post.html', {'posts': posts})
-#
-# def post_detail(request, pk):
-#     post = get_object_or_404(Post, pk=pk)
-#     return render(request, 'blog/post_detail.html', {'post': post})
