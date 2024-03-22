@@ -1,19 +1,21 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, reverse, redirect, get_object_or_404
+import os
+from django.contrib import messages
 from django.urls import reverse
+from django.views.generic import DetailView
+from AdventureMinds import settings
+from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm, ContactForm
+from .forms import *
 from .models import *
-import os
 from uuid import uuid4
 import django
-from AdventureMinds import settings
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect, reverse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.views.generic.detail import DetailView
 
-# Create your views here.
 
 @login_required
 def user_profile(request):
@@ -22,6 +24,7 @@ def user_profile(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=user_profile_instance)
         if form.is_valid():
+            print(form.cleaned_data)
             # Check if 'profile_photo' exists in request.FILES
             if 'profile_photo' in request.FILES:
                 # Generate a unique filename
@@ -51,14 +54,15 @@ def user_preferences(request):
         form = UserPreferencesForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            preferences = UserPreferences.objects.create(user_profile=user_profile_instance)
-            for category_name, choices in cleaned_data.items():
-                category = PreferenceCategory.objects.get(name=category_name)
-                preferences.preferences.add(*choices)
+            if user_profile_instance:
+                preferences = UserPreferences.objects.create(user_profile=user_profile_instance)
+                for category_name, choices in cleaned_data.items():
+                    category = PreferenceCategory.objects.get(name=category_name)
+                    preferences.preferences.add(*choices)
 
-            # Assign the created preferences to the UserProfile instance
-            user_profile_instance.preferences = preferences
-            user_profile_instance.save()
+                # Assign the created preferences to the UserProfile instance
+                user_profile_instance.preferences = preferences
+                user_profile_instance.save()
 
             return redirect(reverse('mainapp:profile'))
     else:
@@ -160,6 +164,10 @@ def getusers(request):
     return JsonResponse(list(users), safe=False)
 
 
+class Thread:
+    pass
+
+
 @login_required
 def messages(request):
 
@@ -229,35 +237,29 @@ def mark_messages_as_read(request):
     except UserChat.DoesNotExist:
         return JsonResponse({'error': 'UserChat not found'}, status=404)
 
-
 @login_required(login_url='mainapp:login')
 def add_trip(request):
     if request.method == 'POST':
         trip_form = AddTripForm(request.POST, request.FILES, user=request.user)
         preference_form = TripPreferenceForm(request.POST)
+        print("POST request received")
         if trip_form.is_valid() and preference_form.is_valid():
-
-            # Save the trip data
+            print("Forms are valid")
             trip = trip_form.save(commit=False)
             trip.uploader = request.user
+            trip.save()
 
-            # Create a new TripPreference object
-            trip_preference = TripPreference.objects.create()
+            trip_preference = preference_form.save(commit=False)
+            trip_preference.save()
 
-            # Retrieve the selected preference choices from the form data
-            selected_preferences = [int(choice_id) for field in preference_form.cleaned_data.values() for choice_id in
-                                    field]
-
-            # Get the PreferenceChoice objects corresponding to the selected preference choices
+            selected_preferences = [int(choice_id) for field in preference_form.cleaned_data.values() for choice_id in field]
             preferences = PreferenceChoice.objects.filter(id__in=selected_preferences)
-
-            # Associate preferences with the TripPreference object
             trip_preference.preferences.set(preferences)
 
             # Link the TripPreference object to the Trip object
             trip.preferences = trip_preference
 
-            # Save the Trip object
+            # Save the Trip object again to update the preferences field
             trip.save()
 
             # Save uploaded photos
@@ -271,10 +273,15 @@ def add_trip(request):
             print("Uploaded photos:", [photo.__dict__ for photo in trip.photos.all()])
 
             return redirect('mainapp:homepage')  # Redirect to some success URL
+        else:
+            print("Trip form errors:", trip_form.errors)
+            print("Preference form errors:", preference_form.errors)
     else:
         trip_form = AddTripForm(user=request.user)
         preference_form = TripPreferenceForm()
+
     return render(request, 'mainapp/add_trip.html', {'trip_form': trip_form, 'preference_form': preference_form})
+
 
 
 @login_required
@@ -291,9 +298,9 @@ def trip_list(request):
         # Apply search filter if query parameter exists
         query = request.GET.get('query')
         if query:
-            trips = trips.filter(Q(place__name__icontains=query) | Q(place__address__icontains=query))
+            trips = trips.filter(Q(place__name__icontains=query) | Q(place__address__icontains=query)| Q(place__description__icontains=query))
 
-        # Filter "My Trips" if requested
+
         if 'my_trips' in request.GET:
             trips = trips.filter(uploader=request.user)
 
@@ -334,8 +341,6 @@ def trip_list(request):
         trips = Trip.objects.all()
         return render(request, 'mainapp/guest_trip_list.html', {'trips': trips})
 
-
-
 def calculate_similarity(user_preferences, trip_preferences):
     user_pref_set = set(user_preferences.values_list('id', flat=True))
     trip_pref_set = set(trip_preferences.values_list('id', flat=True))
@@ -349,8 +354,6 @@ def calculate_similarity(user_preferences, trip_preferences):
     jaccard_similarity = intersection / union
 
     return jaccard_similarity
-
-
 
 
 
@@ -416,3 +419,44 @@ def contact_us(request):
     else:
         form = ContactForm()
         return render(request, 'mainapp/contact_us.html', {'form': form})
+
+
+class PlaceDetailView(DetailView):
+    model = Place
+    template_name = 'mainapp/place_detail.html'
+    context_object_name = 'trip'
+
+# @login_required
+def add_review(request, place_id):
+    place = Place.objects.get(id=place_id)
+    reviews = Review.objects.filter(place=place)
+    review_form = ReviewForm()
+
+    if request.method == 'POST':
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            reviews = review_form.save(commit=False)
+            reviews.User = request.User
+            reviews.place = place
+            reviews.save()
+            return redirect('mainapp:add_review', place_id=place.id)
+
+    return render(request, 'mainapp/add_review.html', {'review_form': review_form, 'trip': place, 'review': reviews})
+
+# @login_required
+def add_rating(request, place_id):
+    place = Place.objects.get(id=place_id)
+    rating = Rating.objects.filter(place=place)
+    rating_form = RatingForm()
+
+    if request.method == 'POST':
+        rating_form = RatingForm(request.POST)
+        if rating_form.is_valid():
+            rating = rating_form.save(commit=False)
+            rating.user = request.user
+            rating.place = place
+            rating.save()
+            return redirect('place_detail', place_id=place.id)
+
+    return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
+

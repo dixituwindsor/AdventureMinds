@@ -1,94 +1,12 @@
+{% extends 'mainapp/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ trip.title }} Details</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Custom CSS styles */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            margin-top: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-        }
-        .card {
-            margin-bottom: 20px;
-            border: none;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .card-header {
-            background-color: #1a472a;
-            color: white;
-            font-size: 24px;
-            padding: 20px;
-            border-radius: 8px 8px 0 0;
-        }
-        .card-body {
-            padding: 20px;
-        }
-        .card-title {
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-        .card-text {
-            margin-bottom: 20px;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-right: 20px;
-        }
-        .message-btn{
-            margin-left: auto;
-            margin-right: 0;
-        }
-        .user-info img {
-            width: 40px; /* Adjusted image size */
-            height: 40px; /* Adjusted image size */
-            border-radius: 50%;
-            margin-right: 10px;
-            object-fit: cover; /* Ensures the image fits perfectly */
-            border: 2px solid #1a472a; /* Improved border color */
-        }
-        .join-request-btn {
-            margin-top: 10px;
-        }
-        .message-btn { /* Improved button style for message button */
-            background-color: #1a472a;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            margin-right: 5px;
-            transition: all 0.3s ease;
-        }
-        .message-btn:hover {
-            background-color: #144123;
-        }
-        .lock-icon {
-            width: 20px; /* Adjusted lock icon size */
-            height: 20px; /* Adjusted lock icon size */
-            margin-right: 5px;
-            fill: #1a472a; /* Improved lock icon color */
-        }
-        .img-fluid {
-            max-width: 100%; /* Ensures images don't overflow their containers */
-            height: auto; /* Maintains aspect ratio */
-            border-radius: 8px; /* Adds rounded corners to images */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect */
-        }
-    </style>
-</head>
-<body>
+
+{% block title %}
+    {{ trip.title }} Details
+{% endblock %}
+
+{% block content %}
+
 <div class="container">
     <div class="card">
         <div class="card-header">
@@ -117,7 +35,22 @@
             <p class="card-text"><strong>Meeting Point:</strong> {{ trip.meeting_point }}</p>
             <p class="card-text"><strong>Cost Per Person:</strong> ${{ trip.cost_per_person }}</p>
             <p class="card-text"><strong>Max Capacity:</strong> {{ trip.max_capacity }}</p>
-            <p class="card-text"><strong>Participants:</strong> {{ trip.participants.count }}</p>
+            <p class="card-text"><strong>Participants:</strong></p>
+            <ul>
+                {% for participant in trip.participants.all %}
+                <li>
+                    <div class="user-info">
+{#                        <img src="{{ participant.userprofile.profile_photo.url }}" alt="{{ participant.username }}">#}
+                        <span>{{ participant.first_name  }} {{ participant.last_name  }}</span>
+                        {% if request.user.is_authenticated %}
+                            {% if request.user != participant %}
+                                <button class="message-btn ml-auto">Message</button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 
@@ -199,7 +132,7 @@
                                 </div>
                                 {% endif %}
                             {% endfor %}
-                            {% if not join_request_pending %}
+                                        {% if not join_request_pending %}
                                 <div class="join-request">
                                     <form action="{% url 'mainapp:join_trip' trip.id %}" method="post">
                                         {% csrf_token %}
@@ -226,12 +159,81 @@
         </div>
     {% endif %}
 {% endif %}
-
-
 </div>
+<style>
+    /* Custom CSS styles */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin-top: 20px;
+    }
+    .container {
+        max-width: 800px;
+        margin: auto;
+    }
+    .card {
+        margin-bottom: 20px;
+        border: none;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+        background-color: rgba(26, 71, 42, 0.72);
+        color: white;
+        font-size: 24px;
+        padding: 20px;
+        border-radius: 8px 8px 0 0;
+    }
+    .card-body {
+        padding: 20px;
+    }
+    .card-title {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+    .card-text {
+        margin-bottom: 20px;
+    }
+    .user-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .user-info img {
+        width: 40px; /* Adjusted image size */
+        height: 40px; /* Adjusted image size */
+        border-radius: 50%;
+        margin-right: 10px;
+        object-fit: cover; /* Ensures the image fits perfectly */
+        border: 2px solid #1a472a; /* Improved border color */
+    }
+    .join-request-btn {
+        margin-top: 10px;
+    }
+    .message-btn { /* Improved button style for message button */
+        background-color: rgba(26, 71, 42, 0.5500000119);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 15px;
+        margin-right: 5px;
+        transition: all 0.3s ease;
+    }
+    .message-btn:hover {
+        background-color: #144123;
+    }
+    .lock-icon {
+        width: 20px; /* Adjusted lock icon size */
+        height: 20px; /* Adjusted lock icon size */
+        margin-right: 5px;
+        fill: #1a472a; /* Improved lock icon color */
+    }
+    .img-fluid {
+        max-width: 100%; /* Ensures images don't overflow their containers */
+        height: auto; /* Maintains aspect ratio */
+        border-radius: 8px; /* Adds rounded corners to images */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect */
+    }
+</style>
+{% endblock %}
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</body>
-</html>
+

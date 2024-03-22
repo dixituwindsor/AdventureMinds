@@ -1,12 +1,11 @@
 from django import forms
-from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference, ContactMessage
+from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference, ContactMessage, PreferenceCategory
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django import forms
-from .models import UserPreferences, PreferenceCategory
 from multiupload.fields import MultiFileField
-from .models import Trip
+from titlecase import titlecase
 
+from .models import Review, Rating
 
 from django.contrib.auth.models import User
 
@@ -81,6 +80,7 @@ class UserPreferencesForm(forms.ModelForm):
 
 
 
+
 class AddTripForm(forms.ModelForm):
     start_date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
@@ -123,7 +123,7 @@ class AddTripForm(forms.ModelForm):
         }
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'place': forms.Select(attrs={'class': 'form-select'}),
+            'place': forms.Select(attrs={'class': 'form-select form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -151,22 +151,25 @@ class AddTripForm(forms.ModelForm):
         return trip
 
 
-class TripPreferenceForm(forms.ModelForm):
-    class Meta:
-        model = TripPreference
-        fields = []
 
+class TripPreferenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         categories = PreferenceCategory.objects.all()
         for category in categories:
+            label = titlecase(category.name.replace('_', ' '))
             choices = PreferenceChoice.objects.filter(category=category)
             choices_list = [(choice.pk, choice.value) for choice in choices]
             self.fields[f'{category.name}'] = forms.MultipleChoiceField(
                 choices=choices_list,
                 widget=forms.CheckboxSelectMultiple,
-                label=category.name
+                label=label,
+            required = False
             )
+
+    class Meta:
+        model = TripPreference
+        fields = []
 
 
 
@@ -203,4 +206,15 @@ class ContactForm(forms.ModelForm):
     class Meta:
         model = ContactMessage
         fields = ['first_name', 'last_name', 'email', 'message']
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['review', 'place', 'user']
+
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['rating', 'place', 'user']
 

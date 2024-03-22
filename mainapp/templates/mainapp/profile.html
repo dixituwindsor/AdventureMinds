@@ -1,234 +1,169 @@
+{% extends 'mainapp/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0ebdf; /* Updated background color */
-            margin: 0;
-            padding: 0;
-        }
 
-        .navbar {
-            background-color: #f0ebdf; /* Updated navbar color */
-            color: #1a472a; /* Updated navbar text color */
-            padding: 10px 20px;
-        }
+{% block content %}
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        {#background-color: #fff; /* Updated background color */#}
+        margin: 0;
+        padding: 0;
+    }
 
-        .navbar-toggler {
-            background-color: #f0ebdf; /* Updated navbar toggler color */
-        }
+    .profile-container {
+        max-width: 650px;
+        margin: 20px auto;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
+    .profile-picture {
+        text-align: center;
+        margin-bottom: 30px;
+    }
 
-        .nav-link {
-            color: #1a472a; /* Updated navbar link color */
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
+    .profile-picture img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #eee;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
 
-        .profile-container {
-            max-width: 650px;
-            margin: 20px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    .profile-picture img:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+    }
 
-        .profile-picture {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+    .btn-update,
+    .btn-preferences,
+    .btn-save {
+        width: 150px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        background-color: #1a472a; /* Updated button color */
+        border-color: #1a472a; /* Updated button border color */
+        color: #fff;
+    }
 
-        .profile-picture img {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 5px solid #eee;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
+    .btn-delete {
+        width: 150px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: #fff;
+    }
 
-        .profile-picture img:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
-        }
+    .btn {
+        background-color: rgba(26, 71, 42, 0.5500000119);
+        border-color: rgba(26, 71, 42, 0.5500000119);
+        color: #fff;
+    }
 
-        .btn-update,
-        .btn-preferences,
-        .btn-save {
-            width: 150px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            background-color: #1a472a; /* Updated button color */
-            border-color: #1a472a; /* Updated button border color */
-            color: #fff;
-        }
+    .btn:hover {
+        background-color: rgba(26, 71, 42, 0.5500000119);
+        border-color: rgba(26, 71, 42, 0.5500000119);
+    }
 
-        .btn-delete {
-            width: 150px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            background-color: #dc3545;
-            border-color: #dc3545;
-            color: #fff;
-        }
+    label {
+        font-weight: bold;
+        color: rgba(26, 71, 42, 0.5500000119); /* Updated label color */
+    }
 
-        .btn {
-            background-color: rgba(26, 71, 42, 0.5500000119);
-            border-color: rgba(26, 71, 42, 0.5500000119);
-            color: #fff;
-        }
+    .form-group {
+        text-align: left;
+        margin-bottom: 15px;
+    }
 
-        .btn:hover {
-            background-color: rgba(26, 71, 42, 0.5500000119);
-            border-color: rgba(26, 71, 42, 0.5500000119);
-        }
+    input[type="text"],
+    input[type="email"],
+    input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
 
-        label {
-            font-weight: bold;
-            color: rgba(26, 71, 42, 0.5500000119); /* Updated label color */
-        }
-
-        .form-group {
-            text-align: left;
-            margin-bottom: 15px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="date"] {
-            width: 100%;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        /* Placeholder style for uploaded photo */
-        .placeholder-name {
-            font-weight: bold;
-            color: rgba(26, 71, 42, 0.5500000119); /* Updated placeholder color */
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <button class="navbar-toggler bg-primary text-white d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_content" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand text-white" href={% url 'mainapp:homepage' %}>Adventure Minds</a>
-            <form class="d-none d-md-inline-block form-inline me-auto">
-                <div class="input-group">
-                    <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
-                    <button class="btn bg-success text-white" type="submit"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
-            <ul class="nav d-flex align-items-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Itinerary</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Itinerary</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Itinerary</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Itinerary</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Food</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Travel</a>
-                </li>
-            </ul>
+    /* Placeholder style for uploaded photo */
+    .placeholder-name {
+        font-weight: bold;
+        color: rgba(26, 71, 42, 0.5500000119); /* Updated placeholder color */
+        margin-top: 10px;
+    }
+</style>
+<div class="container">
+    <div class="profile-container">
+        <div class="profile-picture mx-auto">
+            {% if form.instance.profile_photo %}
+                <img id="profile-image" src="{{ form.instance.profile_photo.url }}" alt="Profile Photo">
+            {% else %}
+                <img id="profile-image" src="{% static 'mainapp/user.png' %}" alt="Default Profile Photo">
+            {% endif %}
         </div>
-    </nav>
-    <div class="container">
-        <div class="profile-container">
-            <div class="profile-picture mx-auto">
-                {% if form.instance.profile_photo %}
-                    <script>
-                        console.log("{{ form.instance.profile_photo.url }}");
-                    </script>
-                    <img id="profile-image" src="{{ form.instance.profile_photo.url }}" alt="Profile Photo">
-                {% else %}
-                    <img id="profile-image" src="{% static 'mainapp/user.png' %}" alt="Default Profile Photo">
-                {% endif %}
-            </div>
-            <div>
-                <button class="btn btn-update" onclick="updatePhoto()">Update Photo</button>
-                <p id="uploaded-name" class="placeholder-name" style="display: none;"></p>
-            </div>
-            <form id="profile-form" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="file" id="id_profile_photo" name="profile_photo" accept="image/*" style="display: none;">
-                <div class="form-group">
-                    <label for="id_username">Username:</label>
-                                        {{ form.username }}
-                </div>
-                <div class="form-group">
-                    <label for="id_email">Email:</label>
-                    {{ form.email }}
-                </div>
-                <div class="form-group">
-                    <label for="id_first_name">First Name:</label>
-                    {{ form.first_name }}
-                </div>
-                <div class="form-group">
-                    <label for="id_last_name">Last Name:</label>
-                    {{ form.last_name }}
-                </div>
-                <div class="form-group">
-                    <label for="id_date_of_birth">Date of Birth:</label>
-                    {{ form.date_of_birth }}
-                </div>
-                <div class="form-group">
-                    <label for="id_address">Address:</label>
-                    {{ form.address }}
-                </div>
-                <div class="form-group">
-                    <label for="id_phone_number">Phone Number:</label>
-                    {{ form.phone_number }}
-                </div>
-                <a href="{% url 'mainapp:user_preferences' %}" class="btn btn-preferences">Edit Preferences</a>
-                <button type="button" class="btn btn-save" onclick="submitForm()">Save</button>
-            </form>
+        <div>
+            <button class="btn btn-update" onclick="updatePhoto()">Update Photo</button>
+            <p id="uploaded-name" class="placeholder-name" style="display: none;"></p>
         </div>
+        <form id="profile-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="id_profile_photo" name="profile_photo" accept="image/*" style="display: none;">
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label for="id_email">Email:</label>
+                {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label for="id_first_name">First Name:</label>
+                {{ form.first_name }}
+            </div>
+            <div class="form-group">
+                <label for="id_last_name">Last Name:</label>
+                {{ form.last_name }}
+            </div>
+            <div class="form-group">
+                <label for="id_date_of_birth">Date of Birth:</label>
+                {{ form.date_of_birth }}
+            </div>
+            <div class="form-group">
+                <label for="id_address">Address:</label>
+                {{ form.address }}
+            </div>
+            <div class="form-group">
+                <label for="id_phone_number">Phone Number:</label>
+                {{ form.phone_number }}
+            </div>
+            <a href="{% url 'mainapp:user_preferences' %}" class="btn btn-preferences">Edit Preferences</a>
+            <button type="submit" class="btn btn-save">Save</button>
+        </form>
     </div>
+</div>
     <script>
-        function updatePhoto() {
-            document.getElementById('id_profile_photo').click();
-        }
+    function updatePhoto() {
+        document.getElementById('id_profile_photo').click();
+    }
 
-        function submitForm() {
-            document.getElementById('profile-form').submit();
-        }
+    // Display uploaded name when photo is selected
+    document.getElementById('id_profile_photo').addEventListener('change', function(event) {
+        var uploadedName = document.getElementById('uploaded-name');
+        uploadedName.textContent = event.target.files[0].name;
+        uploadedName.style.display = 'block';
+    });
 
-        // Display uploaded name when photo is selected
-        document.getElementById('id_profile_photo').addEventListener('change', function(event) {
-            var uploadedName = document.getElementById('uploaded-name');
-            uploadedName.textContent = event.target.files[0].name;
-            uploadedName.style.display = 'block';
-        });
-    </script>
-</body>
-</html>
+    // Trigger file input click event when update photo button is clicked
+    document.querySelector('.btn-update').addEventListener('click', function() {
+        updatePhoto();
+    });
+</script>
+{% endblock %}
 

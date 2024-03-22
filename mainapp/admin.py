@@ -2,7 +2,7 @@ from django.contrib import admin
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from .models import UserProfile, Place, ChatMessage, UserChat, UserPreferences, PreferenceChoice, PreferenceCategory, Trip, TripPhoto, TripPreference, JoinRequest, ChatGroup
+from .models import UserProfile, Place, ChatMessage, UserChat, Review, Rating, UserPreferences, PreferenceChoice, PreferenceCategory, Trip, TripPhoto, TripPreference, Thread, JoinRequest, ChatGroup
 
 
 # Register your models here.
