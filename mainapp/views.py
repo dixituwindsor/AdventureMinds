@@ -1,36 +1,21 @@
 import os
-
 from django.contrib import messages
-from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import DetailView
-
 from AdventureMinds import settings
-from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice, TripPreference, TripPhoto, Trip, \
-    JoinRequest, Thread, ChatMessage, Place
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, TripPhoto
 from django.db.models import Q
-
-from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm
+from .forms import *
+from .models import *
 from uuid import uuid4
-from django.contrib import messages
+import django
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.contrib.auth.decorators import login_required
-from .models import Place, Rating, Review, User, UserPreferences, PreferenceCategory, ChatGroup, ChatMessage, \
-    TripPreference, PreferenceChoice, TripPhoto, Trip, JoinRequest
 from django.contrib.auth import authenticate, login, logout
-from .forms import  ReviewForm, RatingForm
-from .models import UserProfile
 from django.views.generic.detail import DetailView
+
 
 @login_required
 def user_profile(request):
@@ -47,17 +32,14 @@ def user_profile(request):
                 # Assign the unique filename to the profile_photo field
                 form.instance.profile_photo.name = 'profile/' + file_name
             # Print form data before saving
-            print(form.cleaned_data)
             form.save()
-            messages.success(request, 'Profile updated successfully.')
+            django.contrib.messages.success(request, 'Profile updated successfully.')
             return redirect('mainapp:profile')
     else:
         form = UserProfileForm(instance=user_profile_instance)
         user_profile_instance.user = request.user  # Set the user attribute
 
-
     return render(request, 'mainapp/profile.html', {'form': form})
-
 
 
 @login_required
@@ -89,7 +71,8 @@ def user_preferences(request):
             existing_preferences = user_profile_instance.preferences.get_selected_preferences()
 
         # Pass existing preferences to the form
-        form = UserPreferencesForm(instance=user_profile_instance.preferences, initial={'existing_preferences': existing_preferences})
+        form = UserPreferencesForm(instance=user_profile_instance.preferences,
+                                   initial={'existing_preferences': existing_preferences})
 
     return render(request, 'mainapp/userPreferences.html',{'form': form, 'existing_preferences': existing_preferences})
 
@@ -157,19 +140,24 @@ def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
 
+
 def message_button(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         second_person = get_object_or_404(User, id=user_id)
+        second_person_obj = UserProfile.objects.get(user=second_person)
         first_person = request.user
-        if first_person != second_person:
-            thread, created = Thread.objects.get_or_create(
-                first_person=first_person,
-                second_person=second_person,
+        first_person_obj = UserProfile.objects.get(user=first_person)
+
+        if first_person_obj != second_person_obj:
+            chat, created = UserChat.objects.get_or_create(
+                first_person=first_person_obj,
+                second_person=second_person_obj,
             )
             return redirect('mainapp:messages')
         else:
             return redirect('mainapp:messages')
+
 
 def getusers(request):
     users = UserProfile.objects.all().values('username', 'id')
@@ -182,12 +170,23 @@ class Thread:
 
 @login_required
 def messages(request):
-    threads = Thread.objects.filter(Q(first_person=request.user) | Q(second_person=request.user) | Q(group__members=request.user)).prefetch_related('chatmessage_thread').order_by('timestamp').distinct()
+
+    user_profile = UserProfile.objects.get(user=request.user)
+    last_active_userchat_id = request.session.get('last_active_userchat_id')
+    userchats = UserChat.objects.filter(Q(first_person=user_profile) | Q(second_person=user_profile) | Q(group__members=user_profile)).prefetch_related('chatmessage_userchat').order_by('timestamp').distinct()
 
     context = {
-        'Threads': threads
+        'userchats': userchats,
+        'last_active_userchat_id': last_active_userchat_id
     }
+
     return render(request, 'mainapp/messages.html', context)
+
+@login_required
+def set_last_active_userchat_id(request):
+    userchat_id = request.POST.get('userchat_id')
+    request.session['last_active_userchat_id'] = userchat_id
+    return JsonResponse({'status': 'success'})
 
 
 def create_group(request):
@@ -196,20 +195,30 @@ def create_group(request):
         selected_users = request.POST.getlist('selected_users')
 
         group = ChatGroup.objects.create(name=group_name)
-        group.members.add(request.user)
-        group.members.add(*selected_users)
-
         first_person = request.user
-        thread, created = Thread.objects.get_or_create(
-            first_person=first_person,
+        user_profile = UserProfile.objects.get(user=first_person)
+        group.members.add(user_profile)
+
+        if len(selected_users) < 1:
+            return HttpResponse("<h1>Please select At least one user.</h1>")
+
+        for selected_user in selected_users:
+            profile = UserProfile.objects.get(user=selected_user)
+            group.members.add(profile)
+
+        chat, created = UserChat.objects.get_or_create(
+            first_person=user_profile,
             group_id=group.id,
         )
 
+        django.contrib.messages.success(request, 'Group created successfully.')
+
         return redirect('mainapp:messages')
     else:
-        threads = Thread.objects.filter(Q(first_person=request.user) | Q(second_person=request.user) | Q(group__members=request.user)).prefetch_related('chatmessage_thread').order_by('timestamp')
+        user_profile = UserProfile.objects.get(user=request.user)
+        userchats = UserChat.objects.filter(Q(first_person=user_profile) | Q(second_person=user_profile) | Q(group__members=user_profile)).prefetch_related('chatmessage_userchat').order_by('timestamp')
         context = {
-            'Threads': threads
+            'userchats': userchats
         }
         return render(request, 'mainapp/create_group.html', context)
 
@@ -217,16 +226,16 @@ def create_group(request):
 @require_POST
 @csrf_exempt
 def mark_messages_as_read(request):
-    thread_id = request.POST.get('thread_id')
+    userchat_id = request.POST.get('userchat_id')
     user_id = request.POST.get('user_id')
-    if not thread_id:
-        return JsonResponse({'error': 'Thread ID is required'}, status=400)
+    if not userchat_id:
+        return JsonResponse({'error': 'UserChat ID is required'}, status=400)
     try:
-        thread = Thread.objects.get(id=thread_id)
-        ChatMessage.objects.filter(thread=thread).exclude(user__id=user_id).update(read=True)
+        userchat = UserChat.objects.get(id=userchat_id)
+        ChatMessage.objects.filter(userchat=userchat).exclude(user__id=user_id).update(read=True)
         return JsonResponse({'success': True})
-    except Thread.DoesNotExist:
-        return JsonResponse({'error': 'Thread not found'}, status=404)
+    except UserChat.DoesNotExist:
+        return JsonResponse({'error': 'UserChat not found'}, status=404)
 
 @login_required(login_url='mainapp:login')
 def add_trip(request):
@@ -370,12 +379,12 @@ def join_trip(request, trip_id):
     # Check if the user has already requested to join the trip
     existing_request = JoinRequest.objects.filter(trip=trip, user=user).exists()
     if existing_request:
-        messages.warning(request, "You have already requested to join this trip.")
+        django.contrib.messages.warning(request, "You have already requested to join this trip.")
         return redirect('mainapp:trip_detail', trip_id=trip_id)
 
     # Create a new join request
     join_request = JoinRequest.objects.create(trip=trip, user=user, status='pending')
-    messages.success(request, "Your join request has been submitted successfully.")
+    django.contrib.messages.success(request, "Your join request has been submitted successfully.")
     return redirect('mainapp:trip_detail', trip_id=trip_id)
 
 
@@ -400,6 +409,16 @@ def decline_join_request(request, trip_id, request_id):
 
     return redirect('mainapp:trip_detail', trip_id=trip_id)
 
+
+def contact_us(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, 'mainapp/contact_us.html')
+    else:
+        form = ContactForm()
+        return render(request, 'mainapp/contact_us.html', {'form': form})
 
 
 class PlaceDetailView(DetailView):
@@ -440,3 +459,4 @@ def add_rating(request, place_id):
             return redirect('place_detail', place_id=place.id)
 
     return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
+

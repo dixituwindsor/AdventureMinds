@@ -1,9 +1,10 @@
 from django.conf.urls.static import static
 from django.urls import path, include
-
 from AdventureMinds import settings
 from . import views
+from django.conf import settings
 from .views import PlaceDetailView
+
 
 app_name = 'mainapp'
 urlpatterns = [
@@ -35,5 +36,9 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('getusers/', views.getusers, name='getusers'),
     path('accounts/', include('django.contrib.auth.urls')),
-]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('mark_messages_as_read/', views.mark_messages_as_read, name='mark_messages_as_read'),
+    path('set_last_active_userchat_id/', views.set_last_active_userchat_id, name='set_last_active_userchat_id'),
+    path('contact_us/', views.contact_us, name='contact_us'),
+]
 
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
