@@ -56,7 +56,7 @@ html {
 }
 .msg_card_body {
   overflow-y: auto;
-  max-height: 65%;
+  max-height: 70%;
   padding-bottom: 20px;
 }
 .card-header {
@@ -167,16 +167,6 @@ html {
   height: 40px;
   width: 40px;
 }
-.online_icon {
-  position: absolute;
-  height: 15px;
-  width: 15px;
-  background-color: #4cd137;
-  border-radius: 50%;
-  bottom: 0.2em;
-  right: 0.4em;
-  border: 1.5px solid white;
-}
 .offline {
   background-color: #c23616 !important;
 }
@@ -193,15 +183,15 @@ html {
   font-size: 10px;
   color: rgba(255, 255, 255, 0.6);
 }
-.video_cam {
-  margin-left: 50px;
-  margin-top: 5px;
-}
-.video_cam span {
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  margin-right: 20px;
+.new_message_icon {
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  background-color: #4cd137;
+  border-radius: 50%;
+  bottom: 0.2em;
+  right: 0.4em;
+  border: 1.5px solid white;
 }
 .msg_cotainer {
   margin-top: auto;
@@ -231,6 +221,7 @@ html {
   bottom: -15px;
   color: rgba(255, 255, 255, 0.5);
   font-size: 10px;
+  white-space: nowrap;
 }
 .msg_time_send {
   position: absolute;
@@ -249,34 +240,6 @@ html {
   color: white;
   cursor: pointer;
   font-size: 20px;
-}
-.action_menu {
-  z-index: 1;
-  position: absolute;
-  padding: 15px 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  border-radius: 15px;
-  top: 30px;
-  right: 15px;
-  display: none;
-}
-.action_menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.action_menu ul li {
-  width: 100%;
-  padding: 10px 15px;
-  margin-bottom: 5px;
-}
-.action_menu ul li i {
-  padding-right: 10px;
-}
-.action_menu ul li:hover {
-  cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.2);
 }
 @media (max-width: 576px) {
   .contacts_card {
