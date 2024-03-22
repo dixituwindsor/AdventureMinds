@@ -1,5 +1,7 @@
 from django.urls import path, include
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'mainapp'
 urlpatterns = [
@@ -26,4 +28,7 @@ urlpatterns = [
     path('getusers/', views.getusers, name='getusers'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('mark_messages_as_read/', views.mark_messages_as_read, name='mark_messages_as_read'),
+    path('set_last_active_userchat_id/', views.set_last_active_userchat_id, name='set_last_active_userchat_id'),
+    path('contact_us/', views.contact_us, name='contact_us'),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

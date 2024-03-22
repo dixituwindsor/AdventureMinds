@@ -1,5 +1,5 @@
 from django import forms
-from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference
+from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference, ContactMessage
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
@@ -197,3 +197,10 @@ class SignupForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ['first_name', 'last_name', 'email', 'message']
+

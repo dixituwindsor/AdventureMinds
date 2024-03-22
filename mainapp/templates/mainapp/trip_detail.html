@@ -43,7 +43,13 @@
         .user-info {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 10px;
+            padding-right: 20px;
+        }
+        .message-btn{
+            margin-left: auto;
+            margin-right: 0;
         }
         .user-info img {
             width: 40px; /* Adjusted image size */
@@ -90,11 +96,17 @@
         </div>
         <div class="card-body">
             <div class="user-info">
-                <img src="{{ trip.uploader.userprofile.profile_photo.url }}" alt="{{ trip.uploader.username }}">
-                <span>{{ trip.uploader.username }}</span>
+                <div>
+                    <img src="{{ trip.uploader.userprofile.profile_photo.url }}" alt="{{ trip.uploader.username }}">
+                    <span>{{ trip.uploader.username }}</span>
+                </div>
                 {% if request.user.is_authenticated %}
                     {% if request.user != trip.uploader %}
-                        <button class="message-btn ml-auto">Message Uploader</button>
+                        <form action="{% url 'mainapp:message_button' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ trip.uploader.id }}">
+                            <input class="message-btn ml-auto" type="submit" name="message" value="Message Uploader">
+                        </form>
                     {% endif %}
                 {% endif %}
             </div>

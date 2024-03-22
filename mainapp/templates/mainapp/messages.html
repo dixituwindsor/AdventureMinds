@@ -34,23 +34,39 @@
                 </div>
                 <div class="card-body contacts_body">
                     <ui class="contacts" id="contacts">
-                        {% for thread in Threads %}
-                            <li class="{% if forloop.first %}active{% endif %} contact-li" chat-id="chat_{{ thread.id }}" style="cursor: pointer">
+                        {% for userchat in userchats %}
+                            <li class="{% if forloop.first or userchat.id == last_active_userchat_id %}active{% endif %} contact-li" chat-id="chat_{{ userchat.id }}" data-userchat-id="{{ userchat.id }}" style="cursor: pointer">
                                 <div class="d-flex bd-highlight">
                                     <div class="img_cont">
-                                        <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
-                                        {% if thread.chatmessage_thread.all and tread.chatmessage_thread.all.last.user != user and not thread.chatmessage_thread.all.last.read %}
+                                        {% if userchat.group %}
+                                            <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                        {% else %}
+                                            {% if userchat.first_person.user == user %}
+                                                {% if userchat.second_person.profile_photo %}
+                                                    <img src="{{ userchat.second_person.profile_photo.url }}" class="rounded-circle user_img">
+                                                {% else %}
+                                                    <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                                {% endif %}
+                                            {% else %}
+                                                {% if userchat.first_person.profile_photo %}
+                                                    <img src="{{ userchat.first_person.profile_photo.url }}" class="rounded-circle user_img">
+                                                {% else %}
+                                                    <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if userchat.chatmessage_userchat.all and tread.chatmessage_userchat.all.last.user != user and not userchat.chatmessage_userchat.all.last.read %}
                                             <span class="new_message_icon"></span>
                                         {% endif %}
                                     </div>
                                     <div class="user_info">
-                                        {% if thread.group %}
-                                            <span>{{ thread.group.name }}</span>
+                                        {% if userchat.group %}
+                                            <span>{{ userchat.group.name }}</span>
                                         {% else %}
-                                            {% if thread.first_person == user %}
-                                                <span>{{ thread.second_person.username }}</span>
+                                            {% if userchat.first_person.user == user %}
+                                                <span>{{ userchat.second_person.user.username }}</span>
                                             {% else %}
-                                                <span>{{ thread.first_person.username }}</span>
+                                                <span>{{ userchat.first_person.user.username }}</span>
                                             {% endif %}
                                         {% endif %}
                                     </div>
@@ -64,54 +80,78 @@
         </div>
         <div class="col-md-8 col-xl-6 chat h-100 mt-4">
             <div class="card">
-                {% for thread in Threads %}
-                    <div class="messages-wrapper  {% if forloop.first %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ thread.id }}" other-user-id="
-                                {% if thread.first_person == user %}
-                                    {% if not thread.group %}
-                                        {{ thread.second_person.id }}
+                {% for userchat in userchats %}
+                    <div class="messages-wrapper  {% if forloop.first %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ userchat.id }}" other-user-id="
+                                {% if userchat.first_person.user == user %}
+                                    {% if not userchat.group %}
+                                        {{ userchat.second_person.user.id }}
                                     {% else %}
-                                        {{ thread.group.id }}
+                                        {{ userchat.group.id }}
                                     {% endif %}
                                 {% else %}
-                                    {{ thread.first_person.id }}
+                                    {{ userchat.first_person.user.id }}
                                 {% endif %}
                             ">
                         <div class="card-header msg_head">
                             <div class="d-flex bd-highlight">
                                 <div class="img_cont">
-                                    <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                    {% if userchat.group %}
+                                        <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                    {% else %}
+                                        {% if userchat.first_person.user == user %}
+                                            {% if userchat.second_person.profile_photo %}
+                                                <img src="{{ userchat.second_person.profile_photo.url }}" class="rounded-circle user_img">
+                                            {% else %}
+                                                <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                            {% endif %}
+                                        {% else %}
+                                            {% if userchat.first_person.profile_photo %}
+                                                <img src="{{ userchat.first_person.profile_photo.url }}" class="rounded-circle user_img">
+                                            {% else %}
+                                                <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
                                 </div>
                                 <div class="user_info">
-                                    {% if thread.group %}
-                                        <span>{{ thread.group.name }}</span>
+                                    {% if userchat.group %}
+                                        <span>{{ userchat.group.name }}</span>
                                     {% else %}
-                                        {% if thread.first_person == user %}
-                                            <span>{{ thread.second_person.username }}</span>
+                                        {% if userchat.first_person.user == user %}
+                                            <span>{{ userchat.second_person.user.username }}</span>
                                         {% else %}
-                                            <span>{{ thread.first_person.username }}</span>
+                                            <span>{{ userchat.first_person.user.username }}</span>
                                         {% endif %}    
                                     {% endif %}
-                                    <p>{{ thread.chatmessage_thread.all.count }} messages</p>
+                                    <p>{{ userchat.chatmessage_userchat.all.count }} messages</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="card-body msg_card_body">
-                            {% for chat in thread.chatmessage_thread.all %}
-                                {% if chat.user == user %}
+                            {% for chat in userchat.chatmessage_userchat.all %}
+                                {% if chat.user.user == user %}
                                     <div class="d-flex mb-4 replied">
                                         <div class="msg_cotainer_send">
                                             {{ chat.message }}
                                             <span class="msg_time_send">{{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
                                         </div>
                                         <div class="img_cont_msg">
-                                            <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
+                                            {% if chat.user.profile_photo %}
+                                                <img src="{{chat.user.profile_photo.url }}" class="rounded-circle user_img_msg">
+                                            {% else %}
+                                                <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
+                                            {% endif %}
                                         </div>
                                     </div>
                                 {% else %}
                                     <div class="d-flex mb-4 received">
                                         <div class="img_cont_msg">
-                                            <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
+                                            {% if chat.user.profile_photo %}
+                                                <img src="{{chat.user.profile_photo.url }}" class="rounded-circle user_img_msg">
+                                            {% else %}
+                                                <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
+                                            {% endif %}
                                         </div>
                                         <div class="msg_cotainer">
                                             {{ chat.message }}
@@ -150,10 +190,50 @@
 
     <script>
         function openPopup() {
-            var popup = window.open('{% url "mainapp:create_group" %}', 'popup', 'width=400,height=300');
+            var screenWidth = window.screen.width;
+            var screenHeight = window.screen.height;
+            var popupWidth = 400;
+            var popupHeight = 300;
+            var left = (screenWidth - popupWidth) / 2;
+            var top = (screenHeight - popupHeight) / 2;
+    
+            // Open the popup window at the center position
+            var popup = window.open('{% url "mainapp:create_group" %}', 'popup', 'width=400,height=300,left=' + left + ',top=' + top);
             popup.focus();
         }
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        {% if messages %}
+            {% for message in messages %}
+                window.opener.location.reload();
+                window.close();
+            {% endfor %}
+        {% endif %}
+    });
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            $('.contact-li').on('click', function() {
+                var userchat_id = $(this).data('userchat-id'); // Assuming you have a data attribute for the user ID
+                $.ajax({
+                    url: '/set_last_active_userchat_id/',
+                    type: 'POST',
+                    data: {
+                        'userchat_id': userchat_id,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                        }
+                    }
+                });
+            });
+        })
+    </script>
+        
 
 </body>
 </html>

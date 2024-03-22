@@ -165,6 +165,9 @@
         <div class="profile-container">
             <div class="profile-picture mx-auto">
                 {% if form.instance.profile_photo %}
+                    <script>
+                        console.log("{{ form.instance.profile_photo.url }}");
+                    </script>
                     <img id="profile-image" src="{{ form.instance.profile_photo.url }}" alt="Profile Photo">
                 {% else %}
                     <img id="profile-image" src="{% static 'mainapp/user.png' %}" alt="Default Profile Photo">
