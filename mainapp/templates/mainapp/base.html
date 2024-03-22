@@ -187,7 +187,7 @@
 
         /* Updated color for navbar */
         .navbar {
-            background-color: #1a472a; /* Updated color */
+            background-color: rgba(26, 71, 42, 0.72); 
         }
 
         .navbar .navbar-nav .nav-link {
@@ -237,7 +237,7 @@
 
         /* Profile popover */
         .popover-header {
-            background-color: #1a472a;
+            background-color: rgba(26, 71, 42, 0.72);
             color: white;
         }
         .profile-image {
@@ -255,43 +255,54 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <a class="navbar-brand" href="#">Navbar</a>
+<nav class="navbar navbar-expand-lg navbar-dark"style="
+    padding-bottom: 12px;
+    padding-top: 12px;
+">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <div class="collapse navbar-collapse" id="navbarNavDropdown" style="
+    height: 45px;
+">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="#">Home</a>
+                <a class="nav-link" href="{% url 'mainapp:homepage' %}" style=" margin-right: 15px;">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Add Trip</a>
+                <a class="nav-link" href="{% url 'mainapp:add_trip' %}"style=" margin-right: 15px;">Add Trip</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"style=" margin-right: 15px;">Calender</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"style=" margin-right: 15px;">Blogs</a>
             </li>
         </ul>
-        <div class="mx-auto">
-            <!-- Center the search form -->
-            <form class="form-inline my-2 my-lg-0" id="search-form" action="{% url 'mainapp:trip_list' %}" method="get">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search trips" aria-label="Search" id="search-input" name="query">
-                <div id="search-suggestions">
-                    {% for search_query in saved_searches %}
-                        <div class="search-suggestion">{{ search_query }}</div>
-                    {% endfor %}
-                </div>
-                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
-            </form>
+        <div class="mx-auto position-relative">
+    <!-- Center the search form -->
+    <form class="form-inline my-2 my-lg-0" id="search-form" action="{% url 'mainapp:trip_list' %}" method="get">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search trips" aria-label="Search" id="search-input" name="query" style="width: 300px; margin-right: 10px;">
+        <!-- Modify the search suggestions container to set margin-top equal to navbar height -->
+        <div id="search-suggestions" class="position-absolute bg-white border rounded" style="max-width: 300px; top: 100%; left: 0; display: none; margin-top: 0; width: 300px;">
+            {% for search_query in saved_searches %}
+                <div class="search-suggestion">{{ search_query }}</div>
+            {% endfor %}
         </div>
+        <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+    </form>
+</div>
+
         <!-- Profile Button Trigger -->
-        <img src="https://www.iconsdb.com/icons/preview/white/chat-4-xxl.png" alt="Messages" class="small-icon" onclick="location.href='#';">
-        <img src="https://www.iconsdb.com/icons/preview/white/bell-2-xxl.png" alt="Notifications" class="small-icon" onclick="location.href='#';">
-        <!-- Profile Image Trigger -->
-        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile Image" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
-    <a href="#">Profile</a><br>
-    <a href="#">Logout</a><br>
-    <a href="#">About Us</a><br>
-    <a href="#">Terms Page</a>
+        <img src="https://www.iconsdb.com/icons/preview/white/chat-4-xxl.png" alt="Messages" class="small-icon" onclick="location.href='#';" style=" margin-right: 10px;">
+            <img src="{{ user.userprofile.profile_photo.url }}" alt="Profile Image" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
+    <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
+    <a href="{% url 'mainapp:logout' %}">Logout</a><br>
+{#    <a href="{% url 'mainapp:about_us' %}">About Us</a><br>#}
+{#    <a href="{% url 'mainapp:terms_page' %}">Terms Page</a>#}
 '>
-    </div>
+</div>
+
 </nav>
 
 <div class="container-fluid">
@@ -321,7 +332,12 @@
         $('#search-input').click(function() {
             $('#search-suggestions').toggle();
         });
-        // Make search suggestions clickable
+        // Close search suggestions when clicking outside
+        $(document).click(function(event) {
+            if (!$(event.target).closest('#search-form').length) {
+                $('#search-suggestions').hide();
+            }
+        });
 
          $('.wish-list-btn button').click(function() {
         $(this).find('i').toggleClass('text-white text-danger'); // Toggle classes to change color

@@ -1,5 +1,19 @@
 import os
 
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.views.generic import DetailView
+
+from AdventureMinds import settings
+from .models import UserProfile, UserPreferences, PreferenceCategory, PreferenceChoice, TripPreference, TripPhoto, Trip, \
+    JoinRequest, Thread, ChatMessage, Place
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse, get_object_or_404
+from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, TripPhoto
 from django.db.models import Q
 
 from django.urls import reverse
@@ -25,6 +39,7 @@ def user_profile(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=user_profile_instance)
         if form.is_valid():
+            print(form.cleaned_data)
             # Check if 'profile_photo' exists in request.FILES
             if 'profile_photo' in request.FILES:
                 # Generate a unique filename
@@ -57,20 +72,22 @@ def user_preferences(request):
         form = UserPreferencesForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            preferences = UserPreferences.objects.create(user_profile=user_profile_instance)
-            for category_name, choices in cleaned_data.items():
-                category = PreferenceCategory.objects.get(name=category_name)
-                preferences.preferences.add(*choices)
+            if user_profile_instance:
+                preferences = UserPreferences.objects.create(user_profile=user_profile_instance)
+                for category_name, choices in cleaned_data.items():
+                    category = PreferenceCategory.objects.get(name=category_name)
+                    preferences.preferences.add(*choices)
 
-            # Assign the created preferences to the UserProfile instance
-            user_profile_instance.preferences = preferences
-            user_profile_instance.save()
+                # Assign the created preferences to the UserProfile instance
+                user_profile_instance.preferences = preferences
+                user_profile_instance.save()
 
             return redirect(reverse('mainapp:profile'))
     else:
-        # Retrieve user's existing preferences if they exist
-        existing_preferences = user_profile_instance.preferences.get_selected_preferences() if user_profile_instance else None
-        print("Existing Preferences:", existing_preferences)  # Print existing preferences for debugging
+        existing_preferences = None
+        if user_profile_instance and user_profile_instance.preferences:
+            existing_preferences = user_profile_instance.preferences.get_selected_preferences()
+
         # Pass existing preferences to the form
         form = UserPreferencesForm(instance=user_profile_instance.preferences, initial={'existing_preferences': existing_preferences})
 
@@ -216,29 +233,24 @@ def add_trip(request):
     if request.method == 'POST':
         trip_form = AddTripForm(request.POST, request.FILES, user=request.user)
         preference_form = TripPreferenceForm(request.POST)
+        print("POST request received")
         if trip_form.is_valid() and preference_form.is_valid():
-
-            # Save the trip data
+            print("Forms are valid")
             trip = trip_form.save(commit=False)
             trip.uploader = request.user
+            trip.save()
 
-            # Create a new TripPreference object
-            trip_preference = TripPreference.objects.create()
+            trip_preference = preference_form.save(commit=False)
+            trip_preference.save()
 
-            # Retrieve the selected preference choices from the form data
-            selected_preferences = [int(choice_id) for field in preference_form.cleaned_data.values() for choice_id in
-                                    field]
-
-            # Get the PreferenceChoice objects corresponding to the selected preference choices
+            selected_preferences = [int(choice_id) for field in preference_form.cleaned_data.values() for choice_id in field]
             preferences = PreferenceChoice.objects.filter(id__in=selected_preferences)
-
-            # Associate preferences with the TripPreference object
             trip_preference.preferences.set(preferences)
 
             # Link the TripPreference object to the Trip object
             trip.preferences = trip_preference
 
-            # Save the Trip object
+            # Save the Trip object again to update the preferences field
             trip.save()
 
             # Save uploaded photos
@@ -252,11 +264,18 @@ def add_trip(request):
             print("Uploaded photos:", [photo.__dict__ for photo in trip.photos.all()])
 
             return redirect('mainapp:homepage')  # Redirect to some success URL
+        else:
+            print("Trip form errors:", trip_form.errors)
+            print("Preference form errors:", preference_form.errors)
     else:
         trip_form = AddTripForm(user=request.user)
         preference_form = TripPreferenceForm()
+
     return render(request, 'mainapp/add_trip.html', {'trip_form': trip_form, 'preference_form': preference_form})
 
+
+
+@login_required
 def trip_list(request):
     if request.user.is_authenticated:
         # For logged-in users
@@ -270,7 +289,8 @@ def trip_list(request):
         # Apply search filter if query parameter exists
         query = request.GET.get('query')
         if query:
-            trips = trips.filter(Q(place_nameicontains=query) | Q(placeaddress_icontains=query))
+            trips = trips.filter(Q(place__name__icontains=query) | Q(place__address__icontains=query)| Q(place__description__icontains=query))
+
 
         if 'my_trips' in request.GET:
             trips = trips.filter(uploader=request.user)
@@ -379,6 +399,7 @@ def decline_join_request(request, trip_id, request_id):
     join_request.delete()
 
     return redirect('mainapp:trip_detail', trip_id=trip_id)
+
 
 
 class PlaceDetailView(DetailView):

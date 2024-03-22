@@ -20,17 +20,12 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=12, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    interested_places = models.ManyToManyField(Place, blank=True)
+    profile_photo = models.ImageField(upload_to='profile/', null=True, blank=True)
+    # interested_places = models.ManyToManyField(Place, null=True, blank=True)
     preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
-    total_reviews = models.PositiveIntegerField(default=0)
-    total_ratings = models.PositiveIntegerField(default=0)
-    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
-
     def __str__(self):
         return self.user.username
 
-    def total_reviews(self):
-        return self.review_set.count()
 
 
 class PreferenceCategory(models.Model):
@@ -64,6 +59,8 @@ class UserPreferences(models.Model):
 
 class TripPreference(models.Model):
     preferences = models.ManyToManyField(PreferenceChoice)
+
+
 
 
 class PreferenceCategory(models.Model):
@@ -221,19 +218,5 @@ class Rating(models.Model):
     def __str__(self):
         return f"{self.user}'s {self.rating}- star rating for {self.place}"
 
-# class UserProfile(User):
-#     interested_places = models.ManyToManyField(Place)
-#     total_reviews = models.PositiveIntegerField(default=0)
-#     total_ratings = models.PositiveIntegerField(default=0)
-#     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
-#     def __str__(self):
-#         return self.get_username()
-#
-#     def total_reviews(self):
-#         return self.review_set.count()
-#
-#     def average_rating(self):
-#         if self.total_reviews() > 0:
-#             return self.review_set.all().aggregate(models.Avg('rating'))['rating__avg']
-#         return 0
+
 
