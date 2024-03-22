@@ -12,10 +12,10 @@ from django.core.exceptions import ValidationError
 class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
-    description = models.TextField(max_length=200, blank=True)
+    description = models.TextField(max_length=1000, blank=True)
 
     def __str__(self):
-        return 'pk=' +str (self.pk)+', name='+self.name
+        return self.name
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=False, blank=True, primary_key=True, default=None)
@@ -59,39 +59,10 @@ class UserPreferences(models.Model):
     def get_selected_preferences(self):
         return [preference.value for preference in self.preferences.all()]
 
+
+
 class TripPreference(models.Model):
     preferences = models.ManyToManyField(PreferenceChoice)
-
-
-
-
-class PreferenceCategory(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-class PreferenceChoice(models.Model):
-    category = models.ForeignKey(PreferenceCategory, on_delete=models.CASCADE)
-    value = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.category.name}: {self.value}"
-
-
-class UserPreferences(models.Model):
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True, blank=True)
-    preferences = models.ManyToManyField(PreferenceChoice)
-
-    def __str__(self):
-        if self.user_profile:
-            return f"Preferences for {self.user_profile.user.username}"
-        else:
-            return "No associated user profile"
-
-    def get_selected_preferences(self):
-        return [preference.value for preference in self.preferences.all()]
 
 
 
@@ -122,6 +93,8 @@ class Trip(models.Model):
 
     def _str_(self):
         return self.title
+
+
 class TripPhoto(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='trip_photos')
     photo = models.ImageField(upload_to='')
@@ -145,13 +118,6 @@ class JoinRequest(models.Model):
 
         return f"Request to join {self.trip} by {self.user}"
 
-
-
-
-
-
-class TripPreference(models.Model):
-    preferences = models.ManyToManyField(PreferenceChoice)
 
 
 
@@ -237,16 +203,24 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.id), self.user.first_name
+        return self.user.first_name
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    rating = models.PositiveIntegerField(choices=(('1','1 star'),('b','2 star'),('c', '3 star'),('d', '4 star'),('e', '5 star')))
+    RATING_CHOICES = (
+        (1, '1 star'),
+        (2, '2 star'),
+        (3, '3 star'),
+        (4, '4 star'),
+        (5, '5 star')
+    )
+    rating = models.PositiveIntegerField(choices=RATING_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'place')
 
     def __str__(self):
-        return f"{self.user}'s {self.rating}- star rating for {self.place}"
+        return f"{self.user}'s {self.rating}-star rating for {self.place}"
+
