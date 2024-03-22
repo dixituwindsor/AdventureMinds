@@ -6,6 +6,8 @@ from django import forms
 from .models import UserPreferences, PreferenceCategory
 from multiupload.fields import MultiFileField
 from .models import Trip
+from titlecase import titlecase
+
 
 
 from django.contrib.auth.models import User
@@ -123,7 +125,7 @@ class AddTripForm(forms.ModelForm):
         }
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'place': forms.Select(attrs={'class': 'form-select'}),
+            'place': forms.Select(attrs={'class': 'form-select form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -151,22 +153,25 @@ class AddTripForm(forms.ModelForm):
         return trip
 
 
-class TripPreferenceForm(forms.ModelForm):
-    class Meta:
-        model = TripPreference
-        fields = []
 
+class TripPreferenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         categories = PreferenceCategory.objects.all()
         for category in categories:
+            label = titlecase(category.name.replace('_', ' '))
             choices = PreferenceChoice.objects.filter(category=category)
             choices_list = [(choice.pk, choice.value) for choice in choices]
             self.fields[f'{category.name}'] = forms.MultipleChoiceField(
                 choices=choices_list,
                 widget=forms.CheckboxSelectMultiple,
-                label=category.name
+                label=label,
+            required = False
             )
+
+    class Meta:
+        model = TripPreference
+        fields = []
 
 
 
@@ -197,3 +202,15 @@ class SignupForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
+
+
+
+# class ReviewForm(forms.ModelForm):
+#     class Meta:
+#         model = Review
+#         fields = ['review', 'place', 'user']
+#
+# class RatingForm(forms.ModelForm):
+#     class Meta:
+#         model = Rating
+#         fields = ['rating', 'place', 'user']

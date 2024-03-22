@@ -15,7 +15,8 @@ admin.site.register(Trip)
 admin.site.register(TripPhoto)
 admin.site.register(TripPreference)
 admin.site.register(JoinRequest)
-
+# admin.site.register(Review)
+# admin.site.register(Rating)
 
 class ChatMessage(admin.TabularInline):
     model = ChatMessage

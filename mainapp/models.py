@@ -22,11 +22,16 @@ class UserProfile(models.Model):
     address = models.CharField(max_length=200, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     profile_photo = models.ImageField(upload_to='profile/', null=True, blank=True)
-    interested_places = models.ManyToManyField(Place, null=True, blank=True)
+    # interested_places = models.ManyToManyField(Place, null=True, blank=True)
     preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
+    # total_reviews = models.PositiveIntegerField(default=0, blank=True, null=True)
+    # total_ratings = models.PositiveIntegerField(default=0, blank=True, null=True)
+    # average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
+
+
 
 
 class PreferenceCategory(models.Model):
@@ -146,3 +151,7 @@ class ChatMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+
+
+
