@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib.auth.models import User, AbstractUser
+from django.core.exceptions import ValidationError
+
 
 
 # Create your models here.
@@ -153,7 +155,7 @@ class TripPreference(models.Model):
 
 
 
-class ThreadManager(models.Manager):
+class userchatManager(models.Manager):
     def by_user(self, **kwargs):
         user = kwargs.get('user')
         lookup = models.Q(first_person=user) | models.Q(second_person=user)
@@ -163,22 +165,43 @@ class ThreadManager(models.Manager):
 
 class ChatGroup(models.Model):
     name = models.CharField(max_length=100)
-    members = models.ManyToManyField(User)
+    members = models.ManyToManyField(UserProfile)
 
     def __str__(self):
         return self.name
 
 
-class Thread(models.Model):
-    first_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
-                                     related_name='thread_first_person')
-    second_person = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,
-                                      related_name='thread_second_person')
+class UserChat(models.Model):
+    first_person = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True,
+                                     related_name='userchat_first_person')
+    second_person = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True,
+                                      related_name='userchat_second_person')
     group = models.ForeignKey(ChatGroup, on_delete=models.CASCADE, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ['first_person', 'second_person', 'group']
+
+    def clean(self):
+        if self.first_person == self.second_person:
+            raise ValidationError("First person and second person cannot be the same.")
+
+        if self.group:
+            if self.second_person is not None:
+                raise ValidationError("In a group chat, second person must be null.")
+
+            if UserChat.objects.filter(first_person=self.first_person, group=self.group).exists():
+                raise ValidationError("A chat with the same first user and group already exists.")
+        else:
+            if UserChat.objects.filter(first_person=self.second_person, second_person=self.first_person,
+                                     group=None).exists():
+                raise ValidationError("Conversation between these users already exists.")
+
+            if UserChat.objects.filter(first_person=self.first_person, second_person=self.second_person).exists():
+                raise ValidationError("Conversation between these users already exists.")
+
+            if not self.group and not self.second_person:
+                raise ValidationError("Second person or group is required.")
 
     def __str__(self):
         if self.group:
@@ -188,14 +211,24 @@ class Thread(models.Model):
 
 
 class ChatMessage(models.Model):
-    thread = models.ForeignKey(Thread, null=True, blank=True, on_delete=models.CASCADE,
-                               related_name='chatmessage_thread')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    userchat = models.ForeignKey(UserChat, null=True, blank=True, on_delete=models.CASCADE,
+                                 related_name='chatmessage_userchat')
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
+    
 
-        # return f"{self.sender.username} -> {self.recipient.username if self.recipient else self.chat_group.name}: {self.content}"
+class ContactMessage(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name} - {self.timestamp}'
+
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -217,6 +250,3 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.user}'s {self.rating}- star rating for {self.place}"
-
-
-
