@@ -1,5 +1,4 @@
 import os
-from uuid import uuid4
 
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -15,14 +14,23 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip, TripPreference, PreferenceChoice, TripPhoto
-from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
-from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm, TripSearchForm
 
-
-# Create your views here.
+from django.urls import reverse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from .forms import UserProfileForm, UserPreferencesForm, AddTripForm, TripPreferenceForm
+from uuid import uuid4
+from django.contrib import messages
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Place, Rating, Review, User, UserPreferences, PreferenceCategory, ChatGroup, ChatMessage, \
+    TripPreference, PreferenceChoice, TripPhoto, Trip, JoinRequest
+from django.contrib.auth import authenticate, login, logout
+from .forms import  ReviewForm, RatingForm
+from .models import UserProfile
+from django.views.generic.detail import DetailView
 
 @login_required
 def user_profile(request):
@@ -83,36 +91,20 @@ def user_preferences(request):
         # Pass existing preferences to the form
         form = UserPreferencesForm(instance=user_profile_instance.preferences, initial={'existing_preferences': existing_preferences})
 
+    return render(request, 'mainapp/userPreferences.html',{'form': form, 'existing_preferences': existing_preferences})
+
+
+def homepage(request):
+    template = "mainapp/homepage2.html"
+    context = {}
+    return render(request=request, template_name=template, context=context)
     # Pass existing preferences to the template context
-    return render(request, 'mainapp/userPreferences.html', {'form': form, 'existing_preferences': existing_preferences})
 
 
 def terms_conditions(request):
     template = "mainapp/terms_conditions.html"
     context = {}
     return render(request=request, template_name=template, context=context)
-
-
-@login_required
-def chat_app(request, user_id=None):
-    if user_id:
-        # Assuming the logged-in user is the first person in the thread
-        first_person = request.user
-        second_person = get_object_or_404(User, id=user_id)
-        thread, created = Thread.objects.get_or_create(
-            first_person=first_person,
-            second_person=second_person,
-        )
-        messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp')
-        context = {
-            'thread': thread,
-            'messages': messages,
-        }
-        return render(request, 'mainapp/messages.html', context)
-    else:
-        users = User.objects.all()
-        context = {'users': users}
-        return render(request, 'mainapp/messages.html', context)
 
 
 # signup page
@@ -143,9 +135,6 @@ def user_signup(request):
         return render(request, 'registration/signup.html')
 
 
-
-
-
 # login page
 def user_login(request):
     if request.method == 'POST':
@@ -163,39 +152,81 @@ def user_login(request):
         return render(request, 'registration/login.html')
 
 
-@login_required
-def homepage(request):
-    return render(request, "mainapp/homepage1.html")
-
 # logout page
 def user_logout(request):
     logout(request)
     return redirect('mainapp:login')
 
+def message_button(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        second_person = get_object_or_404(User, id=user_id)
+        first_person = request.user
+        if first_person != second_person:
+            thread, created = Thread.objects.get_or_create(
+                first_person=first_person,
+                second_person=second_person,
+            )
+            return redirect('mainapp:messages')
+        else:
+            return redirect('mainapp:messages')
+
 def getusers(request):
     users = UserProfile.objects.all().values('username', 'id')
     return JsonResponse(list(users), safe=False)
 
+
+class Thread:
+    pass
+
+
 @login_required
-def chat_app(request, user_id=None):
-    if user_id:
-        # Assuming the logged-in user is the first person in the thread
+def messages(request):
+    threads = Thread.objects.filter(Q(first_person=request.user) | Q(second_person=request.user) | Q(group__members=request.user)).prefetch_related('chatmessage_thread').order_by('timestamp').distinct()
+
+    context = {
+        'Threads': threads
+    }
+    return render(request, 'mainapp/messages.html', context)
+
+
+def create_group(request):
+    if request.method == 'POST':
+        group_name = request.POST.get('group_name')
+        selected_users = request.POST.getlist('selected_users')
+
+        group = ChatGroup.objects.create(name=group_name)
+        group.members.add(request.user)
+        group.members.add(*selected_users)
+
         first_person = request.user
-        second_person = get_object_or_404(User, id=user_id)
         thread, created = Thread.objects.get_or_create(
             first_person=first_person,
-            second_person=second_person,
+            group_id=group.id,
         )
-        messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp')
-        context = {
-            'thread': thread,
-            'messages': messages,
-        }
-        return render(request, 'mainapp/messages.html', context)
+
+        return redirect('mainapp:messages')
     else:
-        users = User.objects.all()
-        context = {'users': users}
-        return render(request, 'mainapp/messages.html', context)
+        threads = Thread.objects.filter(Q(first_person=request.user) | Q(second_person=request.user) | Q(group__members=request.user)).prefetch_related('chatmessage_thread').order_by('timestamp')
+        context = {
+            'Threads': threads
+        }
+        return render(request, 'mainapp/create_group.html', context)
+
+
+@require_POST
+@csrf_exempt
+def mark_messages_as_read(request):
+    thread_id = request.POST.get('thread_id')
+    user_id = request.POST.get('user_id')
+    if not thread_id:
+        return JsonResponse({'error': 'Thread ID is required'}, status=400)
+    try:
+        thread = Thread.objects.get(id=thread_id)
+        ChatMessage.objects.filter(thread=thread).exclude(user__id=user_id).update(read=True)
+        return JsonResponse({'success': True})
+    except Thread.DoesNotExist:
+        return JsonResponse({'error': 'Thread not found'}, status=404)
 
 @login_required(login_url='mainapp:login')
 def add_trip(request):
@@ -244,7 +275,6 @@ def add_trip(request):
 
 
 
-
 @login_required
 def trip_list(request):
     if request.user.is_authenticated:
@@ -261,7 +291,7 @@ def trip_list(request):
         if query:
             trips = trips.filter(Q(place__name__icontains=query) | Q(place__address__icontains=query)| Q(place__description__icontains=query))
 
-        # Filter "My Trips" if requested
+
         if 'my_trips' in request.GET:
             trips = trips.filter(uploader=request.user)
 
@@ -302,8 +332,6 @@ def trip_list(request):
         trips = Trip.objects.all()
         return render(request, 'mainapp/guest_trip_list.html', {'trips': trips})
 
-
-
 def calculate_similarity(user_preferences, trip_preferences):
     user_pref_set = set(user_preferences.values_list('id', flat=True))
     trip_pref_set = set(trip_preferences.values_list('id', flat=True))
@@ -317,8 +345,6 @@ def calculate_similarity(user_preferences, trip_preferences):
     jaccard_similarity = intersection / union
 
     return jaccard_similarity
-
-
 
 
 
@@ -375,42 +401,42 @@ def decline_join_request(request, trip_id, request_id):
     return redirect('mainapp:trip_detail', trip_id=trip_id)
 
 
-# class PlaceDetailView(DetailView):
-#     model = Place
-#     template_name = 'mainapp/place_detail.html'
-#     context_object_name = 'trip'
-#
-# # @login_required
-# def add_review(request, place_id):
-#     place = Place.objects.get(id=place_id)
-#     reviews = Review.objects.filter(place=place)
-#     review_form = ReviewForm()
-#
-#     if request.method == 'POST':
-#         review_form = ReviewForm(request.POST)
-#         if review_form.is_valid():
-#             reviews = review_form.save(commit=False)
-#             reviews.User = request.User
-#             reviews.place = place
-#             reviews.save()
-#             return redirect('mainapp:add_review', place_id=place.id)
-#
-#     return render(request, 'mainapp/add_review.html', {'review_form': review_form, 'trip': place, 'review': reviews})
-#
-# # @login_required
-# def add_rating(request, place_id):
-#     place = Place.objects.get(id=place_id)
-#     rating = Rating.objects.filter(place=place)
-#     rating_form = RatingForm()
-#
-#     if request.method == 'POST':
-#         rating_form = RatingForm(request.POST)
-#         if rating_form.is_valid():
-#             rating = rating_form.save(commit=False)
-#             rating.user = request.user
-#             rating.place = place
-#             rating.save()
-#             return redirect('place_detail', place_id=place.id)
-#
-#     return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
-#
+
+class PlaceDetailView(DetailView):
+    model = Place
+    template_name = 'mainapp/place_detail.html'
+    context_object_name = 'trip'
+
+# @login_required
+def add_review(request, place_id):
+    place = Place.objects.get(id=place_id)
+    reviews = Review.objects.filter(place=place)
+    review_form = ReviewForm()
+
+    if request.method == 'POST':
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            reviews = review_form.save(commit=False)
+            reviews.User = request.User
+            reviews.place = place
+            reviews.save()
+            return redirect('mainapp:add_review', place_id=place.id)
+
+    return render(request, 'mainapp/add_review.html', {'review_form': review_form, 'trip': place, 'review': reviews})
+
+# @login_required
+def add_rating(request, place_id):
+    place = Place.objects.get(id=place_id)
+    rating = Rating.objects.filter(place=place)
+    rating_form = RatingForm()
+
+    if request.method == 'POST':
+        rating_form = RatingForm(request.POST)
+        if rating_form.is_valid():
+            rating = rating_form.save(commit=False)
+            rating.user = request.user
+            rating.place = place
+            rating.save()
+            return redirect('place_detail', place_id=place.id)
+
+    return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
