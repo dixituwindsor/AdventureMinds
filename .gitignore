@@ -1,0 +1,6 @@
+# created by virtualenv automatically
+
+mainapp/migrations
+.venv
+.idea
+db.sqlite3

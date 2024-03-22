@@ -43,3 +43,7 @@ class RatingForm(forms.ModelForm):
         model = Rating
         fields = ['rating', 'place', 'user']
 
+# class BlogForm(forms.ModelForm):
+#     class Meta:
+#         model = Post
+#         fields = ['title', 'body', 'place']

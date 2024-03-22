@@ -112,6 +112,18 @@ class Rating(models.Model):
     def __str__(self):
         return f"{self.user}'s {self.rating}- star rating for {self.place}"
 
+# class Post(models.Model):
+#     place = models.ForeignKey(Place, on_delete=models.CASCADE)
+#     title = models.CharField(max_length=255)
+#     content = models.TextField()
+#     author = models.ForeignKey(User, on_delete=models.CASCADE)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#
+#     def __str__(self):
+#         return self.title
+
+
+
 # class UserProfile(User):
 #     interested_places = models.ManyToManyField(Place)
 #     total_reviews = models.PositiveIntegerField(default=0)

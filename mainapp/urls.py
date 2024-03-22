@@ -13,4 +13,7 @@ urlpatterns = [
     path('add_rating/<int:place_id>/', views.add_rating, name='add_rating'),
     path('add_review/<int:place_id>/', views.add_review, name='add_review'),
     path('place/<int:pk>/', PlaceDetailView.as_view(), name='place_detail'),
+    # path('', views.add_blog, name='post_list'),
+    # path('post/<int:pk>/', views.post_detail, name='post_detail'),
+
 ]

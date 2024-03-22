@@ -135,7 +135,6 @@ def add_review(request, place_id):
 
 # @login_required
 def add_rating(request, place_id):
-    user = User.ForeignKey(User, on_delete=models.CASCADE)
     place = Place.objects.get(id=place_id)
     rating = Rating.objects.filter(place=place)
     rating_form = RatingForm()
@@ -151,3 +150,11 @@ def add_rating(request, place_id):
 
     return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
 
+
+# def add_blog(request):
+#     posts = Post.objects.all()
+#     return render(request, 'mainapp/blog_post.html', {'posts': posts})
+#
+# def post_detail(request, pk):
+#     post = get_object_or_404(Post, pk=pk)
+#     return render(request, 'blog/post_detail.html', {'post': post})
