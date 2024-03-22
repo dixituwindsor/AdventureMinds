@@ -20,7 +20,7 @@
                 </div>
                 {% if request.user.is_authenticated %}
                     {% if request.user != trip.uploader %}
-                        <form action="{% url 'mainapp:message_button' %}" method="post">
+                        <form class="ml-auto" action="{% url 'mainapp:message_button' %}" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="user_id" value="{{ trip.uploader.id }}">
                             <input class="message-btn ml-auto" type="submit" name="message" value="Message Uploader">
@@ -36,21 +36,26 @@
             <p class="card-text"><strong>Cost Per Person:</strong> ${{ trip.cost_per_person }}</p>
             <p class="card-text"><strong>Max Capacity:</strong> {{ trip.max_capacity }}</p>
             <p class="card-text"><strong>Participants:</strong></p>
-            <ul>
-                {% for participant in trip.participants.all %}
-                <li>
-                    <div class="user-info">
-{#                        <img src="{{ participant.userprofile.profile_photo.url }}" alt="{{ participant.username }}">#}
-                        <span>{{ participant.first_name  }} {{ participant.last_name  }}</span>
-                        {% if request.user.is_authenticated %}
-                            {% if request.user != participant %}
-                                <button class="message-btn ml-auto">Message</button>
-                            {% endif %}
-                        {% endif %}
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
+            <ul style="list-style-type: none; padding-left: 0;">
+    {% for participant in trip.participants.all %}
+    <li>
+        <div class="user-info">
+            <img src="{% if participant.userprofile.profile_photo %}{{ participant.userprofile.profile_photo.url }}{% else %}{% static 'mainapp/user.png' %}{% endif %}" alt="{{ participant.username }}">
+            <span>{{ participant.username }}</span>
+            {% if request.user.is_authenticated %}
+                {% if request.user != participant %}
+                    <form class="ml-auto" action="{% url 'mainapp:message_button' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value="{{ participant.id }}">
+                        <input type="hidden" name="redirect_url" value="{{ request.path }}">
+                        <input class="message-btn ml-auto" type="submit" name="message" value="Message">
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    </li>
+    {% endfor %}
+</ul>
         </div>
     </div>
 
@@ -60,7 +65,7 @@
         </div>
         <div class="card-body">
             <div class="row">
-                {% for photo in trip.photos.all %}
+                {% for photo in trip.trip_photos.all %}
                 <div class="col-md-4 mb-3">
                     <img src="{{ photo.photo.url }}" alt="Trip Photo" class="img-fluid">
                 </div>

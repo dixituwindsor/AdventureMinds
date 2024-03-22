@@ -25,13 +25,9 @@ def user_profile(request):
         form = UserProfileForm(request.POST, request.FILES, instance=user_profile_instance)
         if form.is_valid():
             print(form.cleaned_data)
-            # Check if 'profile_photo' exists in request.FILES
             if 'profile_photo' in request.FILES:
-                # Generate a unique filename
                 file_name = str(uuid4()) + os.path.splitext(request.FILES['profile_photo'].name)[1]
-                # Assign the unique filename to the profile_photo field
                 form.instance.profile_photo.name = 'profile/' + file_name
-            # Print form data before saving
             form.save()
             django.contrib.messages.success(request, 'Profile updated successfully.')
             return redirect('mainapp:profile')
@@ -59,8 +55,6 @@ def user_preferences(request):
                 for category_name, choices in cleaned_data.items():
                     category = PreferenceCategory.objects.get(name=category_name)
                     preferences.preferences.add(*choices)
-
-                # Assign the created preferences to the UserProfile instance
                 user_profile_instance.preferences = preferences
                 user_profile_instance.save()
 
@@ -70,7 +64,6 @@ def user_preferences(request):
         if user_profile_instance and user_profile_instance.preferences:
             existing_preferences = user_profile_instance.preferences.get_selected_preferences()
 
-        # Pass existing preferences to the form
         form = UserPreferencesForm(instance=user_profile_instance.preferences,
                                    initial={'existing_preferences': existing_preferences})
 
@@ -78,10 +71,9 @@ def user_preferences(request):
 
 
 def homepage(request):
-    template = "mainapp/homepage2.html"
+    template = "mainapp/homepage1.html"
     context = {}
     return render(request=request, template_name=template, context=context)
-    # Pass existing preferences to the template context
 
 
 def terms_conditions(request):
@@ -98,12 +90,6 @@ def user_signup(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
-
-        # if User.objects.filter(user__username=username).exists():
-        #     response = HttpResponse()
-        #     response.write("<p>Username already exists, choose different username</p>")
-        #     return response
-
         names = fullname.split()
         user = User.objects.create_user(username=username, email=email, password=password)
         user.first_name = names[0]
@@ -255,22 +241,13 @@ def add_trip(request):
             selected_preferences = [int(choice_id) for field in preference_form.cleaned_data.values() for choice_id in field]
             preferences = PreferenceChoice.objects.filter(id__in=selected_preferences)
             trip_preference.preferences.set(preferences)
-
-            # Link the TripPreference object to the Trip object
             trip.preferences = trip_preference
-
-            # Save the Trip object again to update the preferences field
             trip.save()
 
-            # Save uploaded photos
             for photo in request.FILES.getlist('photos'):
                 trip_photo = TripPhoto(trip=trip, photo=photo)
                 trip_photo.save()
 
-            # Debugging: Print data
-            print("Trip data:", trip.__dict__)
-            print("Trip preferences:", trip.preferences.__dict__)
-            print("Uploaded photos:", [photo.__dict__ for photo in trip.photos.all()])
 
             return redirect('mainapp:homepage')  # Redirect to some success URL
         else:
@@ -292,10 +269,7 @@ def trip_list(request):
         if not user_profile.preferences:
             return redirect('mainapp:user_preferences')
         user_preferences = user_profile.preferences.preferences.prefetch_related('preferences')
-
         trips = Trip.objects.all()
-
-        # Apply search filter if query parameter exists
         query = request.GET.get('query')
         if query:
             trips = trips.filter(Q(place__name__icontains=query) | Q(place__address__icontains=query)| Q(place__description__icontains=query))
@@ -304,30 +278,23 @@ def trip_list(request):
         if 'my_trips' in request.GET:
             trips = trips.filter(uploader=request.user)
 
-        # Sorting
         sort_by = request.GET.get('sort_by')
         if sort_by == 'recommendation':
-            # Calculate similarity scores for each trip
             similarity_scores = {}
             for trip in trips:
-                # Get the TripPreference associated with the trip
                 trip_preference = trip.preferences
                 if trip_preference:
                     similarity_score = calculate_similarity(user_preferences,
                                                             trip_preference.preferences.prefetch_related('preferences'))
                     similarity_scores[trip.id] = similarity_score
 
-            # Sort trips based on similarity scores
             trips = sorted(trips, key=lambda x: similarity_scores.get(x.id, 0), reverse=True)
         elif sort_by == 'alphabetical':
             trips = trips.order_by('place__name')
 
-        # Retrieve saved searches from cookies
         saved_searches = request.COOKIES.get('saved_searches', '').split('|')
 
-        # Handle search query
         if query:
-            # Save the search query to cookies
             saved_searches.append(query)
             saved_searches = list(set(saved_searches))[-5:]  # Limit to last 5 unique queries
             response = render(request, 'mainapp/homepage2.html', {'trips': trips, 'saved_searches': saved_searches, 'query': query})
@@ -337,9 +304,9 @@ def trip_list(request):
 
         return render(request, 'mainapp/homepage2.html', {'trips': trips, 'saved_searches': saved_searches})
     else:
-        # For guest users
         trips = Trip.objects.all()
         return render(request, 'mainapp/guest_trip_list.html', {'trips': trips})
+
 
 def calculate_similarity(user_preferences, trip_preferences):
     user_pref_set = set(user_preferences.values_list('id', flat=True))
@@ -359,10 +326,11 @@ def calculate_similarity(user_preferences, trip_preferences):
 
 def trip_detail(request, trip_id):
     trip = get_object_or_404(Trip, pk=trip_id)
+    photo = TripPhoto.objects.all()
     join_request = None
     if request.user.is_authenticated:
         join_request = JoinRequest.objects.filter(trip=trip, user=request.user).first()
-    return render(request, 'mainapp/trip_detail.html', {'trip': trip, 'join_request': join_request})
+    return render(request, 'mainapp/trip_detail.html', {'trip': trip, 'join_request': join_request, 'photo': photo})
 
 
 def view_profile(request, username):
@@ -376,13 +344,11 @@ def join_trip(request, trip_id):
     trip = get_object_or_404(Trip, pk=trip_id)
     user = request.user
 
-    # Check if the user has already requested to join the trip
     existing_request = JoinRequest.objects.filter(trip=trip, user=user).exists()
     if existing_request:
         django.contrib.messages.warning(request, "You have already requested to join this trip.")
         return redirect('mainapp:trip_detail', trip_id=trip_id)
 
-    # Create a new join request
     join_request = JoinRequest.objects.create(trip=trip, user=user, status='pending')
     django.contrib.messages.success(request, "Your join request has been submitted successfully.")
     return redirect('mainapp:trip_detail', trip_id=trip_id)
@@ -391,11 +357,7 @@ def join_trip(request, trip_id):
 def accept_join_request(request, trip_id, request_id):
     trip = get_object_or_404(Trip, id=trip_id)
     join_request = get_object_or_404(JoinRequest, id=request_id)
-
-    # Add the user to the trip participants
     trip.participants.add(join_request.user)
-
-    # Delete the join request
     join_request.delete()
 
     return redirect('mainapp:trip_detail', trip_id=trip_id)
@@ -403,10 +365,7 @@ def accept_join_request(request, trip_id, request_id):
 
 def decline_join_request(request, trip_id, request_id):
     join_request = get_object_or_404(JoinRequest, id=request_id)
-
-    # Delete the join request
     join_request.delete()
-
     return redirect('mainapp:trip_detail', trip_id=trip_id)
 
 
