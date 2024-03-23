@@ -1,8 +1,8 @@
+{% extends 'mainapp/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Chat</title>
+
+{% block title %}Chat{% endblock %}
+{% block content %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -10,15 +10,14 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.js"></script>
 
     <link rel="stylesheet" href="{% static 'mainapp/messages.css' %}">
-</head>
-<body>
+
 {% if user.is_authenticated %}
     <input type="hidden" id="logged-in-user" value="{{ user.id }}">
 {% endif %}
-<div class="container-fluid h-100">
+<div class="container-fluid h-100 " style="margin-right: 0 !important; margin-left: 0 !important;">
     <div class="row justify-content-center h-100 ">
-        <div class="col-md-4 col-xl-3 chat h-100 mt-4">
-            <div class="card mb-sm-3 mb-md-0 contacts_card">
+        <div class="col-md-4 col-xl-3 chat h-100 mt-4" style="height: 600px !important;">
+            <div class="card mb-sm-3 mb-md-0 contacts_card" >
                 <div class="card-header">
                     <div class="input-group">
                         <button class="create-group-btn" onclick="openPopup()">Create Group</button>
@@ -32,7 +31,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body contacts_body">
+                <div class="card-body contacts_body" >
                     <ui class="contacts" id="contacts">
                         {% for userchat in userchats %}
                             <li class="{% if forloop.first or userchat.id == last_active_userchat_id %}active{% endif %} contact-li" chat-id="chat_{{ userchat.id }}" data-userchat-id="{{ userchat.id }}" style="cursor: pointer">
@@ -78,7 +77,7 @@
                 <div class="card-footer"></div>
             </div>
         </div>
-        <div class="col-md-8 col-xl-6 chat h-100 mt-4">
+        <div class="col-md-8 col-xl-6 chat h-100 mt-4" style="height: 600px !important;">
             <div class="card">
                 {% for userchat in userchats %}
                     <div class="messages-wrapper  {% if forloop.first %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ userchat.id }}" other-user-id="
@@ -121,7 +120,7 @@
                                             <span>{{ userchat.second_person.user.username }}</span>
                                         {% else %}
                                             <span>{{ userchat.first_person.user.username }}</span>
-                                        {% endif %}    
+                                        {% endif %}
                                     {% endif %}
                                     <p>{{ userchat.chatmessage_userchat.all.count }} messages</p>
                                 </div>
@@ -196,7 +195,7 @@
             var popupHeight = 300;
             var left = (screenWidth - popupWidth) / 2;
             var top = (screenHeight - popupHeight) / 2;
-    
+
             // Open the popup window at the center position
             var popup = window.open('{% url "mainapp:create_group" %}', 'popup', 'width=400,height=300,left=' + left + ',top=' + top);
             popup.focus();
@@ -213,7 +212,7 @@
         {% endif %}
     });
     </script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             $('.contact-li').on('click', function() {
@@ -233,7 +232,5 @@
             });
         })
     </script>
-        
 
-</body>
-</html>
+{% endblock %}

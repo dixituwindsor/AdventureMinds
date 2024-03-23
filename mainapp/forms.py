@@ -57,7 +57,6 @@ class UserPreferencesForm(forms.ModelForm):
         initial_data = kwargs.pop('initial', {})
         super(UserPreferencesForm, self).__init__(*args, **kwargs)
 
-        # Dynamically generate fields for each preference category
         categories = PreferenceCategory.objects.all()
         for category in categories:
             choices = category.preferencechoice_set.all()
@@ -67,10 +66,8 @@ class UserPreferencesForm(forms.ModelForm):
                 widget=forms.CheckboxSelectMultiple,
                 required=False  # Make fields not required
             )
-            # Modify choice labels to remove category name
             self.fields[field_name].label_from_instance = lambda obj: obj.value
 
-            # Set initial values based on fetched data
             initial_values = initial_data.get(field_name, [])
             self.initial[field_name] = initial_values  # Use choice objects directly
 
@@ -136,7 +133,6 @@ class AddTripForm(forms.ModelForm):
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
 
-        # Check if end date is greater than or equal to start date
         if start_date and end_date and end_date < start_date:
             raise forms.ValidationError("End date must be greater than or equal to start date.")
 
@@ -211,10 +207,10 @@ class ContactForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['review', 'place', 'user']
+        fields = ['review']
 
 class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
-        fields = ['rating', 'place', 'user']
+        fields = ['rating']
 
