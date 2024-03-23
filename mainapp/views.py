@@ -454,7 +454,7 @@ def add_rating(request,trip_id):
 
 def add_blog_post(request):
     if request.method == 'POST':
-        blog_form = BlogPostForm(request.POST)
+        blog_form = BlogPostForm(request.POST, request.FILES)
         if blog_form.is_valid():
             blog_post = blog_form.save(commit=False)
             blog_post.author = request.user

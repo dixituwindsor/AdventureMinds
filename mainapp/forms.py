@@ -1,5 +1,5 @@
 from django import forms
-from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference, ContactMessage, PreferenceCategory,Review, Rating, BlogPost
+from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference, ContactMessage, PreferenceCategory, Review, Rating, BlogPost
 from django.contrib.auth.forms import UserCreationForm
 from multiupload.fields import MultiFileField
 from titlecase import titlecase
@@ -217,4 +217,4 @@ class RatingForm(forms.ModelForm):
 class BlogPostForm(forms.ModelForm):
     class Meta:
         model = BlogPost
-        fields = ['title', 'content', 'place']
+        fields = ['title', 'content', 'place', 'image']

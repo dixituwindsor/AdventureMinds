@@ -210,7 +210,7 @@ class BlogPost(models.Model):
     content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    # image = models.ImageField(upload_to='blog_images/', null=True, blank=True)  # Add this line for image upload
+    image = models.ImageField(upload_to='blog_images/', null=True, blank=True)  # Add this line for image upload
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
