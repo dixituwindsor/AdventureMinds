@@ -13,7 +13,7 @@
     <h2>Ratings</h2>
     {% for review in reviews %}
         <p>{{ review.user.user }} rated this trip as {{ review.rating }}.</p>
-        <p>{{ review.comment }}</p>
+        <p>{{ review.reviews }}</p>
     {% empty %}
         <p>No reviews yet.</p>
     {% endfor %}

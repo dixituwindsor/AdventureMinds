@@ -421,41 +421,50 @@ def contact_us(request):
         return render(request, 'mainapp/contact_us.html', {'form': form})
 
 
-class PlaceDetailView(DetailView):
-    model = Place
-    template_name = 'mainapp/place_detail.html'
-    context_object_name = 'trip'
-
 # @login_required
-def add_review(request, place_id):
-    place = Place.objects.get(id=place_id)
-    reviews = Review.objects.filter(place=place)
-    review_form = ReviewForm()
-
+def add_review(request):
+    # trip = get_object_or_404(Trip, pk=trip_id)
+    trip = Trip.objects.filter(trip_date='2023-01-12').first()
     if request.method == 'POST':
         review_form = ReviewForm(request.POST)
         if review_form.is_valid():
             reviews = review_form.save(commit=False)
-            reviews.User = request.User
-            reviews.place = place
+            reviews.user = request.user
+            reviews.trip = trip
             reviews.save()
-            return redirect('mainapp:add_review', place_id=place.id)
+            return redirect('mainapp:trip_detail')
+    else:
+        review_form = ReviewForm()
+    return render(request, 'mainapp/add_review.html', {'review_form': review_form})
 
-    return render(request, 'mainapp/add_review.html', {'review_form': review_form, 'trip': place, 'review': reviews})
-
-# @login_required
-def add_rating(request, place_id):
-    place = Place.objects.get(id=place_id)
-    rating = Rating.objects.filter(place=place)
-    rating_form = RatingForm()
-
+def add_rating(request,trip_id):
+    trip = get_object_or_404(Trip, pk=trip_id)
+    # trip = Trip.objects.filter(trip_date='2023-01-12').first()
     if request.method == 'POST':
         rating_form = RatingForm(request.POST)
         if rating_form.is_valid():
             rating = rating_form.save(commit=False)
+            rating.trip = trip
             rating.user = request.user
-            rating.place = place
             rating.save()
-            return redirect('place_detail', place_id=place.id)
+            return redirect('mainapp:trip_detail')
+    else:
+        rating_form = RatingForm()
+    return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form})
 
-    return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
+# @login_required
+# def add_rating(request, place_id):
+#     place = Place.objects.get(id=place_id)
+#     rating = Rating.objects.filter(place=place)
+#     rating_form = RatingForm()
+#
+#     if request.method == 'POST':
+#         rating_form = RatingForm(request.POST)
+#         if rating_form.is_valid():
+#             rating = rating_form.save(commit=False)
+#             rating.user = request.user
+#             rating.place = place
+#             rating.save()
+#             return redirect('place_detail', place_id=place.id)
+#
+#     return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})

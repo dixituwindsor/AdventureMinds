@@ -3,7 +3,6 @@ from django.urls import path, include
 from AdventureMinds import settings
 from . import views
 from django.conf import settings
-from .views import PlaceDetailView
 
 
 app_name = 'mainapp'
@@ -29,9 +28,8 @@ urlpatterns = [
     path('trip/<int:trip_id>/join-request/<int:request_id>/accept/', views.accept_join_request, name='accept_join_request'),
     path('trip/<int:trip_id>/join-request/<int:request_id>/decline/', views.decline_join_request,
          name='decline_join_request'),
-    path('add_rating/<int:place_id>/', views.add_rating, name='add_rating'),
-    path('add_review/<int:place_id>/', views.add_review, name='add_review'),
-    path('place/<int:pk>/', PlaceDetailView.as_view(), name='place_detail'),
+    path('add_rating/', views.add_rating, name='add_rating'),
+    path('add_review/', views.add_review, name='add_review'),
     path('signup/', views.user_signup, name='signup'),
     path('logout/', views.user_logout, name='logout'),
     path('getusers/', views.getusers, name='getusers'),

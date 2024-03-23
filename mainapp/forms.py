@@ -207,12 +207,12 @@ class ContactForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['review', 'place', 'user']
+        fields = ['review']
 
 class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
-        fields = ['rating', 'place', 'user']
+        fields = ['rating']
 
 # class BlogForm(forms.ModelForm):
 #     class Meta:

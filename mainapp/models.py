@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 class Place(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=300)
-    description = models.TextField(max_length=200, blank=True)
+    description = models.TextField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return 'pk=' +str (self.pk)+', name='+self.name
@@ -28,43 +28,6 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-
-
-class PreferenceCategory(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-
-class PreferenceChoice(models.Model):
-    category = models.ForeignKey(PreferenceCategory, on_delete=models.CASCADE)
-    value = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.category.name}: {self.value}"
-
-
-class UserPreferences(models.Model):
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True, blank=True)
-    preferences = models.ManyToManyField(PreferenceChoice)
-
-    def __str__(self):
-        if self.user_profile:
-            return f"Preferences for {self.user_profile.user.username}"
-        else:
-            return "No associated user profile"
-
-    def get_selected_preferences(self):
-        return [preference.value for preference in self.preferences.all()]
-
-class TripPreference(models.Model):
-    preferences = models.ManyToManyField(PreferenceChoice)
-
-
-
-
 class PreferenceCategory(models.Model):
     name = models.CharField(max_length=100)
 
@@ -92,8 +55,6 @@ class UserPreferences(models.Model):
 
     def get_selected_preferences(self):
         return [preference.value for preference in self.preferences.all()]
-
-
 
 
 class Trip(models.Model):
@@ -112,7 +73,7 @@ class Trip(models.Model):
     is_past = models.BooleanField(default=False)
     is_future = models.BooleanField(default=True)
     preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
-
+    trip_date = models.DateTimeField(auto_now_add=True)
     # Define methods to filter past and future trips
     def get_past_trips(self):
         return Trip.objects.filter(pk=self.pk, is_past=True)
@@ -122,6 +83,7 @@ class Trip(models.Model):
 
     def _str_(self):
         return self.title
+
 class TripPhoto(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='trip_photos')
     photo = models.ImageField(upload_to='')
@@ -144,10 +106,6 @@ class JoinRequest(models.Model):
     def __str__(self):
 
         return f"Request to join {self.trip} by {self.user}"
-
-
-
-
 
 
 class TripPreference(models.Model):
@@ -229,53 +187,22 @@ class ContactMessage(models.Model):
     def __str__(self):
         return f'{self.first_name} {self.last_name} - {self.timestamp}'
 
-
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    trip = models.ForeignKey(Trip, default=1, on_delete=models.CASCADE)
     review = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.id), self.user.first_name
+        return f"{self.user.username} - {self.trip.title}"
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    rating = models.PositiveIntegerField(choices=(('1','1 star'),('b','2 star'),('c', '3 star'),('d', '4 star'),('e', '5 star')))
+    trip = models.ForeignKey(Trip, default=1, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(default=1, choices=(('1','1 star'),('b','2 star'),('c', '3 star'),('d', '4 star'),('e', '5 star')))
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ('user', 'place')
-
     def __str__(self):
-        return f"{self.user}'s {self.rating}- star rating for {self.place}"
+        return f"{self.user.username} - {self.trip.title} - {self.rating} Stars"
 
-# class Post(models.Model):
-#     place = models.ForeignKey(Place, on_delete=models.CASCADE)
-#     title = models.CharField(max_length=255)
-#     content = models.TextField()
-#     author = models.ForeignKey(User, on_delete=models.CASCADE)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     def __str__(self):
-#         return self.title
-
-
-
-# class UserProfile(User):
-#     interested_places = models.ManyToManyField(Place)
-#     total_reviews = models.PositiveIntegerField(default=0)
-#     total_ratings = models.PositiveIntegerField(default=0)
-#     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
-#     def __str__(self):
-#         return self.get_username()
-#
-#     def total_reviews(self):
-#         return self.review_set.count()
-#
-#     def average_rating(self):
-#         if self.total_reviews() > 0:
-#             return self.review_set.all().aggregate(models.Avg('rating'))['rating__avg']
-#         return 0
 
