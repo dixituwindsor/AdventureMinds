@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        a:hover {
+            color: #007bff;
+        }
+        .uploader {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .review-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .review-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Here are the details of your upcoming and past trips</h1>
+
+        <!-- Upcoming Trips Section -->
+        <h3>Upcoming Trips</h3>
+        <ul>
+            {% for trip in upcoming_trips %}
+                <li>
+                    {{ trip.title }} - {{ trip.start_date }} to {{ trip.end_date }} (Upcoming)
+                    <a href="{% url 'mainapp:add_review' place_id=trip.place.id %}">
+                        <button class="review-button">Add Review</button>
+                    </a>
+                </li>
+            {% empty %}
+                <li>No upcoming trips</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Past Trips Section -->
+        <h3>Past Trips</h3>
+        <ul>
+            {% for trip in past_trips %}
+                <li>
+                    {{ trip.title }} - {{ trip.start_date }} to {{ trip.end_date }} (Past)
+                    <a href="{% url 'mainapp:add_review' place_id=trip.place.id %}">
+                        <button class="review-button">Add Review</button>
+                    </a>
+                </li>
+            {% empty %}
+                <li>No past trips</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

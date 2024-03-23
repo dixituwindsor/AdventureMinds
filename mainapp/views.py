@@ -428,3 +428,15 @@ def add_rating(request, place_id):
 
     return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
 
+@login_required
+def trip_list(request):
+    current_user = request.user
+    current_date = timezone.now().date()
+    upcoming_trips = Trip.objects.filter(participants=current_user, start_date__gt=current_date)
+    past_trips = Trip.objects.filter(participants=current_user, end_date__lt=current_date)
+    context = {
+        'upcoming_trips': upcoming_trips,
+        'past_trips': past_trips,
+        'current_date': current_date,
+    }
+    return render(request, 'mainapp/user_trip_history.html', context)

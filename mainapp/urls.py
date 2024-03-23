@@ -39,4 +39,5 @@ urlpatterns = [
     path('mark_messages_as_read/', views.mark_messages_as_read, name='mark_messages_as_read'),
     path('set_last_active_userchat_id/', views.set_last_active_userchat_id, name='set_last_active_userchat_id'),
     path('contact_us/', views.contact_us, name='contact_us'),
+    path('user_trip_history/', views.trip_list, name='user_trip_history'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

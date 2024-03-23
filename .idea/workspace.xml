@@ -5,12 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="90677a49-940c-414b-bf14-de6b39741ac2" name="Changes" comment="minor fixes">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/static/mainapp/contact_us.css" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/static/mainapp/contact_us.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/contact_us.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/contact_us.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/trip_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/trip_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -104,7 +102,6 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.8 (AdventureMinds)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -153,6 +150,7 @@
       <workItem from="1711116910217" duration="1184000" />
       <workItem from="1711121131468" duration="325000" />
       <workItem from="1711142689085" duration="10384000" />
+      <workItem from="1711161023584" duration="2695000" />
     </task>
     <task id="LOCAL-00001" summary="resolve conflicts">
       <option name="closed" value="true" />
