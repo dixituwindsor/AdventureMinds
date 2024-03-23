@@ -1,5 +1,6 @@
 # created by virtualenv automatically
 .venv/
+venv/
 .idea
 /.idea/
 test.py
@@ -7,4 +8,4 @@ mainapp/migrations
 trip_photos
 mainapp/media
 mainapp/trip_photos
-
+db.sqlite3

@@ -7,7 +7,6 @@
 {% block content %}
 <style>
 
-    /* Updated card styles */
 
     .custom-container-fluid {
         margin-left: 0 !important;
@@ -82,7 +81,7 @@
         <div class="col">
             <button class="btn btn-secondary" onclick="window.location.href='{% url 'mainapp:trip_list' %}?sort_by=recommendation'">Sort by Recommendation</button>
             <button class="btn btn-secondary" onclick="window.location.href='{% url 'mainapp:trip_list' %}?sort_by=alphabetical'">Sort Alphabetically</button>
-            <button class="btn btn-secondary" onclick="window.location.href='{% url 'mainapp:trip_list' %}?my_trips'">My Uploaded Trips</button>
+            <button class="btn btn-secondary" onclick="window.location.href='{% url 'mainapp:trip_list' %}?my_trips'">Uploaded by me</button>
         </div>
     </div>
 

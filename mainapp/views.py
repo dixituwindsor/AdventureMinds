@@ -394,37 +394,54 @@ class PlaceDetailView(DetailView):
     template_name = 'mainapp/place_detail.html'
     context_object_name = 'trip'
 
-# @login_required
-def add_review(request, place_id):
-    place = Place.objects.get(id=place_id)
-    reviews = Review.objects.filter(place=place)
-    review_form = ReviewForm()
 
-    if request.method == 'POST':
-        review_form = ReviewForm(request.POST)
-        if review_form.is_valid():
-            reviews = review_form.save(commit=False)
-            reviews.User = request.User
-            reviews.place = place
-            reviews.save()
-            return redirect('mainapp:add_review', place_id=place.id)
-
-    return render(request, 'mainapp/add_review.html', {'review_form': review_form, 'trip': place, 'review': reviews})
 
 # @login_required
-def add_rating(request, place_id):
-    place = Place.objects.get(id=place_id)
-    rating = Rating.objects.filter(place=place)
-    rating_form = RatingForm()
+def add_rating_and_review(request, place_id):
+    place = get_object_or_404(Place, id=place_id)
+    user = request.user
+
+    user_rating = Rating.objects.filter(place=place, user=user).first()
+    user_review = Review.objects.filter(place=place, user=user).first()
+
+    rating_form = RatingForm(instance=user_rating)
+    review_form = ReviewForm(instance=user_review)
 
     if request.method == 'POST':
-        rating_form = RatingForm(request.POST)
-        if rating_form.is_valid():
+        rating_form = RatingForm(request.POST, instance=user_rating)
+        review_form = ReviewForm(request.POST, instance=user_review)
+
+        if rating_form.is_valid() and review_form.is_valid():
             rating = rating_form.save(commit=False)
-            rating.user = request.user
+            rating.user = user
             rating.place = place
             rating.save()
-            return redirect('place_detail', place_id=place.id)
 
-    return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form, 'place': place, 'rating': rating})
+            review = review_form.save(commit=False)
+            review.user = user
+            review.place = place
+            review.save()
 
+            return redirect('mainapp:user_trip_history')
+
+    return render(request, 'mainapp/add_rating_and_review.html', {
+        'rating_form': rating_form,
+        'review_form': review_form,
+        'place': place,
+        'user_rating': user_rating,
+        'user_review': user_review,
+    })
+
+
+@login_required
+def user_trip_list(request):
+    current_user = request.user
+    current_date = timezone.now().date()
+    upcoming_trips = Trip.objects.filter(participants=current_user, start_date__gt=current_date)
+    past_trips = Trip.objects.filter(participants=current_user, end_date__lt=current_date)
+    context = {
+        'upcoming_trips': upcoming_trips,
+        'past_trips': past_trips,
+        'current_date': current_date,
+    }
+    return render(request, 'mainapp/user_trip_history.html', context)
