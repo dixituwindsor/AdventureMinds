@@ -1,13 +1,12 @@
 from django import forms
-from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference, ContactMessage, PreferenceCategory
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from multiupload.fields import MultiFileField
 from titlecase import titlecase
 
 from .models import Review, Rating
+from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference, ContactMessage, \
+    PreferenceCategory
 
-from django.contrib.auth.models import User
 
 class UserProfileForm(forms.ModelForm):
     first_name = forms.CharField(label='First Name', required=False)
@@ -24,6 +23,7 @@ class UserProfileForm(forms.ModelForm):
             'profile_photo': 'Profile Photo'
         }
         widgets = {
+            'address' :  forms.Textarea(attrs={'rows': 5, 'cols': 40}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
             'profile_photo': forms.ClearableFileInput(attrs={'class': 'form-control-file'})
         }
@@ -198,6 +198,15 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
 
 
+class ForgotPasswordForm(forms.Form):
+    username = forms.CharField(label='Username')
+    email = forms.EmailField(label='Email')
+    last_three_digits_of_phone_number = forms.CharField(label='Last Three Digits of Phone Number')
+    date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
+    new_password = forms.CharField(widget=forms.PasswordInput, label='New Password')
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label='Confirm Password')
+
+
 class ContactForm(forms.ModelForm):
     class Meta:
         model = ContactMessage
@@ -213,4 +222,3 @@ class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
         fields = ['rating']
-

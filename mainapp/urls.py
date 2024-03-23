@@ -1,17 +1,18 @@
+from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from AdventureMinds import settings
-from . import views
-from django.conf import settings
-from .views import PlaceDetailView
 
+from . import views
+from .views import PlaceDetailView
 
 app_name = 'mainapp'
 urlpatterns = [
     path('', views.homepage, name='home'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('login/', views.user_login, name='login'),
     path('signup/', views.user_signup, name='signup'),
+    path('login/', views.user_login, name='login'),
+    path('logout/', views.user_logout, name='logout'),
+    path('forgotpassword/', views.forgot_password, name='forgotpassword'),
     path('myprofile/', views.user_profile, name='profile'),
     path('preferences/', views.user_preferences, name='user_preferences'),
     path('messages/', views.messages, name='messages'),
