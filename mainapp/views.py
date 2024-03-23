@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.views.generic import DetailView
 from AdventureMinds import settings
+from random import shuffle
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -260,11 +261,12 @@ def add_trip(request):
     return render(request, 'mainapp/add_trip.html', {'trip_form': trip_form, 'preference_form': preference_form})
 
 
+from django.db.models import Avg
+
 
 @login_required
 def trip_list(request):
     if request.user.is_authenticated:
-        # For logged-in users
         user_profile = get_object_or_404(UserProfile, user=request.user)
         if not user_profile.preferences:
             return redirect('mainapp:user_preferences')
@@ -272,8 +274,8 @@ def trip_list(request):
         trips = Trip.objects.all()
         query = request.GET.get('query')
         if query:
-            trips = trips.filter(Q(place__name__icontains=query) | Q(place__address__icontains=query)| Q(place__description__icontains=query))
-
+            trips = trips.filter(Q(place__name__icontains=query) | Q(place__address__icontains=query) | Q(
+                place__description__icontains=query))
 
         if 'my_trips' in request.GET:
             trips = trips.filter(uploader=request.user)
@@ -297,10 +299,11 @@ def trip_list(request):
         if query:
             saved_searches.append(query)
             saved_searches = list(set(saved_searches))[-5:]  # Limit to last 5 unique queries
-            response = render(request, 'mainapp/homepage2.html', {'trips': trips, 'saved_searches': saved_searches, 'query': query})
-            response.set_cookie('saved_searches', '|'.join(saved_searches), max_age=3600*24*7)  # Save for 1 week
-
+            response = render(request, 'mainapp/homepage2.html',
+                              {'trips': trips, 'saved_searches': saved_searches, 'query': query})
+            response.set_cookie('saved_searches', '|'.join(saved_searches), max_age=3600 * 24 * 7)  # Save for 1 week
             return response
+
 
         return render(request, 'mainapp/homepage2.html', {'trips': trips, 'saved_searches': saved_searches})
     else:
@@ -328,6 +331,12 @@ def trip_detail(request, trip_id):
     trip = get_object_or_404(Trip, pk=trip_id)
     photo = TripPhoto.objects.all()
     join_request = None
+
+    average_rating = Rating.objects.filter(place=trip.place).aggregate(Avg('rating'))['rating__avg']
+    trip.average_rating = round(average_rating, 1) if average_rating else None
+    reviews = list(Review.objects.filter(place=trip.place))
+    shuffle(reviews)
+    trip.reviews = reviews
     if request.user.is_authenticated:
         join_request = JoinRequest.objects.filter(trip=trip, user=request.user).first()
     return render(request, 'mainapp/trip_detail.html', {'trip': trip, 'join_request': join_request, 'photo': photo})
