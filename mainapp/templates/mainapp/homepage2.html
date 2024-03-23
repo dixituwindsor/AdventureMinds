@@ -82,7 +82,7 @@
         <div class="col">
             <button class="btn btn-secondary" onclick="window.location.href='{% url 'mainapp:trip_list' %}?sort_by=recommendation'">Sort by Recommendation</button>
             <button class="btn btn-secondary" onclick="window.location.href='{% url 'mainapp:trip_list' %}?sort_by=alphabetical'">Sort Alphabetically</button>
-            <button class="btn btn-secondary" onclick="window.location.href='{% url 'mainapp:trip_list' %}?my_trips'">My Trips</button>
+            <button class="btn btn-secondary" onclick="window.location.href='{% url 'mainapp:trip_list' %}?my_trips'">My Uploaded Trips</button>
         </div>
     </div>
 
@@ -96,12 +96,12 @@
                         </div>
                         <div id="carouselExampleIndicators{{ forloop.counter }}" class="carousel slide" data-ride="carousel">
                             <ol class="carousel-indicators">
-                                {% for photo in trip.photos.all %}
+                                {% for photo in trip.trip_photos.all %}
                                     <li data-target="#carouselExampleIndicators{{ forloop.parentloop.counter }}" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
                                 {% endfor %}
                             </ol>
                             <div class="carousel-inner">
-                                {% for photo in trip.photos.all %}
+                                {% for photo in trip.trip_photos.all %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                         <img src="{{ photo.photo.url }}" class="d-block w-100" alt="Trip Photo">
                                     </div>

@@ -1,3 +1,4 @@
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -146,11 +147,11 @@
         }
 
         .container-fluid {
-            max-width: 960px; /* Adjust based on your preference */
-            margin: auto; /* Center the container */
-            padding: 20px;
-            background-color: #e9ecef; /* Darker shade */
-        }
+    max-width: 960px; /* Adjust based on your preference */
+    margin: 20px auto; /* Center the container with a maximum margin of 100px for left and right */
+    padding: 20px;
+    background-color: #e9ecef; /* Darker shade */
+}
 
         .card {
             font-size: 0.8rem; /* Further reduce font size for smaller cards */
@@ -294,13 +295,18 @@
 </div>
 
         <!-- Profile Button Trigger -->
-        <img src="https://www.iconsdb.com/icons/preview/white/chat-4-xxl.png" alt="Messages" class="small-icon" onclick="location.href='#';" style=" margin-right: 10px;">
-            <img src="{{ user.userprofile.profile_photo.url }}" alt="Profile Image" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
-    <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
-    <a href="{% url 'mainapp:logout' %}">Logout</a><br>
-{#    <a href="{% url 'mainapp:about_us' %}">About Us</a><br>#}
-{#    <a href="{% url 'mainapp:terms_page' %}">Terms Page</a>#}
-'>
+        <img src="https://www.iconsdb.com/icons/preview/white/chat-4-xxl.png" alt="Messages" class="small-icon" onclick="location.href='{% url 'mainapp:messages' %}';" style=" margin-right: 10px;">
+          {% if user.userprofile.profile_photo %}
+    <img src="{{ user.userprofile.profile_photo.url }}" alt="Profile Image" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
+        <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
+        <a href="{% url 'mainapp:logout' %}">Logout</a><br>
+    '>
+{% else %}
+    <img id="profile-image" src="{% static 'mainapp/user.png' %}" alt="Default Profile Photo" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
+        <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
+        <a href="{% url 'mainapp:logout' %}">Logout</a><br>
+    '>
+{% endif %}
 </div>
 
 </nav>

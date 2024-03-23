@@ -156,7 +156,7 @@ class ChatConsumer(AsyncConsumer):
         group = ChatGroup.objects.filter(id=group_id).first()
         if group:
             members = group.members.all()
-            users = [self.get_user(member.id) for member in members]
+            users = [self.get_user(member.user.id) for member in members]
             return users
         return []
 
