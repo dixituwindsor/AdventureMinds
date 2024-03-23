@@ -1,11 +1,8 @@
-
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib.auth.models import User, AbstractUser
 from django.core.exceptions import ValidationError
-
 
 
 # Create your models here.
@@ -17,6 +14,7 @@ class Place(models.Model):
     def __str__(self):
         return 'pk=' +str (self.pk)+', name='+self.name
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=False, blank=True, primary_key=True, default=None)
     phone_number = models.CharField(max_length=12, null=True, blank=True)
@@ -25,9 +23,9 @@ class UserProfile(models.Model):
     profile_photo = models.ImageField(upload_to='profile/', null=True, blank=True)
     # interested_places = models.ManyToManyField(Place, null=True, blank=True)
     preferences = models.ForeignKey('UserPreferences', on_delete=models.SET_NULL, null=True, blank=True)
+
     def __str__(self):
         return self.user.username
-
 
 
 class PreferenceCategory(models.Model):
@@ -37,7 +35,6 @@ class PreferenceCategory(models.Model):
         return self.name
 
 
-
 class PreferenceChoice(models.Model):
     category = models.ForeignKey(PreferenceCategory, on_delete=models.CASCADE)
     value = models.CharField(max_length=100)
@@ -45,41 +42,11 @@ class PreferenceChoice(models.Model):
     def __str__(self):
         return f"{self.category.name}: {self.value}"
 
-
-class UserPreferences(models.Model):
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True, blank=True)
-    preferences = models.ManyToManyField(PreferenceChoice)
-
-    def __str__(self):
-        if self.user_profile:
-            return f"Preferences for {self.user_profile.user.username}"
-        else:
-            return "No associated user profile"
-
-    def get_selected_preferences(self):
-        return [preference.value for preference in self.preferences.all()]
 
 class TripPreference(models.Model):
     preferences = models.ManyToManyField(PreferenceChoice)
 
 
-
-
-class PreferenceCategory(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-class PreferenceChoice(models.Model):
-    category = models.ForeignKey(PreferenceCategory, on_delete=models.CASCADE)
-    value = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.category.name}: {self.value}"
-
-
 class UserPreferences(models.Model):
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True, blank=True)
     preferences = models.ManyToManyField(PreferenceChoice)
@@ -92,8 +59,6 @@ class UserPreferences(models.Model):
 
     def get_selected_preferences(self):
         return [preference.value for preference in self.preferences.all()]
-
-
 
 
 class Trip(models.Model):
@@ -111,7 +76,7 @@ class Trip(models.Model):
     participants = models.ManyToManyField(User, related_name='participating_trips', blank=True)
     is_past = models.BooleanField(default=False)
     is_future = models.BooleanField(default=True)
-    preferences = models.ForeignKey('TripPreference', on_delete=models.SET_NULL, null=True, blank=True)
+    preferences = models.ForeignKey(TripPreference, on_delete=models.SET_NULL, null=True, blank=True)
 
     # Define methods to filter past and future trips
     def get_past_trips(self):
@@ -122,6 +87,8 @@ class Trip(models.Model):
 
     def _str_(self):
         return self.title
+
+
 class TripPhoto(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='trip_photos')
     photo = models.ImageField(upload_to='')
@@ -144,15 +111,6 @@ class JoinRequest(models.Model):
     def __str__(self):
 
         return f"Request to join {self.trip} by {self.user}"
-
-
-
-
-
-
-class TripPreference(models.Model):
-    preferences = models.ManyToManyField(PreferenceChoice)
-
 
 
 class userchatManager(models.Manager):
@@ -238,6 +196,7 @@ class Review(models.Model):
 
     def __str__(self):
         return str(self.id), self.user.first_name
+
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
