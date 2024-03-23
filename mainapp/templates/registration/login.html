@@ -81,11 +81,12 @@
     <div class="container">
         <h1>Login</h1>
         <form method="POST">
-            <h5 class="error-message">{{  msg }}</h5>
+            <h5 class="error-message">{{ msg }}</h5>
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Login</button>
             <a href="{% url 'mainapp:signup' %}">Don't have an account? Create one</a>
+            <a href="{% url 'mainapp:forgotpassword' %}">Forgot your password?</a>
         </form>
     </div>
 </body>

@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
@@ -11,28 +11,12 @@ from .models import UserProfile, User, UserPreferences, PreferenceCategory, Trip
     TripPhoto, Thread, ChatMessage
 
 
-# login page
+# sign up page
 def user_signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
-        if form.is_valid():
-            # form.save()
-            # commit false to save current object in db
-            # userobj = form.save(commit=False)
-            # # making some necessary change in obj then saving it in db
-            # userobj.username = form.cleaned_data['username'].lower()
-            # if UserProfile.objects.filter(username=userobj.username).exists():
-            #     form = SignupForm()
-            #     return render(request, 'registration/signup.html', {'form': form, 'msg':'username already taken, use different one'})
-            #
-            # if UserProfile.objects.filter(username=userobj.email).exists():
-            #     form = SignupForm()
-            #     return render(request, 'registration/signup.html', {'form': form, 'msg': 'Use different email id'})
-            #
-            # userobj.email = form.cleaned_data['email'].lower()
-            # userobj.password = make_password(form.cleaned_data['password'])
-            # userobj.save()
 
+        if form.is_valid():
             user_obj = form.save(commit=False)
             user_obj.username = form.cleaned_data['username'].lower()
             if User.objects.filter(username=user_obj.username).exists():
@@ -40,7 +24,7 @@ def user_signup(request):
                 return render(request, 'registration/signup.html',
                               {'form': form, 'msg': 'username already taken, use different one'})
 
-            if User.objects.filter(username=user_obj.email).exists():
+            if User.objects.filter(email=user_obj.email).exists():
                 form = SignupForm()
                 return render(request, 'registration/signup.html', {'form': form, 'msg': 'Use different email id'})
 
@@ -55,7 +39,7 @@ def user_signup(request):
             return redirect('mainapp:login')
         else:
             form = SignupForm()
-            return render(request, 'registration/signup.html', {'form': form, 'msg': 'Something went wrong, try again'})
+            return render(request, 'registration/signup.html', {'form': form, 'msg': 'Something went wrong, try again with different username'})
     else:
         form = SignupForm()
         return render(request, 'registration/signup.html', {'form': form})
@@ -83,23 +67,31 @@ def user_login(request):
         form = LoginForm()
         return render(request, 'registration/login.html', {'form': form})
 
+# logout page
+def user_logout(request):
+    logout(request)
+    return redirect('mainapp:login')
+
 def forgot_password(request):
     if request.method == 'POST':
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username'].lower()
-            print("username : "+username)
             if User.objects.get(username=username):
                 user_obj = User.objects.get(username=username)
                 user_profile_obj = UserProfile.objects.get(user=user_obj)
                 if (user_obj.email == form.cleaned_data['email']
                         and user_profile_obj.phone_number[-3:] == form.cleaned_data['last_three_digits_of_phone_number']
                         and user_profile_obj.date_of_birth == form.cleaned_data['date_of_birth']):
-                    # user_obj.password = make_password(form.cleaned_data['password'])
-                    # user_obj.save()
-                    form = LoginForm()
-                    return render(request, 'registration/login.html',
-                                  {'form': form, 'msg': 'password changed successfully'})
+
+                    if(form.cleaned_data['new_password'] == form.cleaned_data['confirm_password']):
+                        user_obj.password = make_password(form.cleaned_data['new_password'])
+                        user_obj.save()
+                        return redirect('mainapp:login')
+                    else:
+                        form = ForgotPasswordForm()
+                        return render(request, 'registration/forgot_password.html',
+                                      {'form': form, 'msg': 'Both password did not match'})
                 else:
                     form = ForgotPasswordForm()
                     return render(request, 'registration/forgot_password.html',

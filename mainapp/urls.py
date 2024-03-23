@@ -5,8 +5,10 @@ app_name = 'mainapp'
 urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('login/', views.user_login, name='login'),
     path('signup/', views.user_signup, name='signup'),
+    path('login/', views.user_login, name='login'),
+    path('logout/', views.user_logout, name='logout'),
+    path('forgotpassword/', views.forgot_password, name='forgotpassword'),
     path('myprofile/', views.user_profile, name='profile'),
     path('preferences/', views.user_preferences, name='user_preferences'),
     path('chat_app/', views.chat_app, name='chat_app'),
@@ -16,5 +18,5 @@ urlpatterns = [
     path('trip_list/', views.trip_list, name='trip_list'),
     path('trip/<int:trip_id>/', views.trip_detail, name='trip_detail'),
     path('getusers/', views.getusers, name='getusers'),
-    path('forgotpassword/', views.forgot_password, name='forgotpassword')
+
 ]
