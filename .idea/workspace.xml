@@ -4,10 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="90677a49-940c-414b-bf14-de6b39741ac2" name="Changes" comment="">
+    <list default="true" id="90677a49-940c-414b-bf14-de6b39741ac2" name="Changes" comment="minor fixes">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/mainapp/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/migrations/0001_initial.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/templates/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/registration/login.html" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainapp/templates/mainapp/homepage2.html" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/templates/mainapp/homepage2.html" afterDir="false" />
+>>>>>>> cf7bf20cf317e3397d5102d0ba0cdc743481d6b6
       <change beforePath="$PROJECT_DIR$/mainapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainapp/views.py" afterDir="false" />
     </list>
@@ -23,6 +31,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
+        <option value="CSS File" />
       </list>
     </option>
   </component>
@@ -40,6 +49,7 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< HEAD
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
@@ -57,6 +67,26 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+=======
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Django Server.AdventureMinds.executor": "Run",
+    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "django.template.preview.state": "SHOW_EDITOR",
+    "git-widget-placeholder": "nikunj",
+    "last_opened_file_path": "D:/AdventureMindsProject/AdventureMinds/mainapp",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
+>>>>>>> cf7bf20cf317e3397d5102d0ba0cdc743481d6b6
   }
 }</component>
   <component name="RecentsManager">
@@ -82,11 +112,35 @@
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <option name="port" value="8001" />
+      <option name="host" value="localhost" />
+      <option name="additionalOptions" value="" />
+      <option name="browserUrl" value="" />
+      <option name="runTestServer" value="false" />
+      <option name="runNoReload" value="false" />
+      <option name="useCustomRunCommand" value="false" />
+      <option name="customRunCommand" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Python.DjangoServer" factoryName="Django server">
+      <module name="AdventureMinds" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="launchJavascriptDebuger" value="false" />
-      <option name="port" value="8000" />
+      <option name="port" value="8001" />
       <option name="host" value="localhost" />
       <option name="additionalOptions" value="" />
       <option name="browserUrl" value="" />
@@ -121,12 +175,83 @@
       <workItem from="1710804366533" duration="21000" />
       <workItem from="1710804564380" duration="581000" />
       <workItem from="1710864074614" duration="5709000" />
+<<<<<<< HEAD
       <workItem from="1711058987056" duration="2217000" />
       <workItem from="1711083164343" duration="2604000" />
+=======
+      <workItem from="1710976182259" duration="1328000" />
+      <workItem from="1710982263642" duration="3853000" />
+      <workItem from="1711052431140" duration="7456000" />
+      <workItem from="1711060794445" duration="13459000" />
+      <workItem from="1711109601433" duration="381000" />
+      <workItem from="1711116910217" duration="1184000" />
+      <workItem from="1711121131468" duration="325000" />
+      <workItem from="1711142689085" duration="10384000" />
+      <workItem from="1711161023584" duration="2695000" />
+>>>>>>> cf7bf20cf317e3397d5102d0ba0cdc743481d6b6
     </task>
+    <task id="LOCAL-00001" summary="resolve conflicts">
+      <option name="closed" value="true" />
+      <created>1710970204949</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1710970204949</updated>
+    </task>
+    <task id="LOCAL-00002" summary="updated designs">
+      <option name="closed" value="true" />
+      <created>1711121232699</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1711121232699</updated>
+    </task>
+    <task id="LOCAL-00003" summary="updated designs">
+      <option name="closed" value="true" />
+      <created>1711121405189</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1711121405189</updated>
+    </task>
+    <task id="LOCAL-00004" summary="minor fixes">
+      <option name="closed" value="true" />
+      <created>1711151937494</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1711151937494</updated>
+    </task>
+    <task id="LOCAL-00005" summary="minor fixes">
+      <option name="closed" value="true" />
+      <created>1711151961786</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1711151961786</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="resolve conflicts" />
+    <MESSAGE value="updated designs" />
+    <MESSAGE value="merge changes" />
+    <MESSAGE value="minor fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="minor fixes" />
   </component>
 </project>

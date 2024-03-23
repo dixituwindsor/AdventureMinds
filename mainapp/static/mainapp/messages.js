@@ -1,120 +1,189 @@
-let input_message = $('#input-message')
-let message_body = $('.msg_card_body')
-let send_message_form = $('#send-message-form')
-const USER_ID = $('#logged-in-user').val()
+let input_message = $('#input-message');
+let message_body = $('.msg_card_body');
+let send_message_form = $('#send-message-form');
+const USER_ID = $('#logged-in-user').val();
 
-let loc = window.location
-let wsStart = 'ws://'
+let loc = window.location;
+let wsStart = 'ws://';
 
 if(loc.protocol === 'https') {
-    wsStart = 'wss://'
+    wsStart = 'wss://';
 }
-let endpoint = wsStart + loc.host + loc.pathname
+let endpoint = wsStart + loc.host + loc.pathname;
 
-var socket = new WebSocket(endpoint)
+var socket = new WebSocket(endpoint);
 
-socket.onopen = async function(e){
-    console.log('open', e)
-    send_message_form.on('submit', function (e){
-        e.preventDefault()
-        let message = input_message.val()
-        let send_to = get_active_other_user_id()
-        let thread_id = get_active_thread_id()
+socket.onopen = async function(e) {
+    console.log('WebSocket connection opened', e);
+    send_message_form.on('submit', function (e) {
+        e.preventDefault();
+        let message = input_message.val();
+        let receiver_id = get_active_other_user_id();
+        let userchat_id = get_active_userchat_id();
 
         let data = {
             'message': message,
-            'sent_by': USER_ID,
-            'send_to': send_to,
-            'thread_id': thread_id
-        }
-        data = JSON.stringify(data)
-        socket.send(data)
-        $(this)[0].reset()
-    })
-}
+            'sender_id': USER_ID,
+            'receiver_id': receiver_id,
+            'userchat_id': userchat_id
+        };
+        data = JSON.stringify(data);
+        socket.send(data);
+        $(this)[0].reset();
+    });
+};
 
-socket.onmessage = async function(e){
-    console.log('message', e)
-    let data = JSON.parse(e.data)
-    let message = data['message']
-    let sent_by_id = data['sent_by']
-    let thread_id = data['thread_id']
-    newMessage(message, sent_by_id, thread_id)
-}
-
-socket.onerror = async function(e){
-    console.log('error', e)
-}
-
-socket.onclose = async function(e){
-    console.log('close', e)
-}
-
-
-function newMessage(message, sent_by_id, thread_id) {
-	if ($.trim(message) === '') {
-		return false;
-	}
-	let message_element;
-	let chat_id = 'chat_' + thread_id
-	if(sent_by_id == USER_ID){
-	    message_element = `
-			<div class="d-flex mb-4 replied">
-				<div class="msg_cotainer_send">
-					${message}
-					<span class="msg_time_send">8:55 AM, Today</span>
-				</div>
-				<div class="img_cont_msg">
-					<img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
-				</div>
-			</div>
-	    `
+socket.onmessage = async function(e) {
+    let data;
+    try {
+        data = JSON.parse(e.data);
+    } catch (error) {
+        console.error('Error parsing message:', error);
+        return;
     }
-	else{
-	    message_element = `
-           <div class="d-flex mb-4 received">
-              <div class="img_cont_msg">
-                 <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
-              </div>
-              <div class="msg_cotainer">
-                 ${message}
-              <span class="msg_time">8:40 AM, Today</span>
-              </div>
-           </div>
+    let message = data['message'];
+    let sent_by_id = data['sent_by'];
+    let userchat_id = data['userchat_id'];
+    let send_time = data['send_time'];
+    let sender_username = data['username'];
+    let user_photo = data['user_photo'];
+
+    if (!message || !sent_by_id || !userchat_id) {
+        console.error('Error: Incomplete message data');
+        return;
+    }
+    newMessage(message, sent_by_id, userchat_id, send_time, sender_username, user_photo);
+};
+
+
+socket.onerror = async function(e) {
+    console.error('Websocket error: ', e);
+};
+
+socket.onclose = async function(e) {
+    console.log('close', e);
+};
+
+function newMessage(message, sent_by_id, userchat_id, send_time, sender_username, user_photo) {
+    if ($.trim(message) === '') {
+        return false;
+    }
+    let message_element;
+    let chat_id = 'chat_' + userchat_id;
+
+    console.log(user_photo);
+
+    if(sent_by_id === USER_ID && user_photo != null){
+        message_element = `
+            <div class="d-flex mb-4 replied">
+                <div class="msg_cotainer_send">
+                    ${message}
+                    <span class="msg_time_send">${send_time}</span>
+                </div>
+                <div class="img_cont_msg">
+                    <img src="${user_photo}" class="rounded-circle user_img_msg">
+                </div>
+            </div>
         `
-
+    } else if(sent_by_id === USER_ID && user_photo == null){
+        message_element = `
+            <div class="d-flex mb-4 replied">
+                <div class="msg_cotainer_send">
+                    ${message}
+                    <span class="msg_time_send">${send_time}</span>
+                </div>
+                <div class="img_cont_msg">
+                    <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
+                </div>
+            </div>
+        `
+    } else if(sent_by_id !== USER_ID && user_photo != null){
+        message_element = `
+            <div class="d-flex mb-4 received">
+                <div class="img_cont_msg">
+                    <img src="${user_photo}" class="rounded-circle user_img_msg">
+                </div>
+                <div class="msg_cotainer">
+                    ${message}
+                    <span class="msg_time">${sender_username}, ${send_time}</span>
+                </div>
+            </div>
+        `;
+    }
+    else {
+        message_element = `
+            <div class="d-flex mb-4 received">
+                <div class="img_cont_msg">
+                    <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
+                </div>
+                <div class="msg_cotainer">
+                    ${message}
+                    <span class="msg_time">${sender_username}, ${send_time}</span>
+                </div>
+            </div>
+        `;
     }
 
-    let message_body = $('.messages-wrapper[chat-id="' + chat_id + '"] .msg_card_body')
-	message_body.append($(message_element))
-    message_body.animate({
-        scrollTop: $(document).height()
-    }, 100);
-	input_message.val(null);
+    let message_body = $('.messages-wrapper[chat-id="' + chat_id + '"] .msg_card_body');
+    message_body.append($(message_element));
+    setTimeout(function() {
+        message_body.animate({
+            scrollTop: message_body[0].scrollHeight
+        }, 100);
+    }, 1); // Adjust the delay as needed
+
+    input_message.val(null);
 }
 
 
 $('.contact-li').on('click', function (){
-    $('.contacts .actiive').removeClass('active')
-    $(this).addClass('active')
+    $('.contacts .active').removeClass('active');
+    $(this).addClass('active');
 
-    // message wrappers
-    let chat_id = $(this).attr('chat-id')
-    $('.messages-wrapper.is_active').removeClass('is_active')
-    $('.messages-wrapper[chat-id="' + chat_id +'"]').addClass('is_active')
+    let chat_id = $(this).attr('chat-id');
+    $('.messages-wrapper.is_active').removeClass('is_active');
+    let messageWrapper = $('.messages-wrapper[chat-id="' + chat_id +'"]');
+    messageWrapper.addClass('is_active');
 
-})
+    // Scroll to the top of the message body
+    let messageBody = messageWrapper.find('.msg_card_body');
+    messageBody.scrollTop(messageBody[0].scrollHeight);
+
+    let userchat_id = chat_id.replace('chat_', '');
+
+    // Make an AJAX call to mark messages as read
+    $.ajax({
+        url: '/mark_messages_as_read/', // Update this URL to match your URL configuration
+        type: 'POST',
+        data: {
+            'userchat_id': userchat_id,
+            'user_id': USER_ID,
+            'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token for POST requests
+        },
+        success: function(response) {
+            if (response.success) {
+                console.log('Messages marked as read');
+            } else {
+                console.error('Error marking messages as read:', response.error);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX error:', error);
+        }
+    });
+
+});
 
 function get_active_other_user_id(){
-    let other_user_id = $('.messages-wrapper.is_active').attr('other-user-id')
-    other_user_id = $.trim(other_user_id)
-    return other_user_id
+    let other_user_id = $('.messages-wrapper.is_active').attr('other-user-id');
+    other_user_id = $.trim(other_user_id);
+    return other_user_id;
 }
 
-function get_active_thread_id(){
-    let chat_id = $('.messages-wrapper.is_active').attr('chat-id')
-    let thread_id = chat_id.replace('chat_', '')
-    return thread_id
+function get_active_userchat_id(){
+    let chat_id = $('.messages-wrapper.is_active').attr('chat-id');
+    let userchat_id = chat_id.replace('chat_', '');
+    return userchat_id;
 }
 
 $(document).ready(function() {
@@ -130,6 +199,12 @@ $(document).ready(function() {
         });
     });
 
+    let activeChat = $('.messages-wrapper.is_active');
+    if (activeChat.length > 0) {
+        let messageBody = activeChat.find('.msg_card_body');
+        messageBody.scrollTop(messageBody[0].scrollHeight);
+    }
+
     $(".contact-li").click(function() {
         $(".contact-li").removeClass("active");
         $(this).addClass("active");
@@ -138,5 +213,4 @@ $(document).ready(function() {
         $(".messages-wrapper").removeClass("is_active").addClass("hide");
         $(".messages-wrapper[chat-id='" + chatId + "']").removeClass("hide").addClass("is_active");
     });
-
 });

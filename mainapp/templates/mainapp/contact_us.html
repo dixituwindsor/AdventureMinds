@@ -1,0 +1,21 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+
+{% block title %}
+    Contact Us
+{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'mainapp/contact_us.css' %}">
+
+<div class="container">
+    <div class="contact-form" style="background-color: #ffffff">
+        <h1>Contact Us</h1>
+        <form action="{% url 'mainapp:contact_us' %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -6,13 +6,13 @@
     <title>Chat</title>
 </head>
 <body>
-    <h1>Chat with {{ thread.second_person.username }}</h1>
+    <h1>Chat with {{ userchat.second_person.username }}</h1>
     <div id="messages">
         {% for message in messages %}
             <p>{{ message.sender.username }}: {{ message.message }}</p>
         {% endfor %}
     </div>
-    <form method="post" action="{% url 'send_message' thread_id=thread.id %}">
+    <form method="post" action="{% url 'send_message' userchat_id=userchat.id %}">
         {% csrf_token %}
         <textarea name="message" rows="3" cols="50"></textarea><br>
         <button type="submit">Send</button>
