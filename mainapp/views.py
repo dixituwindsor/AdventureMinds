@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, SignupForm, LoginForm
 from .models import UserProfile, Trip, Wishlist
 from datetime import datetime
+from django.template.loader import render_to_string
 
 # Create your views here.
 
@@ -172,6 +173,7 @@ def view_wishlist(request):
 
 
 def view_calendar(request):
+    x = []
     if request.method == 'POST':
         start_date_str = request.POST.get('start_date')
         end_date_str = request.POST.get('end_date')
@@ -182,12 +184,12 @@ def view_calendar(request):
                 # end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
 
                 trips = Trip.objects.filter(start_date__gte=start_date_str, end_date__lte=end_date_str)
-
                 return render(request, 'mainapp/calendar.html', {'trips': trips})
             except ValueError:
                 error_message = 'Invalid date format. Please use YYYY-MM-DD.'
         else:
+
             trips = Trip.objects.all()
             return render(request, 'mainapp/calendar.html', {'trips': trips})
-
-    return render(request, 'mainapp/calendar.html', context={'trips': []})
+    else:
+        return render(request, 'mainapp/calendar.html', {'trips': x})
