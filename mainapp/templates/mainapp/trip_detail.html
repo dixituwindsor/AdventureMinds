@@ -59,20 +59,22 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            Photos
-        </div>
-        <div class="card-body">
-            <div class="row">
-                {% for photo in trip.trip_photos.all %}
-                <div class="col-md-4 mb-3">
+<div class="card">
+    <div class="card-header">
+        Photos
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for photo in trip.trip_photos.all %}
+            <div class="col-md-4 mb-3">
+                <a href="{{ photo.photo.url }}" target="_blank">
                     <img src="{{ photo.photo.url }}" alt="Trip Photo" class="img-fluid">
-                </div>
-                {% endfor %}
+                </a>
             </div>
+            {% endfor %}
         </div>
     </div>
+</div>
 
     <div class="card">
         <div class="card-header">
@@ -86,6 +88,31 @@
             </ul>
         </div>
     </div>
+<div class="card">
+    <div class="card-header">
+        Average Rating and Reviews of {{ trip.place.name }}
+    </div>
+    <div class="card-body">
+        <p><strong>Average Rating:</strong> {{ trip.average_rating }}</p>
+        <p><strong>Reviews:</strong></p>
+        <ul>
+            {% for review in trip.reviews|slice:":3" %}
+                <li>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <p>{{ review.review }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="user-info text-right">
+                                <span>by: {{ review.user.username }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 
    {% if request.user.is_authenticated %}
     {% if request.user == trip.uploader %}
