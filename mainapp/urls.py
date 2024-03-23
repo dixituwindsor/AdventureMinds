@@ -16,4 +16,5 @@ urlpatterns = [
     # END CODE
     path('add_or_remove_wishlist/', views.add_or_remove_wishlist, name='add_or_remove_wishlist'),
     path('wishlist/', views.view_wishlist, name='wishlist'),
+    path('calendar/', views.view_calendar, name='calendar'),
 ]
