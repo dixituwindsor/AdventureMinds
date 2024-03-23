@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,10 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #EEECDC;
+            background-color: #EEECDC; /* Fallback color */
+            background-image: url("{% static 'mainapp/flatten-1.png' %}");
+            background-size: cover;
+            background-position: center;
             color: #084B29;
             margin: 0;
             padding: 0;
@@ -15,6 +19,18 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+        }
+        .overlay {
+            background-color: rgba(238, 236, 220, 0.8); /* Overlay color with opacity */
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1; /* Ensure the overlay is above the background image */
         }
         .container {
             background-color: white;
@@ -24,6 +40,7 @@
             width: 90%;
             max-width: 400px;
             text-align: center;
+            z-index: 2; /* Ensure the container is above the overlay */
         }
         h1 {
             margin-top: 0;
@@ -34,7 +51,6 @@
             margin-top: 20px;
         }
         input[type="text"],
-        input[type="email"],
         input[type="password"] {
             width: calc(100% - 22px);
             padding: 10px;
@@ -45,7 +61,6 @@
             transition: border-color 0.3s ease;
         }
         input[type="text"]:focus,
-        input[type="email"]:focus,
         input[type="password"]:focus {
             border-color: #084B29;
         }
@@ -77,19 +92,20 @@
             margin-top: 5px;
             font-size: 14px;
         }
-        
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Signup</h1>
-        <form method="POST">
-            <h5 class="error-message" >{{  msg }}</h5>
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Signup</button>
-            <a href="{% url 'mainapp:login' %}">Already have an account? Login</a>
-        </form>
-    </div>
+{#    <div class="overlay">#}
+        <div class="container">
+            <h1>Signup</h1>
+            <form method="POST">
+                <h5 class="error-message" >{{  msg }}</h5>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Signup</button>
+                <a href="{% url 'mainapp:login' %}">Already have an account? Login</a>
+            </form>
+        </div>
+{#    </div>#}
 </body>
 </html>
