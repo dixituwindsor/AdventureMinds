@@ -452,6 +452,18 @@ def add_rating(request,trip_id):
         rating_form = RatingForm()
     return render(request, 'mainapp/add_rating.html', {'rating_form': rating_form})
 
+def add_blog_post(request):
+    if request.method == 'POST':
+        blog_form = BlogPostForm(request.POST)
+        if blog_form.is_valid():
+            blog_post = blog_form.save(commit=False)
+            blog_post.author = request.user
+            blog_post.save()
+            return redirect('mainapp:blog_post_detail', blog_post_id=blog_post.id)
+    else:
+        blog_form = BlogPostForm()
+    return render(request, 'mainapp/add_blogpost.html', {'blog_form': blog_form})
+
 # @login_required
 # def add_rating(request, place_id):
 #     place = Place.objects.get(id=place_id)
