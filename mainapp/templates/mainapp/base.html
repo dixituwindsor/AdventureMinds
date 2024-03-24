@@ -299,16 +299,18 @@
           {% if user.userprofile.profile_photo %}
     <img src="{{ user.userprofile.profile_photo.url }}" alt="Profile Image" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
         <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
-                <a href="{% url 'mainapp:contact_us' %}">Contact Us</a><br>
+        <a href="{% url 'mainapp:contact_us' %}">Contact Us</a><br>
 
-        <a href="{% url 'mainapp:logout' %}">Logout</a><br>
+{#        <a href="{% url 'mainapp:logout' %}">Logout</a><br>#}
+        <a href="/logout/">Logout</a><br>
     '>
 {% else %}
     <img id="profile-image" src="{% static 'mainapp/user.png' %}" alt="Default Profile Photo" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
         <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
         <a href="{% url 'mainapp:contact_us' %}">Contact Us</a><br>
 
-        <a href="{% url 'mainapp:logout' %}">Logout</a><br>
+{#        <a href="{% url 'mainapp:logout' %}">Logout</a><br>#}
+        <a href="/logout/">Logout</a><br>
         
     '>
 {% endif %}
