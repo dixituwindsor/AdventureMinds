@@ -1,14 +1,12 @@
 from django import forms
-from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django import forms
-from .models import UserPreferences, PreferenceCategory
 from multiupload.fields import MultiFileField
-from .models import Trip
+from titlecase import titlecase
 
+from .models import Review, Rating
+from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference, ContactMessage, \
+    PreferenceCategory
 
-from django.contrib.auth.models import User
 
 class UserProfileForm(forms.ModelForm):
     first_name = forms.CharField(label='First Name', required=False)
@@ -25,6 +23,7 @@ class UserProfileForm(forms.ModelForm):
             'profile_photo': 'Profile Photo'
         }
         widgets = {
+            'address' :  forms.Textarea(attrs={'rows': 5, 'cols': 40}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
             'profile_photo': forms.ClearableFileInput(attrs={'class': 'form-control-file'})
         }
@@ -58,7 +57,6 @@ class UserPreferencesForm(forms.ModelForm):
         initial_data = kwargs.pop('initial', {})
         super(UserPreferencesForm, self).__init__(*args, **kwargs)
 
-        # Dynamically generate fields for each preference category
         categories = PreferenceCategory.objects.all()
         for category in categories:
             choices = category.preferencechoice_set.all()
@@ -68,16 +66,15 @@ class UserPreferencesForm(forms.ModelForm):
                 widget=forms.CheckboxSelectMultiple,
                 required=False  # Make fields not required
             )
-            # Modify choice labels to remove category name
             self.fields[field_name].label_from_instance = lambda obj: obj.value
 
-            # Set initial values based on fetched data
             initial_values = initial_data.get(field_name, [])
             self.initial[field_name] = initial_values  # Use choice objects directly
 
     class Meta:
         model = UserPreferences
         fields = []  # No need to specify fields as they are dynamically generated
+
 
 
 
@@ -123,7 +120,7 @@ class AddTripForm(forms.ModelForm):
         }
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'place': forms.Select(attrs={'class': 'form-select'}),
+            'place': forms.Select(attrs={'class': 'form-select form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -136,7 +133,6 @@ class AddTripForm(forms.ModelForm):
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
 
-        # Check if end date is greater than or equal to start date
         if start_date and end_date and end_date < start_date:
             raise forms.ValidationError("End date must be greater than or equal to start date.")
 
@@ -151,22 +147,25 @@ class AddTripForm(forms.ModelForm):
         return trip
 
 
-class TripPreferenceForm(forms.ModelForm):
-    class Meta:
-        model = TripPreference
-        fields = []
 
+class TripPreferenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         categories = PreferenceCategory.objects.all()
         for category in categories:
+            label = titlecase(category.name.replace('_', ' '))
             choices = PreferenceChoice.objects.filter(category=category)
             choices_list = [(choice.pk, choice.value) for choice in choices]
             self.fields[f'{category.name}'] = forms.MultipleChoiceField(
                 choices=choices_list,
                 widget=forms.CheckboxSelectMultiple,
-                label=category.name
+                label=label,
+            required = False
             )
+
+    class Meta:
+        model = TripPreference
+        fields = []
 
 
 
@@ -197,3 +196,29 @@ class SignupForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
+
+
+class ForgotPasswordForm(forms.Form):
+    username = forms.CharField(label='Username')
+    email = forms.EmailField(label='Email')
+    last_three_digits_of_phone_number = forms.CharField(label='Last Three Digits of Phone Number')
+    date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
+    new_password = forms.CharField(widget=forms.PasswordInput, label='New Password')
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label='Confirm Password')
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ['first_name', 'last_name', 'email', 'message']
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['review']
+
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['rating']
