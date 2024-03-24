@@ -13,9 +13,8 @@
             <h1>AdventureMinds</h1>
             <nav>
                 <ul>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="{% url 'mainapp:homepage' %}">Trips</a></li>
+                    <li><a href="{% url 'mainapp:contact_us' %}">Contact</a></li>
                     <li><a href="{% url 'mainapp:signup' %}">Sign Up</a></li>
                     <li><a href="{% url 'mainapp:login' %}">Login</a></li>
                 </ul>
