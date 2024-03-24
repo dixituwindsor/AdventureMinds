@@ -182,5 +182,31 @@
         .catch(error => console.error('Error toggling wishlist:', error));
     }
 </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.wish-list-btn').click(function(e){
+                e.preventDefault();
+                var tripId = $(this).data('trip-id');
+
+                // Send AJAX request to add or remove from wishlist
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'mainapp:add_or_remove_wishlist' %}",
+                    data: {
+                        'trip_id': tripId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        // Update wishlist items list on success
+                        $('#wishlist-items').html(response.wishlist_items_html);
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 
 {% endblock %}

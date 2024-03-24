@@ -11,6 +11,16 @@
 
     <link rel="stylesheet" href="{% static 'mainapp/messages.css' %}">
 
+    <style>
+    .container-fluid {
+            max-width: 100%;
+            width: 100%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #e9ecef;
+        }
+    </style>
+
 {% if user.is_authenticated %}
     <input type="hidden" id="logged-in-user" value="{{ user.id }}">
 {% endif %}
@@ -154,7 +164,7 @@
                                         </div>
                                         <div class="msg_cotainer">
                                             {{ chat.message }}
-                                            <span class="msg_time">{{ chat.user.username }}, {{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
+                                            <span class="msg_time">{{ chat.user.user.username }}, {{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
                                         </div>
                                     </div>
                                 {% endif %}
