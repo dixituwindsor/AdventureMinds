@@ -2,10 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from multiupload.fields import MultiFileField
 from titlecase import titlecase
-
-from .models import Review, Rating
-from .models import UserProfile, UserPreferences, Trip, PreferenceChoice, TripPreference, ContactMessage, \
-    PreferenceCategory
+from .models import *
 
 
 class UserProfileForm(forms.ModelForm):
@@ -49,9 +46,6 @@ class UserProfileForm(forms.ModelForm):
         return super(UserProfileForm, self).save(commit)
 
 
-
-
-
 class UserPreferencesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         initial_data = kwargs.pop('initial', {})
@@ -74,8 +68,6 @@ class UserPreferencesForm(forms.ModelForm):
     class Meta:
         model = UserPreferences
         fields = []  # No need to specify fields as they are dynamically generated
-
-
 
 
 class AddTripForm(forms.ModelForm):
@@ -147,7 +139,6 @@ class AddTripForm(forms.ModelForm):
         return trip
 
 
-
 class TripPreferenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -166,7 +157,6 @@ class TripPreferenceForm(forms.ModelForm):
     class Meta:
         model = TripPreference
         fields = []
-
 
 
 class TripSearchForm(forms.Form):
@@ -218,7 +208,14 @@ class ReviewForm(forms.ModelForm):
         model = Review
         fields = ['review']
 
+
 class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
         fields = ['rating']
+
+
+class BlogPostForm(forms.ModelForm):
+    class Meta:
+        model = BlogPost
+        fields = ['title', 'display_content', 'content', 'place', 'image']
