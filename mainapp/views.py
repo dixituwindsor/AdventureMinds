@@ -219,7 +219,6 @@ def add_trip(request):
     return render(request, 'mainapp/add_trip.html', {'trip_form': trip_form, 'preference_form': preference_form})
 
 
-@login_required
 def trip_list(request):
     if request.user.is_authenticated:
         user_profile = get_object_or_404(UserProfile, user=request.user)
