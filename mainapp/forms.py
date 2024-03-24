@@ -4,10 +4,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from multiupload.fields import MultiFileField
 from titlecase import titlecase
-
-from .models import Review, Rating
-
+from .models import *
 from django.contrib.auth.models import User
+
 
 class UserProfileForm(forms.ModelForm):
     first_name = forms.CharField(label='First Name', required=False)
@@ -49,9 +48,6 @@ class UserProfileForm(forms.ModelForm):
         return super(UserProfileForm, self).save(commit)
 
 
-
-
-
 class UserPreferencesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         initial_data = kwargs.pop('initial', {})
@@ -74,8 +70,6 @@ class UserPreferencesForm(forms.ModelForm):
     class Meta:
         model = UserPreferences
         fields = []  # No need to specify fields as they are dynamically generated
-
-
 
 
 class AddTripForm(forms.ModelForm):
@@ -147,7 +141,6 @@ class AddTripForm(forms.ModelForm):
         return trip
 
 
-
 class TripPreferenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -166,7 +159,6 @@ class TripPreferenceForm(forms.ModelForm):
     class Meta:
         model = TripPreference
         fields = []
-
 
 
 class TripSearchForm(forms.Form):
@@ -198,6 +190,15 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
 
 
+class ForgotPasswordForm(forms.Form):
+    username = forms.CharField(label='Username')
+    email = forms.EmailField(label='Email')
+    last_three_digits_of_phone_number = forms.CharField(label='Last Three Digits of Phone Number')
+    date_of_birth = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}))
+    new_password = forms.CharField(widget=forms.PasswordInput, label='New Password')
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label='Confirm Password')
+
+
 class ContactForm(forms.ModelForm):
     class Meta:
         model = ContactMessage
@@ -209,8 +210,14 @@ class ReviewForm(forms.ModelForm):
         model = Review
         fields = ['review']
 
+
 class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
         fields = ['rating']
 
+
+class BlogPostForm(forms.ModelForm):
+    class Meta:
+        model = BlogPost
+        fields = ['title', 'display_content', 'content', 'place', 'image']

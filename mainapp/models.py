@@ -48,7 +48,8 @@ class TripPreference(models.Model):
 
 
 class UserPreferences(models.Model):
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True, blank=True)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True,
+                                     blank=True)
     preferences = models.ManyToManyField(PreferenceChoice)
 
     def __str__(self):
@@ -109,7 +110,6 @@ class JoinRequest(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-
         return f"Request to join {self.trip} by {self.user}"
 
 
@@ -152,7 +152,7 @@ class UserChat(models.Model):
                 raise ValidationError("A chat with the same first user and group already exists.")
         else:
             if UserChat.objects.filter(first_person=self.second_person, second_person=self.first_person,
-                                     group=None).exists():
+                                       group=None).exists():
                 raise ValidationError("Conversation between these users already exists.")
 
             if UserChat.objects.filter(first_person=self.first_person, second_person=self.second_person).exists():
@@ -175,7 +175,7 @@ class ChatMessage(models.Model):
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
-    
+
 
 class ContactMessage(models.Model):
     first_name = models.CharField(max_length=100)
@@ -217,3 +217,32 @@ class Rating(models.Model):
     def __str__(self):
         return f"{self.user}'s {self.rating}-star rating for {self.place}"
 
+
+class Wishlist(models.Model):
+    trip_id = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='wishlist_items')
+    user_id = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    notes = models.TextField(blank=True, null=True)
+    priority = models.IntegerField(default=1)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def get_place(self):
+        return self.trip_id.place
+
+    class Meta:
+        unique_together = ('user_id', 'trip_id',)
+
+    def _str_(self):
+        return f"{self.user_id.user.username}'s Wishlist Item: (Trip: {self.trip_id.description})"
+
+
+class BlogPost(models.Model):
+    title = models.CharField(max_length=255)
+    display_content = models.TextField()
+    content = models.TextField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='blog_images/', null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.title

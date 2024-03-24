@@ -127,10 +127,8 @@ function newMessage(message, sent_by_id, userchat_id, send_time, sender_username
     let message_body = $('.messages-wrapper[chat-id="' + chat_id + '"] .msg_card_body');
     message_body.append($(message_element));
     setTimeout(function() {
-        message_body.animate({
-            scrollTop: message_body[0].scrollHeight
-        }, 100);
-    }, 1); // Adjust the delay as needed
+        message_body.scrollTop(message_body[0].scrollHeight);
+    }); // Adjust the delay as needed
 
     input_message.val(null);
 }
