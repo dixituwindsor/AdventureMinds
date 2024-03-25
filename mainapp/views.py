@@ -219,6 +219,7 @@ def add_trip(request):
     return render(request, 'mainapp/add_trip.html', {'trip_form': trip_form, 'preference_form': preference_form})
 
 
+@login_required
 def trip_list(request):
     if request.user.is_authenticated:
         user_profile = get_object_or_404(UserProfile, user=request.user)
@@ -377,12 +378,9 @@ def user_trip_list(request):
     current_user = request.user
     current_date = timezone.now().date()
     upcoming_trips = Trip.objects.filter(participants=current_user, start_date__gt=current_date)
-    current_trips = Trip.objects.filter(participants=current_user, start_date__lte=current_date,
-                                        end_date__gte=current_date)
     past_trips = Trip.objects.filter(participants=current_user, end_date__lt=current_date)
     context = {
         'upcoming_trips': upcoming_trips,
-        'current_trips': current_trips,
         'past_trips': past_trips,
         'current_date': current_date,
     }

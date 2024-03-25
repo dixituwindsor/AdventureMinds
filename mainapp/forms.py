@@ -1,8 +1,8 @@
 from django import forms
-from django.contrib.auth.models import User
 from multiupload.fields import MultiFileField
 from titlecase import titlecase
 from .models import *
+from django.contrib.auth.models import User
 
 
 class UserProfileForm(forms.ModelForm):
@@ -20,7 +20,6 @@ class UserProfileForm(forms.ModelForm):
             'profile_photo': 'Profile Photo'
         }
         widgets = {
-            'address' :  forms.Textarea(attrs={'rows': 5, 'cols': 40}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
             'profile_photo': forms.ClearableFileInput(attrs={'class': 'form-control-file'})
         }

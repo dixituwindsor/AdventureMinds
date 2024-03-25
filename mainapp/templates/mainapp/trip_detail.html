@@ -192,6 +192,31 @@
     {% endif %}
 {% endif %}
 </div>
+ <div class="review-rating">
+     <!-- Display reviews -->
+    <h2>Reviews</h2>
+    {% if trip.reviews.all %}
+        <ul>
+            {% for review in trip.reviews.all %}
+                <li>{{ review.user.username }} - {{ review.text }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No reviews yet.</p>
+    {% endif %}
+
+    <!-- Display ratings -->
+    <h2>Ratings</h2>
+    {% if trip.ratings.all %}
+        <ul>
+            {% for rating in trip.ratings.all %}
+                <li>{{ rating.user.username }} - {{ rating.value }} Stars</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No ratings yet.</p>
+    {% endif %}
+ </div>   
 <style>
     /* Custom CSS styles */
     body {

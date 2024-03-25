@@ -11,6 +11,7 @@ class Place(models.Model):
     address = models.CharField(max_length=300)
     description = models.TextField(max_length=1000, blank=True)
 
+
     def __str__(self):
         return self.name
 
@@ -27,7 +28,6 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-
 class PreferenceCategory(models.Model):
     name = models.CharField(max_length=100)
 
@@ -42,10 +42,8 @@ class PreferenceChoice(models.Model):
     def __str__(self):
         return f"{self.category.name}: {self.value}"
 
-
 class TripPreference(models.Model):
     preferences = models.ManyToManyField(PreferenceChoice)
-
 
 class UserPreferences(models.Model):
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True,
@@ -78,7 +76,6 @@ class Trip(models.Model):
     is_past = models.BooleanField(default=False)
     is_future = models.BooleanField(default=True)
     preferences = models.ForeignKey(TripPreference, on_delete=models.SET_NULL, null=True, blank=True)
-
     # Define methods to filter past and future trips
     def get_past_trips(self):
         return Trip.objects.filter(pk=self.pk, is_past=True)
@@ -88,7 +85,6 @@ class Trip(models.Model):
 
     def _str_(self):
         return self.title
-
 
 class TripPhoto(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='trip_photos')
@@ -187,10 +183,9 @@ class ContactMessage(models.Model):
     def __str__(self):
         return f'{self.first_name} {self.last_name} - {self.timestamp}'
 
-
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    trip = models.ForeignKey(Trip, default=1, on_delete=models.CASCADE)
     review = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -209,13 +204,25 @@ class Rating(models.Model):
         (5, '5 star')
     )
     rating = models.PositiveIntegerField(choices=RATING_CHOICES)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'place')
 
     def __str__(self):
         return f"{self.user}'s {self.rating}-star rating for {self.place}"
+
+
+class BlogPost(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='blog_images/', null=True, blank=True)  # Add this line for image upload
+    created_at = models.DateTimeField(default=timezone.now)
+    display_content = models.TextField()
+
+    def __str__(self):
+        return self.title
 
 
 class Wishlist(models.Model):
@@ -233,16 +240,3 @@ class Wishlist(models.Model):
 
     def _str_(self):
         return f"{self.user_id.user.username}'s Wishlist Item: (Trip: {self.trip_id.description})"
-
-
-class BlogPost(models.Model):
-    title = models.CharField(max_length=255)
-    display_content = models.TextField()
-    content = models.TextField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    place = models.ForeignKey(Place, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='blog_images/', null=True, blank=True)
-    created_at = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.title

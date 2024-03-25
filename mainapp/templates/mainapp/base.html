@@ -14,8 +14,7 @@
             background-color: #e9ecef;
         }
         .logo-bar {
-    background-color: #1a472a;
-    color: white;
+    background-color: #135436;
     padding: 10px 20px;
     text-align: center;
 }
@@ -71,7 +70,7 @@
 
 .navbar .navbar-nav .nav-link:hover,
 .navbar .navbar-nav .nav-link:focus {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(234, 346, 300, 0.80);
 }
 
 .navbar .navbar-brand {
@@ -117,7 +116,7 @@
 }
 
 .wish-list-btn button i {
-    color: #37b1b6;
+    color: red;
 }
 
 .wish-list-btn button {
@@ -138,7 +137,7 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #e9ecef;
+            background-color: beige;
         }
         html, body{
             height: 100%;
@@ -156,7 +155,7 @@
             width: 80%;
             margin: 20px auto;
             padding: 20px;
-            background-color: #e9ecef;
+            background-color: beige;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -183,7 +182,7 @@
             margin-top: 20px;
             display: block;
             width: 100%;
-            background-color: #1a472a; /* Updated color */
+            background-color: #385236; /* Updated color */
             border: none;
         }
 
@@ -197,7 +196,7 @@
 
         /* Updated color for navbar */
         .navbar {
-            background-color: rgba(26, 71, 42, 0.72); 
+            background-color: #135436;
         }
 
         .navbar .navbar-nav .nav-link {
@@ -245,7 +244,7 @@
         }
 
         .popover-header {
-            background-color: rgba(26, 71, 42, 0.72);
+            background-color: #135436;
             color: white;
         }
         .profile-image {
@@ -259,10 +258,11 @@
             height: 30px;
             margin-left: 10px;
             cursor: pointer;
+
         }
 
         footer {
-            background-color: #007bff;
+            background-color: #135436;
             color: #fff;
             padding: 40px 0;
             text-align: center;
@@ -344,19 +344,22 @@
 </div>
 
         <!-- Profile Button Trigger -->
-        <img src="https://www.iconsdb.com/icons/preview/white/chat-4-xxl.png" alt="Messages" class="small-icon" onclick="location.href='{% url 'mainapp:messages' %}';" style=" margin-right: 10px;">
-            {% if user.userprofile.profile_photo %}
-            <img src="{{ user.userprofile.profile_photo.url }}" alt="Profile Image" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
-                <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
+        <img src="{% static 'mainapp/chaticon.png' %}" alt="Messages" class="small-icon" onclick="location.href='{% url 'mainapp:messages' %}';" style=" margin-right: 10px;">
+          {% if user.userprofile.profile_photo %}
+    <img src="{{ user.userprofile.profile_photo.url }}" alt="Profile Image" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
+        <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
                 <a href="{% url 'mainapp:contact_us' %}">Contact Us</a><br>
-                <a href="/logout/">Logout</a><br>
-            '>
-            {% else %}
-            <img id="profile-image" src="{% static 'mainapp/user.png' %}" alt="Default Profile Photo" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
-                <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
-                <a href="{% url 'mainapp:contact_us' %}">Contact Us</a><br>
-                <a href="/logout/">Logout</a><br>
-            '>
+
+        <a href="{% url 'mainapp:logout' %}">Logout</a><br>
+    '>
+{% else %}
+    <img id="profile-image" src="{% static 'mainapp/user.png' %}" alt="Default Profile Photo" class="profile-image ml-2" data-toggle="popover" data-placement="bottom" title="Profile" data-html="true" data-content='
+        <a href="{% url 'mainapp:profile' %}" >Profile</a><br>
+        <a href="{% url 'mainapp:contact_us' %}">Contact Us</a><br>
+
+        <a href="{% url 'mainapp:user_logout' %}">Logout</a><br>
+        
+    '>
 {% endif %}
 </div>
 
