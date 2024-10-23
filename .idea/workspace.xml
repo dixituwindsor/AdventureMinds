@@ -35,27 +35,38 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+<<<<<<< Updated upstream
     &quot;Django Server.AdventureMinds.executor&quot;: &quot;Run&quot;,
     &quot;Python.manage.executor&quot;: &quot;Run&quot;,
+=======
+>>>>>>> Stashed changes
     &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR&quot;,
+<<<<<<< Updated upstream
     &quot;git-widget-placeholder&quot;: &quot;dixit&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/Masters/Sem3/IADS/Project/AdventureMindsNew/AdventureMinds&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+=======
+    &quot;git-widget-placeholder&quot;: &quot;Merging master&quot;,
+>>>>>>> Stashed changes
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+<<<<<<< Updated upstream
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Masters\Sem3\IADS\Project\AdventureMindsNew\AdventureMinds" />
     </key>
   </component>
   <component name="RunManager" selected="Python.manage">
+=======
+  <component name="RunManager" selected="Django Server.AdventureMinds">
+>>>>>>> Stashed changes
     <configuration name="AdventureMinds" type="Python.DjangoServer" factoryName="Django server">
       <module name="AdventureMinds" />
       <option name="ENV_FILES" value="" />
