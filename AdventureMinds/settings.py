@@ -59,7 +59,7 @@ ROOT_URLCONF = "AdventureMinds.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates']
+        "DIRS": [os.path.join(BASE_DIR, 'templates')]
         ,
         "APP_DIRS": True,
         "OPTIONS": {
@@ -122,7 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "mainapp/static"]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'mainapp/static')]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
 
