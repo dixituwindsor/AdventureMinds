@@ -1,8 +1,50 @@
 {% extends 'mainapp/base_calender.html' %}
 {% load static %}
-{% block content_calender %}
+{% block content %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css">
+
+{#    {% block content_calender %}#}
     <link rel="stylesheet" type="text/css" href="{% static 'mainapp/calender.css' %}">
     <div class="calendar-container">
         {{ calendar }}
     </div>
+{#    {% endblock %}#}
+
+    {% block script %}
+          <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+        <script>
+        $(document).ready(function (){
+            const elmnt = document.getElementById("footerid");
+            elmnt.remove();
+        })
+        </script>
+    {% endblock %}
+{#    <footer>#}
+{#        <div class="footer-container">#}
+{#            <div class="footer-content">#}
+{#                <div class="footer-column">#}
+{#                    <h3>Contact Information</h3>#}
+{#                    <p>Email: contact@adventureminds.com</p>#}
+{#                    <p>Phone: +1 (123) 456-7890</p>#}
+{#                </div>#}
+{#                <div class="footer-column">#}
+{#                    <h3>&ensp;&ensp;&ensp;Follow Us</h3>#}
+{#                    <ul style="list-style-type: none">#}
+{#                        <li><a href="#">Facebook</a></li>#}
+{#                        <li><a href="#">Twitter</a></li>#}
+{#                        <li><a href="#">Instagram</a></li>#}
+{#                    </ul>#}
+{#                </div>#}
+{#            </div>#}
+{#            <p>&copy; 2024 AdventureMinds. All rights reserved.</p>#}
+{#        </div>#}
+{#    </footer>#}
 {% endblock %}
+

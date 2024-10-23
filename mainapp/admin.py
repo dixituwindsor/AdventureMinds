@@ -21,6 +21,7 @@ admin.site.register(Rating)
 admin.site.register(Review)
 admin.site.register(BlogPost)
 admin.site.register(Wishlist)
+admin.site.register(ContactMessage)
 
 
 class ChatMessage(admin.TabularInline):

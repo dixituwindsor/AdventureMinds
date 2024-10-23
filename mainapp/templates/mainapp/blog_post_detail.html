@@ -10,9 +10,12 @@
     <p><strong>Place:</strong> {{ blog_post.place.name }}</p>
     <p><strong>Created at:</strong> {{ blog_post.created_at }}</p>
     <br>
-    <p><strong>Content:</strong> {{ blog_post.content }}</p>
+    <p><strong>Content:</strong></p>
+    <pre style="white-space: pre-wrap;">{{ blog_post.content }}</pre>
     <br>
-    <img src="{{ blog_post.image.url }}">
+    {% if blog_post.image %}
+        <img src="{{ blog_post.image.url }}">
+    {% endif %}
 
 
 {% endblock %}

@@ -534,10 +534,6 @@ def getusers(request):
     return JsonResponse(list(users), safe=False)
 
 
-class Thread:
-    pass
-
-
 @login_required
 def messages(request):
     user_profile = UserProfile.objects.get(user=request.user)

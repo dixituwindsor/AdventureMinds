@@ -120,20 +120,6 @@ class ChatConsumer(AsyncConsumer):
             'text': event['text']
         })
 
-    async def send_group_message(self, user_id, message, userchat):
-        # Ensure this operation is performed asynchronously
-        members = await self.get_group_members(userchat.group.id)
-        for member in members:
-            if member.id != user_id:
-                await self.send({
-                    'type': 'websocket.send',
-                    'text': json.dumps({
-                        'message': message,
-                        'sent_by': user_id,
-                        'userchat_id': userchat.id
-                    })
-                })
-
     @database_sync_to_async
     def get_userchat(self, userchat_id):
         return UserChat.objects.filter(id=userchat_id).first()
