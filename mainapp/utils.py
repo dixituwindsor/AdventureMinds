@@ -16,7 +16,7 @@ class Calendar(HTMLCalendar):
         trips_per_day = trips.filter(start_date__day=day)
         d = ''
         for trip in trips_per_day:
-            d += f'<li> {trip.title}, Ends on: {trip.end_date.strftime('%d-%m-%Y')} </li>'
+            d += f"<li> {trip.title}, Ends on: {trip.end_date.strftime('%d-%m-%Y')} </li>"
 
         if day != 0:
             return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"
