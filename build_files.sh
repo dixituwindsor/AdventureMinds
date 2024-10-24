@@ -7,6 +7,8 @@ mv db.sqlite3 /tmp/db.sqlite3
 
 # Modify the Django settings to point to this new location
 sed -i 's#"NAME": BASE_DIR / "db.sqlite3"#"NAME": "/tmp/db.sqlite3"#' AdventureMinds/settings.py
+python3.9 manage.py migrate --noinput
+
 python3 manage.py collectstatic --noinput --clear
 mv staticfiles_build/static public/
 echo "BUILD END"
