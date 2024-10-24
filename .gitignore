@@ -5,4 +5,3 @@ venv/
 /.idea/
 test.py
 mainapp/migrations
-db.sqlite3
