@@ -10,5 +10,4 @@ sed -i 's#"NAME": BASE_DIR / "db.sqlite3"#"NAME": "/tmp/db.sqlite3"#' AdventureM
 python3.9 manage.py migrate --noinput
 
 python3 manage.py collectstatic --noinput --clear
-mv staticfiles_build/static public/
 echo "BUILD END"

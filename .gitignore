@@ -4,4 +4,3 @@ venv/
 .idea
 /.idea/
 test.py
-mainapp/migrations
