@@ -26,8 +26,8 @@ SECRET_KEY = "django-insecure-z)p!^5#lfet3hqq!d1m&+2_^%(45ytg@mi-ry6u6^s3+m8fmgx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app', '.now.sh']
-# comment
+ALLOWED_HOSTS = []
+
 
 # Application definition
 
@@ -59,7 +59,7 @@ ROOT_URLCONF = "AdventureMinds.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'templates')]
+        "DIRS": [BASE_DIR / 'templates']
         ,
         "APP_DIRS": True,
         "OPTIONS": {
@@ -82,7 +82,7 @@ WSGI_APPLICATION = "AdventureMinds.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME":  "/tmp/db.sqlite3",
+        "NAME":  "db.sqlite3",
     }
 }
 
@@ -121,10 +121,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'mainapp/static')]
+STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "mainapp/static"]
 
-STATIC_ROOT = os.path.join(BASE_DIR, "public", "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mainapp/media')
