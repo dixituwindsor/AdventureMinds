@@ -6,7 +6,7 @@ curl -o db.sqlite3 https://raw.githubusercontent.com/dixituwindsor/AdventureMind
 mv db.sqlite3 /tmp/db.sqlite3
 
 # Modify the Django settings to point to this new location
-sed -i 's#NAME": "db.sqlite3"#NAME": "/tmp/db.sqlite3"#' AdventureMinds/settings.py
+sed -i 's#"NAME": BASE_DIR / "db.sqlite3"#"NAME": "/tmp/db.sqlite3"#' AdventureMinds/settings.py
 python3 manage.py collectstatic --noinput --clear
 mv staticfiles_build/static public/
 echo "BUILD END"
